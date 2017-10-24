@@ -50,6 +50,28 @@ class App extends Component {
     this.state = {
       loggedIn: false,
     };
+
+    this.getRef = this.getRef.bind(this);
+  }
+
+  getRef(el) {
+    console.log('getRef');
+    this.el = el;
+  }
+
+  componentDidMount() {
+    console.log('app componentDidMount');
+
+    // var test1 = document.getElementById('tester1');
+
+    Plotly.plot(this.el, [{
+      x: [1, 2, 3, 4, 5],
+      y: [1, 2, 4, 8, 16],
+    }], {
+      margin: {
+        t: 0,
+      },
+    });
   }
   handleLogin = () => {
     this.setState({ loggedIn: true });
@@ -77,22 +99,27 @@ class App extends Component {
     });
   }
   render() {
-    console.log('LOGGED IN STATE: ', this.state.loggedIn);
+    console.log('app render'); // using id also works
+    //  {/*<div id="tester1" style={{width:"90%", height:"250px"}}>*/}
     return (
-      <Provider store={store}>
-        <MuiThemeProvider muiTheme={muiTheme}>
-          <div>
-            {
-              (this.state.loggedIn || Meteor.user() !== null) ?
-                <MainPage handleLogout={this.handleLogout} />
-                : <Login handleLogin={this.handleLogin} />
-            }
-            {/* <Carousel /> */}
-            <NotificationSystem ref="notificationSystem" />
-          </div>
-        </MuiThemeProvider>
-      </Provider>
+      <div ref={this.getRef} id="tester1" style={{ width: '90%', height: '250px' }} />
     );
+    // console.log('LOGGED IN STATE: ', this.state.loggedIn);
+    // return (
+    //   <Provider store={store}>
+    //     <MuiThemeProvider muiTheme={muiTheme}>
+    //       <div>
+    //         {
+    //           (this.state.loggedIn || Meteor.user() !== null) ?
+    //             <MainPage handleLogout={this.handleLogout} />
+    //             : <Login handleLogin={this.handleLogin} />
+    //         }
+    //         {/* <Carousel /> */}
+    //         <NotificationSystem ref="notificationSystem" />
+    //       </div>
+    //     </MuiThemeProvider>
+    //   </Provider>
+    // );
   }
 }
 store.dispatch(actions.waitForCommandResponses());
