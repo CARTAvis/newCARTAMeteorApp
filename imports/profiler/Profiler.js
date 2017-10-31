@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import actions from './actions';
+import api from '../api/ApiService';
 
 class Profiler extends Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.props.dispatch(actions.setupProfiler());
+    console.log('The props after dispatch', this.props);
     // this.getRef = this.getRef.bind(this);
   }
   componentDidMount = () => {
@@ -15,6 +17,10 @@ class Profiler extends Component {
       y: [10, 15, 13, 17],
       type: 'scatter',
     };
+
+    // const cmd = '/CartaObjects/DataLoader:getData'
+    // api.instance().sendCommand()
+
     // const layout = {
     //   height: this.props.width,
     // };
@@ -56,6 +62,7 @@ class Profiler extends Component {
       // console.log('ZOOM DATA: ', data);
       Plotly.relayout(this.el, data);
     }
+    this.props.dispatch(actions.getProfile());
   }
   // getRef = (el) => {
   //   this.el = el;

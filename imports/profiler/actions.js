@@ -1,5 +1,6 @@
 import { ProfilerDB } from '../api/ProfilerDB';
 import { mongoUpsert } from '../api/MongoHelper';
+import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
 const PROFILER_CHANGE = 'PROFILER_CHANGE';
@@ -11,11 +12,47 @@ export const Actions = {
 const SET_HOVER = 'SET_HOVER';
 const ZOOM_PAN = 'ZOOM_PAN';
 
+export function parseRegisterProfilerResp(resp) {
+  const { cmd, data } = resp;
+  console.log('grimmer got register profiler-view command response:', data);
+  const profilerID = data;
+
+  // save profilerID to mongodb
+  mongoUpsert(ProfilerDB, { profilerID }, `Resp_${cmd}`);
+}
+
 function setupProfiler() {
   return (dispatch) => {
     api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
+
+    const cmd = Commands.REGISTER_VIEWER;
+    const params = 'pluginId:Profiler,index:0';
+
+    console.log('send register Profiler');
+
+    api.instance().sendCommand(cmd, params, (resp) => {
+      console.log('get register Profiler result:', resp);
+
+      parseRegisterProfilerResp(resp);
+    });
   };
 }
+
+function getProfile() {
+  return (dispatch, getState) => {
+    const profilerID = getState().ProfilerDB.profilerID;
+    console.log('profilerID: ', profilerID);
+
+    const cmd = `${profilerID}:newProfile`;
+    const params = '';
+
+    api.instance().sendCommand(cmd, params, (resp) => {
+      console.log('#######################################get profile:', resp);
+      // const { x, y } = resp;
+    });
+  };
+}
+
 function onHover(data) {
   return (dispatch, getState) => {
     const val = { curveNumber: data.points[0].curveNumber, pointNumber: data.points[0].pointNumber };
@@ -48,6 +85,7 @@ const actions = {
   setupProfiler,
   onHover,
   onZoomPan,
+  getProfile,
 };
 
 export default actions;
