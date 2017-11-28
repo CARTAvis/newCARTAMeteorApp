@@ -6,11 +6,13 @@
 
   "plugins": [
       # "react"
+      "flowtype"
   ],
   "extends": [
       # "eslint:recommended",
       # "plugin:react/recommended",
-      "airbnb"
+      "airbnb",
+      "plugin:flowtype/recommended"
   ],
 
   "rules": {
@@ -24,6 +26,11 @@
       "import/no-extraneous-dependencies": 0,  # meteor
       "import/extensions": ["off", "never"], # meteor,
       "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }] # jax syntac in js
+  },
+  "settings": {
+    "flowtype": {
+      "onlyFilesWithFlowAnnotation": true
+    }
   },
   "env": {
     "browser": true,

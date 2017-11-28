@@ -6,6 +6,7 @@
     "node-debug": "meteor debug"
   },
   "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-runtime": "^6.20.0",
     "bcrypt": "^1.0.3",
     "blob": "0.0.4",
@@ -40,8 +41,10 @@
     "babel-eslint": "^7.2.3",
     "eslint": "^4.1.1",
     "eslint-config-airbnb": "^15.0.2",
+    "eslint-plugin-flowtype": "^2.39.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
-    "eslint-plugin-react": "^7.1.0"
+    "eslint-plugin-react": "^7.1.0",
+    "flow-bin": "^0.59.0"
   }
 }

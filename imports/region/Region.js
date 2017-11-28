@@ -2,11 +2,16 @@ import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
 import { ImageViewerDB } from '../api/ImageViewerDB';
+// @flow
+
+import * as React from 'react';
+import {Meteor} from 'meteor/meteor';
+import {connect} from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
-import { Card, CardText } from 'material-ui/Card';
+import {Card, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -15,96 +20,109 @@ import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
-// import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
+import type {RectangularRegion} from './models';
 
 const Blob = require('blob');
 
 
-// import ImageViewer2 from '../imageViewer/ImageViewer2';
+type RegionComponentProps = {
+  dispatch: any;
+  cursorInfo?: string,
+  mouseIsDown?: boolean;
+  requestingFile: boolean;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  regionArray?: RectangularRegion[];
+}
 
-let startX;
-let endX;
-let startY;
-let endY;
-class Region extends Component {
+type RegionComponentState = {
+  open: boolean,
+  saveAsInput: string,
+  anchorEl?: ?HTMLButtonElement,
+  selectedRegionKey?: number,
+  selectedFileExtension: string,
+}
+
+class RegionComponent extends React.Component<RegionComponentProps, RegionComponentState> {
+  lastCall: number;
+  div: HTMLDivElement;
+  stage: Stage;
+  layer: Layer;
+
+  startX: number;
+  endX: number;
+  startY: number;
+  endY: number;
+
   constructor(props) {
     super(props);
-    // this.regions = [];
     this.lastCall = 0;
     this.rect = null;
     this.state = {
       open: false,
       saveAsInput: '',
-      cursorInfo: '',
+      selectedFileExtension: 'png',
     };
-
-    // this.props.dispatch(actions.setupRegion());
   }
+
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.stack) {
       if (nextProps.stack.layers.length === 0) {
         this.showCursorInfo(false);
       }
     }
-  }
-  onMouseDown = (event) => {
-    this.props.dispatch(actions.setMouseIsDown(1));
-    // const pos = this.getMousePos(document.getElementById('canvas'), event);
+  };
+
+  onMouseDown = (event: MouseEvent) => {
+    this.props.dispatch(actions.setMouseIsDown(true));
     const pos = this.getMousePos(this.div, event);
     this.props.dispatch(imageActions.regionCommand('start', pos.x, pos.y));
-    endX = pos.x;
-    endY = pos.y;
-    startX = endX;
-    startY = endY;
+    this.endX = pos.x;
+    this.endY = pos.y;
+    this.startX = this.endX;
+    this.startY = this.endY;
     this.drawRect();
-  }
-  onMouseMove = (event) => {
-    if (this.props.mouseIsDown === 1) {
-      // const pos = this.getMousePos(document.getElementById('canvas'), event);
+  };
+
+  onMouseMove = (event: MouseEvent) => {
+    if (this.props.mouseIsDown) {
       const pos = this.getMousePos(this.div, event);
-      endX = pos.x;
-      endY = pos.y;
+      this.endX = pos.x;
+      this.endY = pos.y;
       this.drawRect();
     }
-  }
-  onMouseUp = (event) => {
-    if (this.props.mouseIsDown === 1) {
-      this.props.dispatch(actions.setMouseIsDown(0));
-      // const pos = this.getMousePos(document.getElementById('canvas'), event);
+  };
+
+  onMouseUp = (event: MouseEvent) => {
+    if (this.props.mouseIsDown) {
+      this.props.dispatch(actions.setMouseIsDown(false));
       const pos = this.getMousePos(this.div, event);
       this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
       this.props.dispatch(profilerActions.getProfile());
-      endX = pos.x;
-      endY = pos.y;
+      this.endX = pos.x;
+      this.endY = pos.y;
+
       this.drawRect();
-      this.div.removeEventListener('mousedown', this.onMouseDown);
-      this.div.removeEventListener('mousemove', this.onMouseMove);
-      this.div.removeEventListener('mouseup', this.onMouseUp);
-      // document.getElementById('canvas').removeEventListener('mousedown', this.onMouseDown);
-      // document.getElementById('canvas').removeEventListener('mousemove', this.onMouseMove);
-      // document.getElementById('canvas').removeEventListener('mouseup', this.onMouseUp);
+      const element = this.div;
+      if (element) {
+        element.removeEventListener('mousedown', this.onMouseDown);
+        element.removeEventListener('mousemove', this.onMouseMove);
+        element.removeEventListener('mouseup', this.onMouseUp);
+      }
     }
-  }
-  getMousePos = (canvas, event) => {
+  };
+
+  getMousePos = (canvas: HTMLElement, event: MouseEvent) => {
     const rect = canvas.getBoundingClientRect();
     return {
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
     };
-  }
-  // setRegionArray = (coordX, coordY, width, height) => {
-  //   if (this.props.regionArray) {
-  //     this.regionArray = this.props.regionArray;
-  //   }
-  //   this.regionArray = this.regionArray.concat({
-  //     x: coordX,
-  //     y: coordY,
-  //     w: width,
-  //     h: height,
-  //     key: Math.floor(Math.random() * 10000),
-  //   });
-  // }
+  };
+
   init = () => {
     if (this.props.stack) {
       if (this.props.stack.layers.length > 0) {
@@ -114,33 +132,39 @@ class Region extends Component {
         this.props.dispatch(imageActions.setRegionType('Rectangle'));
       }
     }
-    // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
-    // document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
-    // document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
-  }
+  };
+
+  initRegion = () => {
+    const element = this.div;
+    if (element) {
+      element.addEventListener('mousedown', this.onMouseDown);
+      element.addEventListener('mousemove', this.onMouseMove);
+      element.addEventListener('mouseup', this.onMouseUp);
+    }
+    this.props.dispatch(imageActions.setRegionType('Rectangle'));
+  };
+
   drawRect = () => {
-    const w = endX - startX;
-    const h = endY - startY;
+    const w = this.endX - this.startX;
+    const h = this.endY - this.startY;
     const offsetX = (w < 0) ? w : 0;
     const offsetY = (h < 0) ? h : 0;
 
-    if (this.props.mouseIsDown === 0) {
-      // this.setRegionArray(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h));
-      // console.log(`dimensions: (${startX + offsetX}, ${startY + offsetY}) (${startX + offsetX + w}, ${startY + offsetY})
-      // (${startX + offsetX}, ${startY + offsetY + h}) (${startX + offsetX + w}, ${startY + offsetY + h})`);
+    if (!this.props.mouseIsDown) {
       this.props.dispatch(
-        // actions.setShape(this.regionArray),
-        actions.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
+          actions.setShape(this.startX + offsetX, this.startY + offsetY, Math.abs(w), Math.abs(h)),
       );
     } else {
       this.props.dispatch(
-        actions.drawShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
+          actions.drawShape(this.startX + offsetX, this.startY + offsetY, Math.abs(w), Math.abs(h)),
       );
     }
   }
-  delete = () => {
-    const target = this.state.toDelete;
-    this.props.dispatch(actions.remove(target));
+
+  deleteRegion = () => {
+    const target = this.state.selectedRegionKey;
+    if (target)
+      this.props.dispatch(actions.remove(target));
   }
 
   resizeRect = (newX, newY, pos, index) => {
@@ -153,129 +177,76 @@ class Region extends Component {
     process.nextTick(() => {
       this.props.dispatch(actions.moveRect(newX, newY, index));
     });
-  }
+  };
 
   reshape = (newW, newH, newX, newY, index) => {
-    // this.regionArray = this.props.regionArray;
-    // const newArray = update(this.regionArray[index],
-    //   { x: { $set: newX }, y: { $set: newY }, w: { $set: newW }, h: { $set: newH },
-    //   });
-    // const data = update(this.regionArray, { $splice: [[index, 1, newArray]] });
     process.nextTick(() => {
-      // this.regionArray = data;
       this.props.dispatch(actions.reshape(newW, newH, newX, newY, index));
     });
-  }
-  addAnchor = (item, index) => {
-    // if (!this.regions.hasOwnProperty(item.key)) {
-    //   this.regions[item.key] = {};
-    // }
+  };
 
-    const circlesLen = item.circles.length;
-    const circles = [];
+  addAnchor = (region: RectangularRegion, index: number) => {
+    const circlesLen = region.circles.length;
+    const circleComponents = [];
     for (let i = 0; i < circlesLen; i += 1) {
-      const element = item.circles[i];
-      const circle = (
-        <Circle
-          x={element.x}
-          y={element.y}
-          stroke="#666"
-          fill="#ddd"
-          strokeWidth={2}
-          radius={8}
-          draggable
-          key={element.pos}
-          onDragMove={(e) => {
-            const x = e.target._lastPos.x;
-            const y = e.target._lastPos.y;
-            console.log('drag circle:', x, ';', y);
-            this.resizeRect(x, y, element.pos, index);
-          }}
-          // ref={(node) => {
-          //   if (node && !this.regions[item.key].hasOwnProperty(element.pos)) {
-          //     console.log('regiser circle:', element.pos);
-          //     this.regions[item.key][element.pos] = node;
-          //     this.regions[item.key][element.pos].on('dragmove', () => {
-          //       const x = this.regions[item.key][element.pos].getAttrs().x;
-          //       const y = this.regions[item.key][element.pos].getAttrs().y;
-          //       console.log('drag0:', x, ';', y);
-          //       this.resizeRect(x, y, element.pos, index);
-          //     });
-          //   }
-          // }}
-        />
+      const currentCircle = region.circles[i];
+      const circleComponent = (
+          <Circle
+              x={currentCircle.x}
+              y={currentCircle.y}
+              stroke="#666"
+              fill="#ddd"
+              strokeWidth={2}
+              radius={8}
+              draggable
+              key={currentCircle.pos}
+              onDragMove={(e) => {
+                const x = e.target._lastPos.x;
+                const y = e.target._lastPos.y;
+                console.log('drag circle:', x, ';', y);
+                this.resizeRect(x, y, currentCircle.pos, index);
+              }}
+          />
       );
-      circles.push(circle);
+      circleComponents.push(circleComponent);
     }
 
     const anchors = (
-      <Group>
-        {circles}
-      </Group>
+        <Group>
+          {circleComponents}
+        </Group>
     );
     const result = (
-      <Group
-        key={item.key}
-      >
-        <Rect
-          x={item.x}
-          y={item.y}
-          width={item.w}
-          height={item.h}
-          stroke="red"
-          draggable
-          listening
-          onDragMove={(e) => {
-            const x = e.target._lastPos.x;
-            const y = e.target._lastPos.y;
-            console.log('drag rect:', x, ';', y);
-            this.moveRect(x, y, index);
-          }}
-          // onDragEnd={(e) => {
-          //   console.log(`dimensions: (${e.target.attrs.x}, ${e.target.attrs.y}),
-          //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y}),
-          //   (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
-          //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
-          // }}
-          onClick={() => {
-            this.setState({
-              toDelete: item.key,
-            });
-          }}
-          // ref={(node) => {
-          //   if (node && !this.regions[item.key].hasOwnProperty('shape')) {
-          //     this.regions[item.key].shape = node;
-          //     this.regions[item.key].shape.on('dragmove', () => {
-          //       // console.log('dragmove');
-          //       // const itemW = item.w;
-          //       // const itemH = item.h;
-          //       // const i = index;
-          //       // this.props.regionArray.forEach((obj, index) => {
-          //       //   if (obj.key === item.key) {
-          //       //     itemW = obj.w;
-          //       //     itemH = obj.h;
-          //       //     i = index;
-          //       //   }
-          //       // });
-          //       const x = this.regions[item.key].shape.getAttrs().x;
-          //       const y = this.regions[item.key].shape.getAttrs().y;
-          //       this.moveRect(x, y, index);
-          //       // this.reshape(itemW, itemH, x, y, i);
-          //     });
-          //     this.regions[item.key].shape.on('click', () => {
-          //       this.setState({
-          //         toDelete: item.key,
-          //       });
-          //     });
-          //   }
-          // }}
-        />
-        {anchors}
-      </Group>
+        <Group key={region.key}>
+          <Rect
+              x={region.x}
+              y={region.y}
+              width={region.w}
+              height={region.h}
+              stroke={region.key === this.state.selectedRegionKey ? "green" : "red"}
+              draggable
+              listening
+              onDragMove={(e) => {
+                const x = e.target._lastPos.x;
+                const y = e.target._lastPos.y;
+                console.log('drag rect:', x, ';', y);
+                this.moveRect(x, y, index);
+              }}
+
+              onClick={() => {
+                this.setState({
+                  selectedRegionKey: region.key,
+                });
+              }}
+
+          />
+          {anchors}
+        </Group>
     );
     return result;
-  }
-  handleTouchTap = (event) => {
+  };
+
+  handleTouchTap = (event: SyntheticTouchEvent<HTMLButtonElement>) => {
     // This prevents ghost click.
     event.preventDefault();
     this.setState({
@@ -283,11 +254,13 @@ class Region extends Component {
       anchorEl: event.currentTarget,
     });
   };
+
   handleRequestClose = () => {
     this.setState({
       open: false,
     });
   };
+
   saveAs = (event) => {
     this.setState({
       saveAsInput: event.target.value,
@@ -301,44 +274,45 @@ class Region extends Component {
   }
   convertToImage = () => {
     if (this.layer) {
-      // const resizedCanvas = document.createElement('canvas');
-      // const resizedContext = resizedCanvas.getContext('2d');
-      // resizedCanvas.height = '477';
-      // resizedCanvas.width = '482';
-      // const canvas = this.layer.getCanvas();
-      // resizedContext.drawImage(canvas._canvas, 0, 0, 477, 482);
-      // const url = resizedCanvas.toDataURL('image/png', 1);
       const canvas = this.layer.getCanvas();
       const url = canvas.toDataURL('image/png', 1);
-      if (this.state.value === 'png') {
+      if (this.state.selectedFileExtension === 'png') {
         const a = document.createElement('a');
         a.setAttribute('href', url);
-        a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        a.setAttribute('download', `${this.state.saveAsInput}.${this.state.selectedFileExtension}`);
+        const body = document.body;
+        if (body) {
+          body.appendChild(a);
+          a.click();
+          body.removeChild(a);
+        }
       } else {
-        Meteor.call('convertPNGFile', url, this.state.value, (error, result) => {
+        Meteor.call('convertPNGFile', url, this.state.selectedFileExtension, (error, result) => {
           let mime = '';
-          if (this.state.value === 'pdf') mime = 'application/pdf';
-          else if (this.state.value === 'eps') mime = 'text/eps';
+          if (this.state.selectedFileExtension === 'pdf') mime = 'application/pdf';
+          else if (this.state.selectedFileExtension === 'eps') mime = 'text/eps';
           else mime = 'text/ps';
-          const blob = new Blob([result], { type: mime });
+          const blob = new Blob([result], {type: mime});
           const b64encoded = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.setAttribute('href', b64encoded);
-          a.setAttribute('download', `${this.state.saveAsInput}.${this.state.value}`);
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        // window.URL.revokeObjectURL(b64encoded);
+          a.setAttribute('download', `${this.state.saveAsInput}.${this.state.selectedFileExtension}`);
+          const body = document.body;
+          if (body) {
+            body.appendChild(a);
+            a.click();
+            body.removeChild(a);
+          }
+          // window.URL.revokeObjectURL(b64encoded);
         });
       }
     }
-  }
+  };
+
   handleChange = (event, index, value) => {
-    this.setState({ value });
-  }
+    this.setState({selectedFileExtension: value});
+  };
+
   panZoom = (event) => {
     const pos = this.getMousePos(this.div, event);
     if (event.deltaY >= 0) {
@@ -346,17 +320,21 @@ class Region extends Component {
     } else {
       this.props.dispatch(imageActions.panZoom(pos.x, pos.y, -2));
     }
-  }
+  };
+
   zoomReset = () => {
     this.props.dispatch(imageActions.zoomReset());
-  }
+  };
+
   panReset = () => {
     this.props.dispatch(imageActions.panReset());
-  }
+  };
+
   panZoomReset = () => {
     this.panReset();
     this.zoomReset();
-  }
+  };
+
   showCursorInfo = (show) => {
     const htmlObject = document.getElementById('cursorInfo');
     if (show) {
@@ -366,20 +344,14 @@ class Region extends Component {
     } else {
       htmlObject.innerHTML = '';
     }
-  }
+  };
+
   render() {
-    const { x, y, width, height } = this.props;
-    this.rect = (
-      <Rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        stroke="red"
-        listening
-        key={x + y}
-      />
-    );
+    const {x, y, width, height} = this.props;
+    let currentRegionRect = null;
+    if (this.props.mouseIsDown) {
+      currentRegionRect = <Rect x={x} y={y} width={width} height={height} stroke="red" listening key={x + y}/>
+    }
     return (
       <div>
         <div
@@ -399,31 +371,12 @@ class Region extends Component {
             height={477}
             ref={(node) => {
               this.stage = node;
-              // if (this.stage) {
-              //   const canvas = this.stage.node.toCanvas();
-              //   canvas.width = 1274;
-              //   canvas.height = 954;
-              //   canvas.style.width = '482px';
-              //   canvas.style.height = '477px';
-              //   canvas.getContext('2d').scale(2, 2);
-              // }
             }}
           >
             <Layer
               id="layer"
               ref={(node) => {
                 if (node) this.layer = node;
-                // if (this.layer) {
-                // this.layer.getCanvas().context._context.imageSmoothingQuality = 'high';
-                // console.log(this.layer.getContext().scale(1, 1));
-                // this.layer.getCanvas().setWidth(482);
-                // this.layer.getCanvas().setHeight(477);
-                // this.layer.getCanvas().getContext('2d').scale(2, 2);
-                // }
-                // console.log(this.layer.getCanvas());
-                // canvas.setWidth(1000);
-                // canvas.setHeight(500);
-                // canvas.setSize(482, 477);
               }}
               onMouseMove={(e) => {
                 // console.log(e);
@@ -437,9 +390,8 @@ class Region extends Component {
             >
               <ImageViewer />
               {/* <ImageViewer2 /> */}
-              {(this.props.mouseIsDown === 1) ? this.rect : false}
-              {this.props.regionArray ?
-                this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
+              {currentRegionRect}
+              {this.props.regionArray && this.props.regionArray.map((item, index) => this.addAnchor(item, index))}
             </Layer>
           </Stage>
           <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
@@ -506,9 +458,113 @@ class Region extends Component {
           />
         </Popover>
       </div>
+        <div>
+          <div
+              ref={(node) => {
+                if (node)
+                  this.div = node;
+              }}
+              style={{position: 'relative', width: 482, height: 477}}
+              // onWheel={(e) => { this.panZoom(e); }}
+              onWheel={(e) => {
+                if (this.lastCall + 200 < Date.now()) {
+                  this.lastCall = Date.now();
+                  this.panZoom(e);
+                }
+              }}
+          >
+            <Stage
+                id="stage"
+                width={482}
+                height={477}
+                ref={(node) => {
+                  if (node)
+                    this.stage = node;
+                }}
+            >
+              <Layer
+                  id="layer"
+                  ref={(node) => {
+                    if (node) this.layer = node;
+                  }}
+                  onMouseMove={(e) => {
+                    // console.log(e);
+                    this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                    this.showCursorInfo();
+                  }}
+              >
+                <ImageViewer/>
+                {currentRegionRect}
+                {this.props.regionArray && this.props.regionArray.map((item, index) => this.addAnchor(item, index))}
+              </Layer>
+            </Stage>
+            <Card style={{width: '24px', position: 'absolute', top: 0}}>
+              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
+              <button onClick={this.zoomIn} className="zoom" style={{width: '24px'}}>+</button>
+              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
+              <button onClick={this.zoomOut} className="zoom" style={{width: '24px'}}>-</button>
+            </Card>
+            <Card style={{width: '24px', position: 'absolute', bottom: 0}}>
+              <button onClick={this.panReset} className="zoom" style={{width: '24px'}}>
+                <img style={{width: '16px', height: '16px', margin: 0}} src="/images/pan_reset.png" alt=""/>
+              </button>
+              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
+              <button onClick={this.zoomReset} className="zoom" style={{width: '24px'}}>
+                <img style={{width: '16px', height: '16px'}} src="/images/zoom_reset.png" alt=""/>
+              </button>
+              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
+              <button onClick={this.panZoomReset} className="zoom" style={{width: '24px'}}>
+                <img style={{width: '18px', height: '18px'}} src="/images/panzoom_reset.png" alt=""/>
+              </button>
+            </Card>
+            <br/>
+          </div>
+          <Card style={{width: 482}}>
+            <CardText>
+              <div id="cursorInfo"/>
+            </CardText>
+          </Card>
+          <RaisedButton label="rectangle" onClick={this.initRegion}/>
+          <RaisedButton label="delete" onClick={this.deleteRegion}/>
+          <RaisedButton label="save" onClick={this.handleTouchTap}/>
+          <Popover
+              open={this.state.open}
+              anchorEl={this.state.anchorEl}
+              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+              targetOrigin={{horizontal: 'left', vertical: 'top'}}
+              onRequestClose={this.handleRequestClose}
+          >
+            <TextField
+                floatingLabelText="Save as..."
+                onChange={this.saveAs}
+                style={{margin: '10px', verticalAlign: 'middle'}}
+            />
+            <SelectField
+                floatingLabelText="File Type"
+                value={this.state.selectedFileExtension}
+                onChange={this.handleChange}
+                autoWidth
+                style={{width: '150px', margin: '10px', verticalAlign: 'middle'}}
+            >
+              <MenuItem value="pdf" primaryText="pdf"/>
+              <MenuItem value="eps" primaryText="eps"/>
+              <MenuItem value="ps" primaryText="ps"/>
+              <MenuItem value="png" primaryText="png"/>
+            </SelectField>
+            <br/>
+            <FlatButton
+                type="submit"
+                label="Save"
+                primary
+                style={{marginRight: 0}}
+                onClick={this.convertToImage}
+            />
+          </Popover>
+        </div>
     );
   }
 }
+
 const mapStateToProps = state => ({
   x: state.RegionDB.x,
   y: state.RegionDB.y,
@@ -520,4 +576,4 @@ const mapStateToProps = state => ({
   requestingFile: state.ImageViewerDB.requestingFile,
   stack: state.ImageViewerDB.stack,
 });
-export default connect(mapStateToProps)(Region);
+export default connect(mapStateToProps)(RegionComponent);

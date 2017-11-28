@@ -1,3 +1,5 @@
+// @flow
+
 import update from 'immutability-helper';
 // import { Meteor } from 'meteor/meteor';
 import { RegionDB } from '../api/RegionDB';
@@ -5,39 +7,41 @@ import { RegionDB } from '../api/RegionDB';
 import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
 import Commands from '../api/Commands';
-
-const REGION_CHANGE = 'REGION_CHANGE';
+import type {Circle, RectangularRegion} from './models';
 
 export const ActionType = {
-  REGION_CHANGE,
+  REGION_CHANGE: 'REGION_CHANGE',
 };
 
-const DRAW = 'DRAW';
-const SET_MOUSE = 'SET_MOUSE';
-const SET_SHAPE = 'SET_SHAPE';
-const RESHAPE = 'RESHAPE';
-const MOVERECT = 'MOVERECT';
-const RESIZERECT = 'RESIZERECT';
-const DELETE = 'DELETE';
+export const SubActions = {
+  DRAW: 'DRAW',
+  SET_MOUSE: 'SET_MOUSE',
+  SET_SHAPE: 'SET_SHAPE',
+  RESHAPE: 'RESHAPE',
+  MOVERECT: 'MOVERECT',
+  RESIZERECT: 'RESIZERECT',
+  DELETE: 'DELETE',
+};
+
 
 export function setupRegionDB() {
   // return (dispatch) => {
 
-  api.instance().setupMongoRedux(RegionDB, REGION_CHANGE);
+  api.instance().setupMongoRedux(RegionDB, ActionType.REGION_CHANGE);
   // };
 }
 
 // the creating one
-function drawShape(coordX, coordY, width, height) {
+function drawShape(coordX: number, coordY: number, width: number, height: number) {
   return () => {
     // this is action.payload.data
-    mongoUpsert(RegionDB, { x: coordX, y: coordY, width, height }, DRAW);
+    mongoUpsert(RegionDB, { x: coordX, y: coordY, width, height }, SubActions.DRAW);
   };
 }
 
-function setMouseIsDown(val) {
+function setMouseIsDown(val: boolean) {
   return () => {
-    mongoUpsert(RegionDB, { mouseIsDown: val }, SET_MOUSE);
+    mongoUpsert(RegionDB, { mouseIsDown: val }, SubActions.SET_MOUSE);
   };
 }
 
@@ -50,13 +54,13 @@ const POS_0 = 'topLeft';
 const POS_1 = 'topRight';
 const POS_2 = 'bottomLeft';
 const POS_3 = 'bottomRight';
-function makeCircles(x, y, width, height) {
+function makeCircles(x: number, y: number, width: number, height: number): Circle[] {
   return [{ pos: 'topLeft', x, y }, { pos: 'topRight', x: (x + width), y }, { pos: 'bottomLeft', x, y: (y + height) }, { pos: 'bottomRight', x: (x + width), y: (y + height) }];
 }
 
 // mouse up
-function setShape(x, y, width, height) {
-  return (dispatch, getState) => {
+function setShape(x: number, y: number, width: number, height: number) {
+  return (dispatch: any, getState: any) => {
     const stateTree = getState().RegionDB;
     if (!stateTree.regionArray) {
       mongoUpsert(RegionDB, { regionArray: [{
@@ -66,7 +70,7 @@ function setShape(x, y, width, height) {
         h: height,
         circles: makeCircles(x, y, width, height),
         key: Math.floor(Math.random() * 10000),
-      }] }, SET_SHAPE);
+      }] }, SubActions.SET_SHAPE);
     } else {
       const newArr = stateTree.regionArray.concat({
         x,
@@ -76,12 +80,12 @@ function setShape(x, y, width, height) {
         circles: makeCircles(x, y, width, height),
         key: Math.floor(Math.random() * 10000),
       });
-      mongoUpsert(RegionDB, { regionArray: newArr }, SET_SHAPE);
+      mongoUpsert(RegionDB, { regionArray: newArr }, SubActions.SET_SHAPE);
     }
   };
 }
-function remove(target) {
-  return (dispatch, getState) => {
+function remove(target: number) {
+  return (dispatch: any, getState: any) => {
     const array = getState().RegionDB.regionArray;
     const regionControlsID = getState().RegionDB.regionControlsID;
     const cmd = `${regionControlsID}:${Commands.CLOSE_REGION}`;
@@ -95,15 +99,15 @@ function remove(target) {
         break;
       }
     }
-    mongoUpsert(RegionDB, { regionArray: array.filter(item => item.key !== target) }, DELETE);
+    mongoUpsert(RegionDB, { regionArray: array.filter(item => item.key !== target) }, SubActions.DELETE);
   };
 }
 
-function resizeRect(newX, newY, pos, index) {
-  return (dispatch, getState) => {
-    const array = getState().RegionDB.regionArray;
+function resizeRect(newX: number, newY: number, pos: string, index: number) {
+  return (dispatch: any, getState: any) => {
+    const regions: RectangularRegion[] = getState().RegionDB.regionArray;
 
-    const region = array[index];
+    const region = regions[index];
     switch (pos) {
       case POS_0:
         region.circles[0].x = newX;
@@ -152,7 +156,7 @@ function resizeRect(newX, newY, pos, index) {
       region.circles[2].y,
       region.circles[3].y);
 
-    const newArray = update(array[index],
+    const newArray = update(regions[index],
       { x: { $set: newRectX },
         y: { $set: newRectY },
         w: { $set: (newDiagonalRectX - newRectX) },
@@ -160,18 +164,13 @@ function resizeRect(newX, newY, pos, index) {
         circles: { $set: region.circles },
       });
 
-    // const newArray = update(array[index],
-      // { x: { $set: newX },
-      //   y: { $set: newY },
-      //   circles: { $set: makeCircles(newX, newY, array[index].w, array[index].h) },
-      // });
-    const data = update(array, { $splice: [[index, 1, newArray]] });
-    mongoUpsert(RegionDB, { regionArray: data }, RESIZERECT);
+    const data = update(regions, { $splice: [[index, 1, newArray]] });
+    mongoUpsert(RegionDB, { regionArray: data }, SubActions.RESIZERECT);
   };
 }
 
-function moveRect(newX, newY, index) {
-  return (dispatch, getState) => {
+function moveRect(newX: number, newY: number, index: number) {
+  return (dispatch: any, getState: any) => {
     const array = getState().RegionDB.regionArray;
     const newArray = update(array[index],
       { x: { $set: newX },
@@ -179,18 +178,18 @@ function moveRect(newX, newY, index) {
         circles: { $set: makeCircles(newX, newY, array[index].w, array[index].h) },
       });
     const data = update(array, { $splice: [[index, 1, newArray]] });
-    mongoUpsert(RegionDB, { regionArray: data }, MOVERECT);
+    mongoUpsert(RegionDB, { regionArray: data }, SubActions.MOVERECT);
   };
 }
 
-function reshape(newW, newH, newX, newY, index) {
-  return (dispatch, getState) => {
+function reshape(newW: number, newH: number, newX: number, newY: number, index: number) {
+  return (dispatch: any, getState: any) => {
     const array = getState().RegionDB.regionArray;
     const newArray = update(array[index],
       { x: { $set: newX }, y: { $set: newY }, w: { $set: newW }, h: { $set: newH },
       });
     const data = update(array, { $splice: [[index, 1, newArray]] });
-    mongoUpsert(RegionDB, { regionArray: data }, RESHAPE);
+    mongoUpsert(RegionDB, { regionArray: data }, SubActions.RESHAPE);
   };
 }
 const actions = {
