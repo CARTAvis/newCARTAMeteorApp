@@ -23,7 +23,7 @@ import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import SideMenu from './SideMenu';
 import Topbar from './Topbar';
-// import Region from './Region';
+// import RegionComponent from './RegionComponent';
 import Region from '../region/Region';
 
 class MainPage extends Component {
@@ -141,19 +141,19 @@ class MainPage extends Component {
           >
             <div>
               {/* <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Region />
-                <Region />
-                <Region />
+                <RegionComponent />
+                <RegionComponent />
+                <RegionComponent />
               </div>
               <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Region />
-                <Region />
-                <Region />
+                <RegionComponent />
+                <RegionComponent />
+                <RegionComponent />
               </div>
               <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Region />
-                <Region />
-                <Region />
+                <RegionComponent />
+                <RegionComponent />
+                <RegionComponent />
               </div> */}
               <Region />
               <br />

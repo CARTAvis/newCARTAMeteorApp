@@ -1,3 +1,4 @@
+// @flow
 // import { Meteor } from 'meteor/meteor';
 import { mongoUpsert } from '../api/MongoHelper';
 // import SessionManager from '../api/SessionManager';
@@ -6,23 +7,21 @@ import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
 // redux part
-const HISTOGRAM_CHANGE = 'HISTOGRAM_CHANGE';
 export const ActionType = {
-  HISTOGRAM_CHANGE,
+  HISTOGRAM_CHANGE: 'HISTOGRAM_CHANGE',
 };
 
 
 export function setupHistogramDB() {
-  api.instance().setupMongoRedux(HistogramDB, HISTOGRAM_CHANGE);
+  api.instance().setupMongoRedux(HistogramDB, ActionType.HISTOGRAM_CHANGE);
 }
-export function parseReigsterHistogramResp(resp) {
-  const { cmd, data } = resp;
+export function parseReigsterHistogramResp(resp: {cmd: any, data: any}) {
   // console.log('grimmer got register histogram-view command response:', data);
-  const histogramID = data;
+  const histogramID = resp.data;
   //  grimmer got register histogram-view command response: /CartaObjects/c145
 
   // save histogramID to mongodb
-  mongoUpsert(HistogramDB, { histogramID }, `Resp_${cmd}`);
+  mongoUpsert(HistogramDB, { histogramID }, `Resp_${resp.cmd}`);
 }
 
 function setupHistogram() {

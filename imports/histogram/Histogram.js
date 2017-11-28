@@ -1,11 +1,22 @@
-import React, { Component } from 'react';
+// @flow
+import * as React from 'react';
 import { connect } from 'react-redux';
 import actions from './actions';
 
-class Histogram extends Component {
+type HistogramProps = {
+  dispatch: any;
+}
+
+type HistogramState = {
+  +HistogramDB: any;
+}
+
+class Histogram extends React.Component<HistogramProps, HistogramState> {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      HistogramDB: null,
+    };
     this.props.dispatch(actions.setupHistogram());
   }
   render() {
@@ -22,8 +33,3 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(Histogram);
-
-
-// import {a, b a, c } from a.js
-//
-// import testtest from a.js

@@ -17,7 +17,7 @@ import PlayForward from 'material-ui/svg-icons/av/play-arrow';
 const Image = 'Image';
 const Channel = 'Channel';
 const Stokes = 'Stokes';
-const Region = 'Region';
+const Region = 'RegionComponent';
 
 class Animator extends Component {
   constructor(props) {
