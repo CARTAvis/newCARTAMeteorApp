@@ -20,6 +20,8 @@
       "no-console":0,
       "no-param-reassign": 0,
       "no-underscore-dangle": 0,
+      "max-len": [1, 140],
+      "no-plusplus": 0,
       # https://stackoverflow.com/questions/37765144/eslint-warning-in-resolving-meteor-pseudo-globals
       # Unable to resolve path to module 'meteor/meteor'
       "import/no-unresolved": ["error", { "ignore": ["^meteor/", "^/"] }],
