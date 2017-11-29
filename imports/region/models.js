@@ -1,13 +1,13 @@
 // @flow
 
-export type Circle = {
+export type ControlPoint = {
     pos: string,
     x: number,
     y: number,
 }
 
 export type RectangularRegion = {
-    circles: Circle[],
+    controlPoints: ControlPoint[],
     w: number,
     h: number,
     x: number,

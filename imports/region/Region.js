@@ -1,33 +1,31 @@
-import React, { Component } from 'react';
-import { Meteor } from 'meteor/meteor';
-import { connect } from 'react-redux';
-import { ImageViewerDB } from '../api/ImageViewerDB';
 // @flow
 
 import * as React from 'react';
-import {Meteor} from 'meteor/meteor';
-import {connect} from 'react-redux';
+import { Meteor } from 'meteor/meteor';
+import { connect } from 'react-redux';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
-import {Card, CardText} from 'material-ui/Card';
+import { Card, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import LinearProgress from 'material-ui/LinearProgress';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
+import LinearProgress from 'material-ui/LinearProgress';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
 import ImageViewer from '../imageViewer/ImageViewer';
-import type {RectangularRegion} from './models';
+import type { RectangularRegion } from './models';
+import type { Action, Dispatch } from '../shared/action.models';
 
 const Blob = require('blob');
 
 
 type RegionComponentProps = {
-  dispatch: any;
+  dispatch: Dispatch;
   cursorInfo?: string,
   mouseIsDown?: boolean;
   requestingFile: boolean;
@@ -60,7 +58,6 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
   constructor(props) {
     super(props);
     this.lastCall = 0;
-    this.rect = null;
     this.state = {
       open: false,
       saveAsInput: '',
@@ -84,6 +81,7 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
     this.endY = pos.y;
     this.startX = this.endX;
     this.startY = this.endY;
+
     this.drawRect();
   };
 
@@ -152,26 +150,27 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
 
     if (!this.props.mouseIsDown) {
       this.props.dispatch(
-          actions.setShape(this.startX + offsetX, this.startY + offsetY, Math.abs(w), Math.abs(h)),
+        actions.setShape(this.startX + offsetX, this.startY + offsetY, Math.abs(w), Math.abs(h)),
       );
     } else {
       this.props.dispatch(
-          actions.drawShape(this.startX + offsetX, this.startY + offsetY, Math.abs(w), Math.abs(h)),
+        actions.drawShape(this.startX + offsetX, this.startY + offsetY, Math.abs(w), Math.abs(h)),
       );
     }
-  }
+  };
 
   deleteRegion = () => {
     const target = this.state.selectedRegionKey;
-    if (target)
+    if (target) {
       this.props.dispatch(actions.remove(target));
-  }
+    }
+  };
 
   resizeRect = (newX, newY, pos, index) => {
     process.nextTick(() => {
       this.props.dispatch(actions.resizeRect(newX, newY, pos, index));
     });
-  }
+  };
 
   moveRect = (newX, newY, index) => {
     process.nextTick(() => {
@@ -186,62 +185,62 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
   };
 
   addAnchor = (region: RectangularRegion, index: number) => {
-    const circlesLen = region.circles.length;
-    const circleComponents = [];
-    for (let i = 0; i < circlesLen; i += 1) {
-      const currentCircle = region.circles[i];
-      const circleComponent = (
-          <Circle
-              x={currentCircle.x}
-              y={currentCircle.y}
-              stroke="#666"
-              fill="#ddd"
-              strokeWidth={2}
-              radius={8}
-              draggable
-              key={currentCircle.pos}
-              onDragMove={(e) => {
-                const x = e.target._lastPos.x;
-                const y = e.target._lastPos.y;
-                console.log('drag circle:', x, ';', y);
-                this.resizeRect(x, y, currentCircle.pos, index);
-              }}
-          />
+    const numControlPoints = region.controlPoints.length;
+    const controlPointComponents = [];
+    for (let i = 0; i < numControlPoints; i += 1) {
+      const currentControlPoint = region.controlPoints[i];
+      const controlPointComponent = (
+        <Circle
+          x={currentControlPoint.x}
+          y={currentControlPoint.y}
+          stroke="#666"
+          fill="#ddd"
+          strokeWidth={2}
+          radius={8}
+          draggable
+          key={currentControlPoint.pos}
+          onDragMove={(e) => {
+            const x = e.target._lastPos.x;
+            const y = e.target._lastPos.y;
+            console.log('drag circle:', x, ';', y);
+            this.resizeRect(x, y, currentControlPoint.pos, index);
+          }}
+        />
       );
-      circleComponents.push(circleComponent);
+      controlPointComponents.push(controlPointComponent);
     }
 
     const anchors = (
-        <Group>
-          {circleComponents}
-        </Group>
+      <Group>
+        {controlPointComponents}
+      </Group>
     );
     const result = (
-        <Group key={region.key}>
-          <Rect
-              x={region.x}
-              y={region.y}
-              width={region.w}
-              height={region.h}
-              stroke={region.key === this.state.selectedRegionKey ? "green" : "red"}
-              draggable
-              listening
-              onDragMove={(e) => {
-                const x = e.target._lastPos.x;
-                const y = e.target._lastPos.y;
-                console.log('drag rect:', x, ';', y);
-                this.moveRect(x, y, index);
-              }}
+      <Group key={region.key}>
+        <Rect
+          x={region.x}
+          y={region.y}
+          width={region.w}
+          height={region.h}
+          stroke={region.key === this.state.selectedRegionKey ? 'green' : 'red'}
+          draggable
+          listening
+          onDragMove={(e) => {
+            const x = e.target._lastPos.x;
+            const y = e.target._lastPos.y;
+            console.log('drag rect:', x, ';', y);
+            this.moveRect(x, y, index);
+          }}
 
-              onClick={() => {
-                this.setState({
-                  selectedRegionKey: region.key,
-                });
-              }}
+          onClick={() => {
+            this.setState({
+              selectedRegionKey: region.key,
+            });
+          }}
 
-          />
-          {anchors}
-        </Group>
+        />
+        {anchors}
+      </Group>
     );
     return result;
   };
@@ -292,7 +291,7 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
           if (this.state.selectedFileExtension === 'pdf') mime = 'application/pdf';
           else if (this.state.selectedFileExtension === 'eps') mime = 'text/eps';
           else mime = 'text/ps';
-          const blob = new Blob([result], {type: mime});
+          const blob = new Blob([result], { type: mime });
           const b64encoded = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.setAttribute('href', b64encoded);
@@ -310,7 +309,7 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
   };
 
   handleChange = (event, index, value) => {
-    this.setState({selectedFileExtension: value});
+    this.setState({ selectedFileExtension: value });
   };
 
   panZoom = (event) => {
@@ -347,10 +346,10 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
   };
 
   render() {
-    const {x, y, width, height} = this.props;
+    const { x, y, width, height } = this.props;
     let currentRegionRect = null;
     if (this.props.mouseIsDown) {
-      currentRegionRect = <Rect x={x} y={y} width={width} height={height} stroke="red" listening key={x + y}/>
+      currentRegionRect = <Rect x={x} y={y} width={width} height={height} stroke="red" listening key={x + y} />;
     }
     return (
       <div>

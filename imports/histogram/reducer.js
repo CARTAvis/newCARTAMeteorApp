@@ -1,6 +1,6 @@
 // @flow
 // import { combineReducers } from 'redux';
-import type { Action } from '../shared/actions';
+import type { Action } from '../shared/action.models';
 
 // const defaultData = {
 //   // rootDir: '/tmp',
