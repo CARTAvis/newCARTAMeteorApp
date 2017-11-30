@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
-import { ImageViewerDB } from '../api/ImageViewerDB';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import TextField from 'material-ui/TextField';
@@ -34,6 +33,7 @@ type RegionComponentProps = {
   width?: number;
   height?: number;
   regionArray?: RectangularRegion[];
+  stack: { layers: [] };
 }
 
 type RegionComponentState = {
@@ -65,7 +65,7 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
     };
   }
 
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = (nextProps: RegionComponentProps) => {
     if (nextProps.stack) {
       if (nextProps.stack.layers.length === 0) {
         this.showCursorInfo(false);
@@ -121,25 +121,18 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
     };
   };
 
-  init = () => {
+  initRegion = () => {
     if (this.props.stack) {
       if (this.props.stack.layers.length > 0) {
-        this.div.addEventListener('mousedown', this.onMouseDown);
-        this.div.addEventListener('mousemove', this.onMouseMove);
-        this.div.addEventListener('mouseup', this.onMouseUp);
+        const element = this.div;
+        if (element) {
+          element.addEventListener('mousedown', this.onMouseDown);
+          element.addEventListener('mousemove', this.onMouseMove);
+          element.addEventListener('mouseup', this.onMouseUp);
+        }
         this.props.dispatch(imageActions.setRegionType('Rectangle'));
       }
     }
-  };
-
-  initRegion = () => {
-    const element = this.div;
-    if (element) {
-      element.addEventListener('mousedown', this.onMouseDown);
-      element.addEventListener('mousemove', this.onMouseMove);
-      element.addEventListener('mouseup', this.onMouseUp);
-    }
-    this.props.dispatch(imageActions.setRegionType('Rectangle'));
   };
 
   drawRect = () => {
@@ -264,13 +257,13 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
     this.setState({
       saveAsInput: event.target.value,
     });
-  }
+  };
   zoomIn = () => {
     this.props.dispatch(imageActions.zoom(-2));
-  }
+  };
   zoomOut = () => {
     this.props.dispatch(imageActions.zoom(2));
-  }
+  };
   convertToImage = () => {
     if (this.layer) {
       const canvas = this.layer.getCanvas();
@@ -336,12 +329,8 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
 
   showCursorInfo = (show) => {
     const htmlObject = document.getElementById('cursorInfo');
-    if (show) {
-      if (this.props.cursorInfo) {
-        htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
-      }
-    } else {
-      htmlObject.innerHTML = '';
+    if (htmlObject) {
+      htmlObject.innerHTML = (show && this.props.cursorInfo) ? this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '') : '';
     }
   };
 
@@ -349,12 +338,15 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
     const { x, y, width, height } = this.props;
     let currentRegionRect = null;
     if (this.props.mouseIsDown) {
-      currentRegionRect = <Rect x={x} y={y} width={width} height={height} stroke="red" listening key={x + y} />;
+      currentRegionRect = <Rect x={x} y={y} width={width} height={height} stroke="red" listening key={x + y}/>;
     }
     return (
       <div>
         <div
-          ref={(node) => { this.div = node; }}
+          ref={(node) => {
+            if (node)
+              this.div = node;
+          }}
           style={{ position: 'relative', width: 482, height: 477 }}
           // onWheel={(e) => { this.panZoom(e); }}
           onWheel={(e) => {
@@ -375,7 +367,8 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
             <Layer
               id="layer"
               ref={(node) => {
-                if (node) this.layer = node;
+                if (node)
+                  this.layer = node;
               }}
               onMouseMove={(e) => {
                 // console.log(e);
@@ -387,42 +380,41 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
                 }
               }}
             >
-              <ImageViewer />
-              {/* <ImageViewer2 /> */}
+              <ImageViewer/>
               {currentRegionRect}
               {this.props.regionArray && this.props.regionArray.map((item, index) => this.addAnchor(item, index))}
             </Layer>
           </Stage>
-          <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+          <Card style={{ width: '24px', position: 'absolute', top: 0 }}>
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }}/>
             <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }}/>
             <button onClick={this.zoomOut} className="zoom" style={{ width: '24px' }}>-</button>
           </Card>
-          <Card style={{ width: '24px', position: 'absolute', bottom: 0 }} >
+          <Card style={{ width: '24px', position: 'absolute', bottom: 0 }}>
             <button onClick={this.panReset} className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '16px', height: '16px', margin: 0 }} src="/images/pan_reset.png" alt="" />
+              <img style={{ width: '16px', height: '16px', margin: 0 }} src="/images/pan_reset.png" alt=""/>
             </button>
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }}/>
             <button onClick={this.zoomReset} className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '16px', height: '16px' }} src="/images/zoom_reset.png" alt="" />
+              <img style={{ width: '16px', height: '16px' }} src="/images/zoom_reset.png" alt=""/>
             </button>
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }}/>
             <button onClick={this.panZoomReset} className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '18px', height: '18px' }} src="/images/panzoom_reset.png" alt="" />
+              <img style={{ width: '18px', height: '18px' }} src="/images/panzoom_reset.png" alt=""/>
             </button>
           </Card>
-          <br />
+          <br/>
         </div>
-        {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
+        {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate"/> : false}
         <Card style={{ width: 482 }}>
           <CardText>
-            <div id="cursorInfo" />
+            <div id="cursorInfo"/>
           </CardText>
         </Card>
-        <RaisedButton label="rectangle" onClick={this.init} />
-        <RaisedButton label="delete" onClick={this.delete} />
-        <RaisedButton label="save" onClick={this.handleTouchTap} />
+        <RaisedButton label="rectangle" onClick={this.initRegion}/>
+        <RaisedButton label="delete" onClick={this.deleteRegion}/>
+        <RaisedButton label="save" onClick={this.handleTouchTap}/>
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
@@ -437,17 +429,17 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
           />
           <SelectField
             floatingLabelText="File Type"
-            value={this.state.value}
+            value={this.state.selectedFileExtension}
             onChange={this.handleChange}
             autoWidth
             style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
           >
-            <MenuItem value="pdf" primaryText="pdf" />
-            <MenuItem value="eps" primaryText="eps" />
-            <MenuItem value="ps" primaryText="ps" />
-            <MenuItem value="png" primaryText="png" />
+            <MenuItem value="pdf" primaryText="pdf"/>
+            <MenuItem value="eps" primaryText="eps"/>
+            <MenuItem value="ps" primaryText="ps"/>
+            <MenuItem value="png" primaryText="png"/>
           </SelectField>
-          <br />
+          <br/>
           <FlatButton
             type="submit"
             label="Save"
@@ -457,109 +449,6 @@ class RegionComponent extends React.Component<RegionComponentProps, RegionCompon
           />
         </Popover>
       </div>
-        <div>
-          <div
-              ref={(node) => {
-                if (node)
-                  this.div = node;
-              }}
-              style={{position: 'relative', width: 482, height: 477}}
-              // onWheel={(e) => { this.panZoom(e); }}
-              onWheel={(e) => {
-                if (this.lastCall + 200 < Date.now()) {
-                  this.lastCall = Date.now();
-                  this.panZoom(e);
-                }
-              }}
-          >
-            <Stage
-                id="stage"
-                width={482}
-                height={477}
-                ref={(node) => {
-                  if (node)
-                    this.stage = node;
-                }}
-            >
-              <Layer
-                  id="layer"
-                  ref={(node) => {
-                    if (node) this.layer = node;
-                  }}
-                  onMouseMove={(e) => {
-                    // console.log(e);
-                    this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-                    this.showCursorInfo();
-                  }}
-              >
-                <ImageViewer/>
-                {currentRegionRect}
-                {this.props.regionArray && this.props.regionArray.map((item, index) => this.addAnchor(item, index))}
-              </Layer>
-            </Stage>
-            <Card style={{width: '24px', position: 'absolute', top: 0}}>
-              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
-              <button onClick={this.zoomIn} className="zoom" style={{width: '24px'}}>+</button>
-              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
-              <button onClick={this.zoomOut} className="zoom" style={{width: '24px'}}>-</button>
-            </Card>
-            <Card style={{width: '24px', position: 'absolute', bottom: 0}}>
-              <button onClick={this.panReset} className="zoom" style={{width: '24px'}}>
-                <img style={{width: '16px', height: '16px', margin: 0}} src="/images/pan_reset.png" alt=""/>
-              </button>
-              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
-              <button onClick={this.zoomReset} className="zoom" style={{width: '24px'}}>
-                <img style={{width: '16px', height: '16px'}} src="/images/zoom_reset.png" alt=""/>
-              </button>
-              <Divider style={{marginLeft: '5px', marginRight: '5px'}}/>
-              <button onClick={this.panZoomReset} className="zoom" style={{width: '24px'}}>
-                <img style={{width: '18px', height: '18px'}} src="/images/panzoom_reset.png" alt=""/>
-              </button>
-            </Card>
-            <br/>
-          </div>
-          <Card style={{width: 482}}>
-            <CardText>
-              <div id="cursorInfo"/>
-            </CardText>
-          </Card>
-          <RaisedButton label="rectangle" onClick={this.initRegion}/>
-          <RaisedButton label="delete" onClick={this.deleteRegion}/>
-          <RaisedButton label="save" onClick={this.handleTouchTap}/>
-          <Popover
-              open={this.state.open}
-              anchorEl={this.state.anchorEl}
-              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-              targetOrigin={{horizontal: 'left', vertical: 'top'}}
-              onRequestClose={this.handleRequestClose}
-          >
-            <TextField
-                floatingLabelText="Save as..."
-                onChange={this.saveAs}
-                style={{margin: '10px', verticalAlign: 'middle'}}
-            />
-            <SelectField
-                floatingLabelText="File Type"
-                value={this.state.selectedFileExtension}
-                onChange={this.handleChange}
-                autoWidth
-                style={{width: '150px', margin: '10px', verticalAlign: 'middle'}}
-            >
-              <MenuItem value="pdf" primaryText="pdf"/>
-              <MenuItem value="eps" primaryText="eps"/>
-              <MenuItem value="ps" primaryText="ps"/>
-              <MenuItem value="png" primaryText="png"/>
-            </SelectField>
-            <br/>
-            <FlatButton
-                type="submit"
-                label="Save"
-                primary
-                style={{marginRight: 0}}
-                onClick={this.convertToImage}
-            />
-          </Popover>
-        </div>
     );
   }
 }

@@ -3,9 +3,9 @@ import type { RectangularRegion } from '../region/models';
 
 export type FileBrowserState = {
   fileBrowserOpened: boolean,
-    rootDir: string,
-    selectedFile: number,
-    files: [{name: string, type: string}],
+  rootDir: string,
+  selectedFile: number,
+  files: [{ name: string, type: string }],
 }
 
 export type ImageViewerState = {
@@ -13,6 +13,9 @@ export type ImageViewerState = {
   imageURL: string,
   actionSubType: string,
   sessionID: string,
+  stack: {
+    layers: []
+  }
 }
 
 export type RegionState = {
@@ -24,6 +27,7 @@ export type RegionState = {
   regionArray: RectangularRegion[],
   actionSubType: string,
   sessionID: string,
+  regionControlsID: string,
 }
 
 export type HistogramState = {
