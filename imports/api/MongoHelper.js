@@ -1,24 +1,5 @@
+// @flow
 import SessionManager from '../api/SessionManager';
-
-
-// // NOTE: follow https://github.com/acdlite/flux-standard-action
-// function receiveUIChange(data) {
-//   return {
-//     type: FILEBROWSER_CHANGE,
-//     payload: {
-//       data,
-//     },
-//   };
-// }
-
-// const genericActionCreator = (data) => {
-//   return {
-//     type: actionType,
-//     payload:{
-//       data,
-//     },
-//   };
-// };
 
 let _dispatch = null;
 
@@ -34,12 +15,7 @@ const actionCreator = (data, actionType) => ({
   },
 });
 
-// TODO prevent same collection registering twice
 export function setupMongoReduxListeners(collection, actionType) {
-  // TODO move actionCreator above and only define once
-
-
-  // const collectionObservationHandle =
   collection.find().observe({
     added(newDoc) {
       _dispatch(actionCreator(newDoc, actionType));
@@ -47,17 +23,6 @@ export function setupMongoReduxListeners(collection, actionType) {
     changed(newDoc) {
       _dispatch(actionCreator(newDoc, actionType));
     },
-    // removed(oldDocument) {
-    // const documents = collection.find().fetch();
-    // if (documents.length > 0) {
-    //   const doc = documents[0];
-    //   // for watching the shared sessioni from python
-    //   // which may manually remove images on client. special case
-    //   if (!SessionManager.getOtherSession()) {
-    //     _dispatch(actionCreator(doc));
-    //   }
-    // }
-    // },
   });
 }
 
@@ -70,7 +35,7 @@ export function mongoResumeSelfDB(collection, actionType) {
   }
 }
 
-export function mongoUpsert(collection, newDocObject, actionSubType) {
+export function mongoUpsert(collection: {}, newDocObject: {}, actionSubType: string) {
   newDocObject.actionSubType = actionSubType;
   const sessionID = SessionManager.getSuitableSession();
   const docs = collection.find({ sessionID }).fetch();
@@ -80,7 +45,6 @@ export function mongoUpsert(collection, newDocObject, actionSubType) {
     collection.update(docID, { $set: newDocObject });
   } else {
     newDocObject.sessionID = sessionID;
-    // const docID =
     collection.insert(newDocObject);
   }
 }

@@ -40,7 +40,7 @@ export default class ApiService {
     });
   }
 
-  setupMongoRedux(collection: any, actionType: string) {
+  setupMongoRedux(collection: {}, actionType: string) {
     const mongoSetName = collection.cartaSet;
 
     for (const db of this.dblist) {
