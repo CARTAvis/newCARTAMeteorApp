@@ -1,3 +1,4 @@
+// @flow
 import { Meteor } from 'meteor/meteor';
 import SessionManager from '../api/SessionManager';
 import { mongoResumeSelfDB, setupMongoReduxListeners } from '../api/MongoHelper';
@@ -5,30 +6,16 @@ import { parseImageToMongo } from '../imageViewer/actions';
 
 let instance = null;
 
-
 export default class ApiService {
+  waitSubDBlist: any[];
+  dblist: any[];
+  callbacks: any[];
+  time: Date;
   constructor() {
     this.time = new Date();
     this.callbacks = [];
     this.dblist = [];
     this.waitSubDBlist = [];
-
-    // const p1 = new Promise(
-    //
-    //   (resolve, reject) => {
-    //     console.log('try to resolve'); // will show first , then aaa
-    //     resolve(100);
-    //   }
-    // );
-    //
-    // console.log('in ApiService');
-    // // We define what to do when the promise is resolved/fulfilled with the then() call,
-    // // and the catch() method defines what to do if the promise is rejected.
-    // p1.then((s) => {
-    //   console.log('p1 then result:', s);
-    // });
-    //
-    // console.log('bbb');
 
     return instance;
   }
@@ -44,17 +31,16 @@ export default class ApiService {
   resumeselfDB() {
     for (const db of this.dblist) {
       mongoResumeSelfDB(db.collection, db.actionType);
-      // mongoUpsert(FileBrowserDB, { selectedFile: index }, SELECT_FILE);
     }
   }
 
-  setupViewSize(viewName, width, height) {
+  setupViewSize(viewName: string, width: number, height: number) {
     Meteor.call('setupViewSize', viewName, width, height, (error, result) => {
       console.log('get setupViewSize dummy result:', result);
     });
   }
 
-  setupMongoRedux(collection, actionType) {
+  setupMongoRedux(collection: any, actionType: string) {
     const mongoSetName = collection.cartaSet;
 
     for (const db of this.dblist) {
@@ -86,9 +72,6 @@ export default class ApiService {
 
   unscribeOtherPeopleDB() {
     for (const db of this.dblist) {
-      // db.handler = Meteor.subscribe(db.mongoSetName, SessionManager.getOtherSession(), () => {
-      //   console.log(db.mongoSetName +' subscribe other people OK: !!!');
-      // });
       if (db.handler) {
         // console.log('stop other:', db.mongoSetName);
         db.handler.stop();
@@ -97,27 +80,26 @@ export default class ApiService {
     }
   }
 
-  subscribeAllDB(dispatch) {
+  subscribeAllDB() {
     for (const db of this.waitSubDBlist) {
       Meteor.subscribe(db.mongoSetName, SessionManager.get(), () => {
-        // console.log(`${db.mongoSetName} subscribes2 OK: !!!`);
+        // console.log(`${db.mongoSetName} subscribes OK: !!!`);
       });
     }
 
     this.waitSubDBlist.length = 0;
   }
 
-  sendCommand(cmd, parameter, handler = null) {
+  sendCommand(cmd: string, parameter: string, handler?: (resp: {}) => void) {
+  // sendCommand(cmd: string, parameter: string, handler) {
     const id = cmd + parameter;
 
-    // return a promise
     const self = this;
-    // resolver,
-    const p1 = new Promise(
-      ((resolve, reject) => {
-      // this.sendTestRequest(resolve);
-        // self.callback = resolve;
 
+    // https://stackoverflow.com/questions/45996511/new-missing-annotation-error-in-flowjs-0-54-0
+    // https://stackoverflow.com/questions/43860791/type-promisevoid-is-not-assignable-to-type-promisecustomtype
+    const p1:Promise<{}> = new Promise(
+      ((resolve, reject) => {
         if (handler) {
           // console.log('send command with handler');
           self.callbacks.push({ id, callback: handler, resolve });
@@ -125,9 +107,6 @@ export default class ApiService {
           // console.log('send command without handler');
           self.callbacks.push({ id, callback: null, resolve });
         }
-
-        // save this resolve, then call it when we get the command's response.
-        // do something, e.g. self.socket.emit broadcast messages
       }));
 
     Meteor.call('sendCommand', cmd, parameter, SessionManager.getSuitableSession(), (error, result) => {
@@ -141,10 +120,10 @@ export default class ApiService {
     return p1;
   }
 
-  consumeResponse(resp) {
+  // if this was typescript, "no type" anything still show no typescript error
+  consumeResponse(resp: Object) {
     if (resp.pushedImage) {
       // console.log('get server pushed image):');
-      // console.log(resp);
       parseImageToMongo(resp.buffer);
 
       return;
@@ -157,7 +136,6 @@ export default class ApiService {
       const obj = this.callbacks[i];
       if (obj.id === target) {
         match = obj;
-        // this.callbacks.shift();
         this.callbacks.splice(i, 1);
 
         break;
@@ -177,12 +155,4 @@ export default class ApiService {
       }
     }
   }
-
-  // get type() {
-  //   return this._type;
-  // }
-  //
-  // set type(value) {
-  //   this._type = value;
-  // }
 }
