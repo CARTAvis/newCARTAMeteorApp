@@ -15,6 +15,8 @@ import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
+import histogramActions from '../histogram/actions';
+
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
 
@@ -75,6 +77,7 @@ class Region extends Component {
       const pos = this.getMousePos(this.div, event);
       this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
       this.props.dispatch(profilerActions.getProfile());
+      this.props.dispatch(histogramActions.getHistogramData());
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
@@ -112,6 +115,7 @@ class Region extends Component {
         this.div.addEventListener('mousemove', this.onMouseMove);
         this.div.addEventListener('mouseup', this.onMouseUp);
         this.props.dispatch(imageActions.setRegionType('Rectangle'));
+        this.props.dispatch(histogramActions.selectRegionHisto());
       }
     }
     // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
@@ -141,6 +145,7 @@ class Region extends Component {
   delete = () => {
     const target = this.state.toDelete;
     this.props.dispatch(actions.remove(target));
+    this.props.dispatch(profilerActions.getProfile());
   }
 
   resizeRect = (newX, newY, pos, index) => {
@@ -237,15 +242,14 @@ class Region extends Component {
           //   (${e.target.attrs.x}, ${e.target.attrs.y + e.target.attrs.height}),
           //   (${e.target.attrs.x + e.target.attrs.width}, ${e.target.attrs.y + e.target.attrs.height})`);
           // }}
-          onMouseOver={() => {
-            const pos = this.getMousePos(this.div, event);
-            this.props.dispatch(actions.selectRegion(pos.x, pos.y));
-          }}
           onClick={() => {
             this.setState({
               toDelete: item.key,
             });
+            const pos = this.getMousePos(this.div, event);
+            this.props.dispatch(actions.selectRegion(pos.x, pos.y));
             this.props.dispatch(profilerActions.getProfile());
+            this.props.dispatch(histogramActions.getHistogramData());
           }}
           // ref={(node) => {
           //   if (node && !this.regions[item.key].hasOwnProperty('shape')) {
@@ -390,7 +394,6 @@ class Region extends Component {
         <div
           ref={(node) => { this.div = node; }}
           style={{ position: 'relative', width: 482, height: 477 }}
-          // onWheel={(e) => { this.panZoom(e); }}
           onWheel={(e) => {
             if (this.lastCall + 200 < Date.now()) {
               this.lastCall = Date.now();
@@ -404,36 +407,16 @@ class Region extends Component {
             height={477}
             ref={(node) => {
               this.stage = node;
-              // if (this.stage) {
-              //   const canvas = this.stage.node.toCanvas();
-              //   canvas.width = 1274;
-              //   canvas.height = 954;
-              //   canvas.style.width = '482px';
-              //   canvas.style.height = '477px';
-              //   canvas.getContext('2d').scale(2, 2);
-              // }
             }}
           >
             <Layer
               id="layer"
               ref={(node) => {
                 if (node) this.layer = node;
-                // if (this.layer) {
-                // this.layer.getCanvas().context._context.imageSmoothingQuality = 'high';
-                // console.log(this.layer.getContext().scale(1, 1));
-                // this.layer.getCanvas().setWidth(482);
-                // this.layer.getCanvas().setHeight(477);
-                // this.layer.getCanvas().getContext('2d').scale(2, 2);
-                // }
-                // console.log(this.layer.getCanvas());
-                // canvas.setWidth(1000);
-                // canvas.setHeight(500);
-                // canvas.setSize(482, 477);
               }}
               onMouseMove={(e) => {
-                // console.log(e);
                 if (this.props.stack) {
-                  if (this.props.stack.layers.length > 0 && this.props.mouseIsDown === 0) {
+                  if (this.props.stack.layers.length > 0 && this.props.mouseIsDown !== 1) {
                     this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
                     this.showCursorInfo(true);
                   }

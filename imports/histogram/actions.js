@@ -33,6 +33,18 @@ function getHistogramData() {
     });
   };
 }
+function selectRegionHisto() {
+  return (dispatch, getState) => {
+    const histogramID = getState().HistogramDB.histogramID;
+    const cmd = `${histogramID}:set2DFootPrint`;
+    const params = 'twoDFootPrint:Selected Region';
+    api.instance().sendCommand(cmd, params, (resp) => {
+      // console.log('get response of profile:', resp);
+      console.log('SELECT REGION RESP ', resp);
+      // mongoUpsert(HistogramDB, { histogramData: resp.data }, SET_HISTOGRAM_DATA);
+    });
+  };
+}
 export function parseReigsterHistogramResp(resp) {
   console.log('RESGISTERING HISTOGRAM');
   const { cmd, data } = resp;
@@ -97,6 +109,7 @@ const actions = {
   getHistogramData,
   onHover,
   onZoomPan,
+  selectRegionHisto,
 };
 
 export default actions;
