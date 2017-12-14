@@ -16,6 +16,7 @@ import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
 import histogramActions from '../histogram/actions';
+import Colormap from '../colormap/Colormap';
 
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
@@ -39,6 +40,7 @@ class Region extends Component {
       open: false,
       saveAsInput: '',
       cursorInfo: '',
+      regionListener: false,
     };
 
     // this.props.dispatch(actions.setupRegion());
@@ -81,12 +83,12 @@ class Region extends Component {
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
-      this.div.removeEventListener('mousedown', this.onMouseDown);
-      this.div.removeEventListener('mousemove', this.onMouseMove);
-      this.div.removeEventListener('mouseup', this.onMouseUp);
-      // document.getElementById('canvas').removeEventListener('mousedown', this.onMouseDown);
-      // document.getElementById('canvas').removeEventListener('mousemove', this.onMouseMove);
-      // document.getElementById('canvas').removeEventListener('mouseup', this.onMouseUp);
+      // this.div.removeEventListener('mousedown', this.onMouseDown);
+      // this.div.removeEventListener('mousemove', this.onMouseMove);
+      // this.div.removeEventListener('mouseup', this.onMouseUp);
+      this.setState({
+        regionListener: false,
+      });
     }
   }
   getMousePos = (canvas, event) => {
@@ -121,6 +123,12 @@ class Region extends Component {
     // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
     // document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
     // document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
+    this.setState({
+      regionListener: true,
+    });
+    // this.div.addEventListener('mousedown', this.onMouseDown);
+    // this.div.addEventListener('mousemove', this.onMouseMove);
+    // this.div.addEventListener('mouseup', this.onMouseUp);
   }
   drawRect = () => {
     const w = endX - startX;
@@ -394,16 +402,16 @@ class Region extends Component {
         <div
           ref={(node) => { this.div = node; }}
           style={{ position: 'relative', width: 482, height: 477 }}
-          onWheel={(e) => {
-            if (this.lastCall + 200 < Date.now()) {
-              this.lastCall = Date.now();
-              this.panZoom(e);
-            }
-          }}
+          // onWheel={(e) => {
+          //   if (this.lastCall + 200 < Date.now()) {
+          //     this.lastCall = Date.now();
+          //     this.panZoom(e);
+          //   }
+          // }}
         >
           <Stage
             id="stage"
-            width={482}
+            width={632}
             height={477}
             ref={(node) => {
               this.stage = node;
@@ -414,20 +422,46 @@ class Region extends Component {
               ref={(node) => {
                 if (node) this.layer = node;
               }}
-              onMouseMove={(e) => {
-                if (this.props.stack) {
-                  if (this.props.stack.layers.length > 0 && this.props.mouseIsDown !== 1) {
-                    this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-                    this.showCursorInfo(true);
-                  }
-                }
-              }}
+              // onMouseMove={(e) => {
+              //   // this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+              //   // this.showCursorInfo();
+              // }}
             >
-              <ImageViewer />
-              {/* <ImageViewer2 /> */}
-              {(this.props.mouseIsDown === 1) ? this.rect : false}
-              {this.props.regionArray ?
-                this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
+              <Group
+                onMouseDown={(e) => {
+                  // console.log('MOUSEDOWN');
+                  if (this.state.regionListener) {
+                    // console.log('MOUSE DOWN: ', e);
+                    this.onMouseDown(e.evt);
+                  }
+                }}
+                onMouseMove={(e) => {
+                  if (this.state.regionListener) {
+                    this.onMouseMove(e.evt);
+                  }
+                  this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                  this.showCursorInfo();
+                }}
+                onMouseUp={(e) => {
+                  if (this.state.regionListener) {
+                    this.onMouseUp(e.evt);
+                  }
+                }}
+                onWheel={(e) => {
+                  // console.log('ONWHEEL ', e);
+                  if (this.lastCall + 200 < Date.now()) {
+                    this.lastCall = Date.now();
+                    this.panZoom(e.evt);
+                  }
+                }}
+              >
+                <ImageViewer />
+                {/* <ImageViewer2 /> */}
+                {(this.props.mouseIsDown === 1) ? this.rect : false}
+                {this.props.regionArray ?
+                  this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
+              </Group>
+              <Colormap />
             </Layer>
           </Stage>
           <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
