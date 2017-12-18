@@ -6,6 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
+import GridControl from '../gridControl/GridControl';
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 // import { connect } from 'react-redux';
@@ -158,6 +159,8 @@ class MainPage extends Component {
               <Region />
               <br />
               <Animator />
+              <br />
+              <GridControl />
             </div>
             <div>
               <div style={{ marginLeft: '30%', marginTop: '10px' }}>

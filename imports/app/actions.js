@@ -11,6 +11,7 @@ import { setupFeatureContainerDB } from '../featureContainer/actions';
 import { setupProfilerDB } from '../profiler/actions';
 import { setupRegionDB } from '../region/actions';
 import { setupAnimatorDB } from '../animator/actions';
+import { setupGridDB } from '../gridControl/actions';
 
 import { storeReduxDispatch } from '../api/MongoHelper';
 
@@ -63,6 +64,7 @@ function setupComponentsDB() {
   setupProfilerDB();
   setupRegionDB();
   setupAnimatorDB();
+  setupGridDB();
 }
 
 function setupResponseChannnelAndAllDB() {

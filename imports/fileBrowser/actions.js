@@ -9,6 +9,7 @@ import animator from '../animator/actions';
 import imageViewer from '../imageViewer/actions';
 
 import profiler from '../profiler/actions';
+import gridControl from '../gridControl/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
 
@@ -187,6 +188,7 @@ function selectFileToOpen(path) {
 
         // updateAnimator(animatorID, fileName);
         dispatch(profiler.getProfile());
+        dispatch(gridControl.getDataGrid());
 
         return dispatch(imageViewer.updateStack());
       })
