@@ -22,6 +22,7 @@ const SET_REGION_TYPE = 'setRegionType';
 const REGISTER_REGION_CONTROLS = 'registerRegionControls';
 const REGISTER_GRID_CONTROLS = 'registerGridControls';
 const CLOSE_REGION = 'closeRegion';
+const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
 
 // TODO some commands need parameters, wrap them as a function
 
@@ -44,6 +45,7 @@ const Commands = {
   REGISTER_REGION_CONTROLS,
   REGISTER_GRID_CONTROLS,
   CLOSE_REGION,
+  GET_COLORMAP_All_DATA,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

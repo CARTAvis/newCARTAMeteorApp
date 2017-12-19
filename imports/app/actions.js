@@ -11,6 +11,7 @@ import { setupFeatureContainerDB } from '../featureContainer/actions';
 import { setupProfilerDB } from '../profiler/actions';
 import { setupRegionDB } from '../region/actions';
 import { setupAnimatorDB } from '../animator/actions';
+import { setupColormapDB } from '../colormap/actions';
 import { setupGridDB } from '../gridControl/actions';
 
 import { storeReduxDispatch } from '../api/MongoHelper';
@@ -64,6 +65,7 @@ function setupComponentsDB() {
   setupProfilerDB();
   setupRegionDB();
   setupAnimatorDB();
+  setupColormapDB();
   setupGridDB();
 }
 

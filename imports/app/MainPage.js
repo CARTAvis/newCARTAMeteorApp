@@ -3,6 +3,8 @@ import 'react-grid-layout/css/styles.css';
 import 'react-contextmenu/public/styles.css';
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
+import { Tabs, Tab } from 'material-ui/Tabs';
+import { Card, CardText } from 'material-ui/Card';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
@@ -34,6 +36,8 @@ class MainPage extends Component {
       // expand: false,
       value: 3,
       setting: '',
+      open: false,
+      tabs: [],
     };
   }
   // define callback
@@ -50,12 +54,34 @@ class MainPage extends Component {
     this.setState({ secondColumnWidth: second });
   }
   setSetting = (type) => {
-    // if (type === 'Profiler') {
-    //   console.log('WILL LOAD PROFILER SETTING');
-    // } else {
-    //   console.log('WILL LOAD HISTOGRAM SETTING');
-    // }
+    // add new settings to a new tab
+    this.setState(prevState => ({ tabs: prevState.tabs.concat(type) }));
+    // set new settings
     this.setState({ setting: type });
+    if (this.state.tabs.length === 0) {
+      // show settings
+      this.show();
+    }
+  }
+  settingChanged = (value) => {
+    this.setState({ setting: value });
+  }
+  removeSetting = (type) => {
+    if (this.state.tabs.length === 1) {
+      this.hide();
+    } else {
+      let index = 0;
+      for (let i = 0; i < this.state.tabs.length; i += 1) {
+        if (this.state.tabs[i] === type) {
+          if (i === this.state.tabs.length - 1) index = i - 1;
+          else index = i + 1;
+        }
+      }
+      this.setState(prevState => ({
+        tabs: prevState.tabs.filter(item => item !== type),
+        setting: prevState.tabs[index],
+      }));
+    }
   }
   handleClick = (e, data) => {
     this.grid.getWrappedInstance().onAddItem(data.type);
@@ -93,6 +119,15 @@ class MainPage extends Component {
   resizeHandler = (first, second, third) => {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
+  show = () => {
+    const box2 = document.getElementById('hid-box');
+    box2.className = 'show';
+  }
+  hide = () => {
+    const box2 = document.getElementById('hid-box');
+    box2.className = 'hide';
+    this.setState({ tabs: [] });
+  }
   render() {
     // console.log('IN RENDER');
     const toolbarStyle = {
@@ -110,6 +145,7 @@ class MainPage extends Component {
               ref={(node) => { if (node) this.grid = node; }}
               width={this.state.secondColumnWidth}
               setSetting={this.setSetting}
+              removeSetting={this.removeSetting}
             />
           </ContextMenuTrigger>
         </div>
@@ -121,6 +157,28 @@ class MainPage extends Component {
         </ContextMenu>
       </div>
     );
+    const tabs = (
+      <Tabs
+        value={this.state.setting}
+        onChange={this.settingChanged}
+      >
+        {this.state.tabs.map(value => <Tab label={value} value={value} key={Math.floor(Math.random() * 100)} />)}
+      </Tabs>
+    );
+    const content = (
+      <Card
+        style={{ width: 600, height: 450 }}
+      >
+        <RaisedButton
+          onClick={this.hide}
+          label="close"
+        />
+        {this.state.tabs.length > 1 ? tabs : false}
+        <CardText>
+          {this.showSetting(setting)}
+        </CardText>
+      </Card>
+    );
     return (
       <div className="layout-row">
         <SideMenu
@@ -129,11 +187,14 @@ class MainPage extends Component {
           // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
         />
+        <div id="hid-box" className="hide">
+          {content}
+        </div>
         <div className="layout-fill">
           <Topbar style={toolbarStyle} />
           <LayoutWrapper
-            firstPercentage={40}
-            secondPercentage={40}
+            firstPercentage={50}
+            secondPercentage={50}
             mountHandler={this.mountHandler}
             resizeHandler={this.resizeHandler}
             drage1stHandler={this.drage1stHandler}
@@ -178,9 +239,6 @@ class MainPage extends Component {
                 </RaisedButton>
               </div>
               {midPanel}
-            </div>
-            <div>
-              {this.showSetting(setting)}
             </div>
           </LayoutWrapper>
         </div>

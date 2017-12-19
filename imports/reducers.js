@@ -8,6 +8,7 @@ import profilerReducer from './profiler/reducer';
 import histogramReducer from './histogram/reducer';
 import featureReducer from './featureContainer/reducer';
 import animatorReducer from './animator/reducer';
+import colormapReducer from './colormap/reducer';
 import gridControlReducer from './gridControl/reducer';
 
 const rootReducer = combineReducers({
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   ...profilerReducer,
   ...featureReducer,
   ...animatorReducer,
+  ...colormapReducer,
   ...gridControlReducer,
 });
 

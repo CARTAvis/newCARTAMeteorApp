@@ -14,7 +14,7 @@ class ImageViewer extends Component {
     this.props.dispatch(actions.setupImageViewer());
   }
   componentWillReceiveProps = (nextProps) => {
-    // console.log('INSIDE componentWillUpdate');
+    console.log('IMAGE UPDATE');
     image = new window.Image();
     if (nextProps.imageURL) {
       image.src = `data:image/jpeg;base64,${nextProps.imageURL}`;
