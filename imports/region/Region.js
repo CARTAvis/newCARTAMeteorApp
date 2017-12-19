@@ -42,15 +42,6 @@ class Region extends Component {
       cursorInfo: '',
       regionListener: false,
     };
-
-    // this.props.dispatch(actions.setupRegion());
-  }
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.stack) {
-      if (nextProps.stack.layers.length === 0) {
-        this.showCursorInfo(false);
-      }
-    }
   }
   onMouseDown = (event) => {
     this.props.dispatch(actions.setMouseIsDown(1));
@@ -83,9 +74,6 @@ class Region extends Component {
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
-      // this.div.removeEventListener('mousedown', this.onMouseDown);
-      // this.div.removeEventListener('mousemove', this.onMouseMove);
-      // this.div.removeEventListener('mouseup', this.onMouseUp);
       this.setState({
         regionListener: false,
       });
@@ -113,22 +101,13 @@ class Region extends Component {
   init = () => {
     if (this.props.stack) {
       if (this.props.stack.layers.length > 0) {
-        this.div.addEventListener('mousedown', this.onMouseDown);
-        this.div.addEventListener('mousemove', this.onMouseMove);
-        this.div.addEventListener('mouseup', this.onMouseUp);
+        this.setState({
+          regionListener: true,
+        });
         this.props.dispatch(imageActions.setRegionType('Rectangle'));
         this.props.dispatch(histogramActions.selectRegionHisto());
       }
     }
-    // document.getElementById('canvas').addEventListener('mousedown', this.onMouseDown);
-    // document.getElementById('canvas').addEventListener('mousemove', this.onMouseMove);
-    // document.getElementById('canvas').addEventListener('mouseup', this.onMouseUp);
-    this.setState({
-      regionListener: true,
-    });
-    // this.div.addEventListener('mousedown', this.onMouseDown);
-    // this.div.addEventListener('mousemove', this.onMouseMove);
-    // this.div.addEventListener('mouseup', this.onMouseUp);
   }
   drawRect = () => {
     const w = endX - startX;
@@ -374,12 +353,10 @@ class Region extends Component {
     this.panReset();
     this.zoomReset();
   }
-  showCursorInfo = (show) => {
+  showCursorInfo = () => {
     const htmlObject = document.getElementById('cursorInfo');
-    if (show) {
-      if (this.props.cursorInfo) {
-        htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
-      }
+    if (this.props.cursorInfo) {
+      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
     } else {
       htmlObject.innerHTML = '';
     }
@@ -402,12 +379,6 @@ class Region extends Component {
         <div
           ref={(node) => { this.div = node; }}
           style={{ position: 'relative', width: 482, height: 477 }}
-          // onWheel={(e) => {
-          //   if (this.lastCall + 200 < Date.now()) {
-          //     this.lastCall = Date.now();
-          //     this.panZoom(e);
-          //   }
-          // }}
         >
           <Stage
             id="stage"
@@ -422,10 +393,6 @@ class Region extends Component {
               ref={(node) => {
                 if (node) this.layer = node;
               }}
-              // onMouseMove={(e) => {
-              //   // this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-              //   // this.showCursorInfo();
-              // }}
             >
               <Group
                 onMouseDown={(e) => {
@@ -439,8 +406,12 @@ class Region extends Component {
                   if (this.state.regionListener) {
                     this.onMouseMove(e.evt);
                   }
-                  this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-                  this.showCursorInfo();
+                  if (this.props.stack) {
+                    if (this.props.stack.layers.length > 0) {
+                      this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                      this.showCursorInfo();
+                    }
+                  }
                 }}
                 onMouseUp={(e) => {
                   if (this.state.regionListener) {

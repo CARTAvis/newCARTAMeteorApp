@@ -22,10 +22,10 @@ class FeatureContainer extends Component {
   //     cols,
   //   });
   // }
-  onRemoveItem(i) {
+  onRemoveItem(i, type) {
     // this.setState({ items: _.reject(this.state.items, { i }) });
     this.props.dispatch(actions.onRemoveItemDB(i));
-    this.setSetting('');
+    this.props.removeSetting(type);
   }
   onAddItem = (data) => {
     this.props.dispatch(actions.onAddItemDB(data));
@@ -58,7 +58,7 @@ class FeatureContainer extends Component {
           : <span className="text">{i}</span>} */}
         {/* <span className="text">{el.i}</span> */}
         {this.addGraph(el.type)}
-        <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i)}>x</button>
+        <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i, el.type)}>x</button>
         <button style={{ position: 'absolute', right: '23px', top: 0 }} onClick={() => this.setSetting(el.type)}>Setting</button>
       </div>
     );

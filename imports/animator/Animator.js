@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import actions from './actions';
-import { connect } from 'react-redux';
-
 import Paper from 'material-ui/Paper';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import DropDownMenu from 'material-ui/DropDownMenu';
@@ -13,6 +10,9 @@ import SkipPrev from 'material-ui/svg-icons/av/skip-previous';
 import SkipNext from 'material-ui/svg-icons/av/skip-next';
 import Stop from 'material-ui/svg-icons/av/stop';
 import PlayForward from 'material-ui/svg-icons/av/play-arrow';
+import actions from './actions';
+import { connect } from 'react-redux';
+
 
 const Image = 'Image';
 const Channel = 'Channel';
