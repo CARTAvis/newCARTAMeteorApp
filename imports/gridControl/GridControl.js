@@ -23,8 +23,16 @@ class GridControl extends Component {
   }
 
   render() {
-    // const { dataGrid } = this.props;
-    // const currentskyCoorinateSystem = dataGrid.skyCS;
+    const { dataGrid } = this.props;
+    console.log("Test to get dataGrid from Redux", dataGrid);
+    // const currentSkyCoordinateSystem = dataGrid.skyCS;
+
+    let menuItems = [];
+    let currentSkyCoordinateSystem='';
+    if (dataGrid) {
+      currentSkyCoordinateSystem = dataGrid.skyCS;
+      menuItems.push(<MenuItem value={1} key={1} primaryText={currentSkyCoordinateSystem} />);
+    }
 
     return (
       <div>
@@ -36,14 +44,15 @@ class GridControl extends Component {
             <Tab label={Labels} />
             <Tab label={Ticks} />
           </Tabs>
-          {/* <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
             <DropDownMenu
+              value={currentSkyCoordinateSystem}
               underlineStyle={{ color: 'black' }}
-              onChange={this.changeFrame}
+            //   onChange={this.changeSkyCoordinateSystem}
             >
               {menuItems}
             </DropDownMenu>
-          </div> */}
+          </div>
         </Paper>
       </div>
     );

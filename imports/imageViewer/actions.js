@@ -18,11 +18,6 @@ export const ActionType = {
 export function setupImageViewerDB() {
   api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
 }
-function setGridControlsId(response) {
-  const { data } = response;
-  console.log('Test to get grid control', data);  
-  mongoUpsert(GridDB, { gridControlsID: data }, 'SET_GRID_CONTROLS_ID');
-}
 function setRegionControlsId(response) {
   const { data } = response;
   mongoUpsert(RegionDB, { regionControlsID: data }, 'SET_REGION_CONTROLS_ID');
@@ -46,12 +41,6 @@ function parseReigsterViewResp(resp) {
   const width = 482; // TODO same as the experimental setting in ImageViewer, change later
   const height = 477;
   api.instance().setupViewSize(viewName, width, height);
-
-  command = `${controllerID}:${Commands.REGISTER_GRID_CONTROLS}`;
-  api.instance().sendCommand(command, '')
-    .then((response) => {
-      setGridControlsId(response);
-    });
 }
 function setupImageViewer() {
   return () => {

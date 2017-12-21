@@ -1,6 +1,7 @@
 // import { Meteor } from 'meteor/meteor';
 import { mongoUpsert } from '../api/MongoHelper';
 // import SessionManager from '../api/SessionManager';
+import { ImageViewerDB } from '../api/ImageViewerDB';
 import { GridDB } from '../api/GridDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
@@ -17,9 +18,9 @@ export function setupGridDB() {
 
 function getDataGrid() {
   return (dispatch, getState) => {
-    const gridControlID = getState().GridDB.gridControlsID;
+    const controllerID = getState().ImageViewerDB.controllerID;
     // console.log('Verify getting gridControlID successfully:', gridControlID);
-    const command = `${gridControlID}:getDataGridState`;
+    const command = `${controllerID}:getDataGridState`;
     api.instance().sendCommand(command, '')
       .then((response) => {
         console.log('Test to get datagridstate', response);
