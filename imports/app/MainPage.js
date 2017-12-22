@@ -4,11 +4,10 @@ import 'react-contextmenu/public/styles.css';
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Tabs, Tab } from 'material-ui/Tabs';
-import { Card, CardText } from 'material-ui/Card';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
-import GridControl from '../gridControl/GridControl';
+// import GridControl from '../gridControl/GridControl';
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 // import { connect } from 'react-redux';
@@ -24,6 +23,7 @@ import GridControl from '../gridControl/GridControl';
 import FeatureContainer from '../featureContainer/FeatureContainer';
 import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
+import ImageSettings from './ImageSettings';
 import SideMenu from './SideMenu';
 import Topbar from './Topbar';
 // import Region from './Region';
@@ -38,6 +38,7 @@ class MainPage extends Component {
       setting: '',
       open: false,
       tabs: [],
+      settingsArray: [],
     };
   }
   // define callback
@@ -54,8 +55,19 @@ class MainPage extends Component {
     this.setState({ secondColumnWidth: second });
   }
   setSetting = (type) => {
+    let el = null;
+    if (type === 'Profiler') el = <ProfilerSettings />;
+    else if (type === 'Histogram') el = <HistogramSettings />;
+    else if (type === 'Image') el = <ImageSettings />;
     // add new settings to a new tab
-    this.setState(prevState => ({ tabs: prevState.tabs.concat(type) }));
+    this.setState(prevState => ({
+      tabs: prevState.tabs.concat(type),
+      settingsArray: prevState.settingsArray.concat({
+        type,
+        setting: el,
+        key: Math.floor(Math.random() * 100),
+      }),
+    }));
     // set new settings
     this.setState({ setting: type });
     if (this.state.tabs.length === 0) {
@@ -67,7 +79,8 @@ class MainPage extends Component {
     this.setState({ setting: value });
   }
   removeSetting = (type) => {
-    if (this.state.tabs.length === 1) {
+    console.log('REMOVING: ', type);
+    if (this.state.tabs.length === 1 && (this.state.tabs[0] === 'Profiler' || this.state.tabs[0] === 'Histogram')) {
       this.hide();
     } else {
       let index = 0;
@@ -98,9 +111,15 @@ class MainPage extends Component {
   }
   showSetting = (setting) => {
     if (setting) {
-      if (setting === 'Profiler') return <ProfilerSettings />;
-      else if (setting === 'Histogram') return <HistogramSettings />;
-      return 0;
+      // if (setting === 'Profiler') return <ProfilerSettings />;
+      // else if (setting === 'Histogram') return <HistogramSettings />;
+      // else if (setting === 'Image') return <ImageSettings />;
+      for (let i = 0; i < this.state.settingsArray.length; i += 1) {
+        if (this.state.settingsArray[i].type === setting) {
+          console.log('KEY: ', this.state.settingsArray[i].key);
+          return this.state.settingsArray[i].setting;
+        }
+      }
     }
     return '';
   }
@@ -126,7 +145,10 @@ class MainPage extends Component {
   hide = () => {
     const box2 = document.getElementById('hid-box');
     box2.className = 'hide';
-    this.setState({ tabs: [] });
+    this.setState({
+      tabs: [],
+      setting: '',
+    });
   }
   render() {
     // console.log('IN RENDER');
@@ -162,22 +184,25 @@ class MainPage extends Component {
         value={this.state.setting}
         onChange={this.settingChanged}
       >
-        {this.state.tabs.map(value => <Tab label={value} value={value} key={Math.floor(Math.random() * 100)} />)}
+        {this.state.tabs.map((value, index) =>
+          (<Tab label={value} value={value} key={Math.floor(Math.random() * 100)}>
+            {this.showSetting(value)}
+          </Tab>),
+        )}
       </Tabs>
     );
     const content = (
-      <Card
-        style={{ width: 600, height: 450 }}
-      >
+      // <Card
+      //   style={{ width: 600 }}
+      // >
+      <div>
         <RaisedButton
           onClick={this.hide}
           label="close"
         />
-        {this.state.tabs.length > 1 ? tabs : false}
-        <CardText>
-          {this.showSetting(setting)}
-        </CardText>
-      </Card>
+        {/* {this.state.tabs.length > 1 ? tabs : this.state.first} */}
+        {tabs}
+      </div>
     );
     return (
       <div className="layout-row">
@@ -217,11 +242,12 @@ class MainPage extends Component {
                 <Region />
                 <Region />
               </div> */}
-              <Region />
+              <Region
+                setSetting={this.setSetting}
+                removeSetting={this.removeSetting}
+              />
               <br />
               <Animator />
-              <br />
-              <GridControl />
             </div>
             <div>
               <div style={{ marginLeft: '30%', marginTop: '10px' }}>

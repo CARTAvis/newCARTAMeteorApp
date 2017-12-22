@@ -361,6 +361,14 @@ class Region extends Component {
       htmlObject.innerHTML = '';
     }
   }
+  removeSetting = () => {
+    // this.setState({ items: _.reject(this.state.items, { i }) });
+    this.props.removeSetting('Image');
+  }
+  setSetting = () => {
+    // console.log('THE TYPE TO BE PASSED: ', type);
+    this.props.setSetting('Image');
+  }
   render() {
     const { x, y, width, height } = this.props;
     this.rect = (
@@ -407,7 +415,7 @@ class Region extends Component {
                     this.onMouseMove(e.evt);
                   }
                   if (this.props.stack) {
-                    if (this.props.stack.layers.length > 0) {
+                    if (this.props.stack.layers.length > 0 && !this.state.regionListener) {
                       this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
                       this.showCursorInfo();
                     }
@@ -440,6 +448,10 @@ class Region extends Component {
             <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
             <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
             <button onClick={this.zoomOut} className="zoom" style={{ width: '24px' }}>-</button>
+            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <button onClick={this.setSetting} className="zoom" style={{ width: '24px' }}>
+              <img style={{ width: '16px', height: '16px' }} src="/images/tools.png" alt="" />
+            </button>
           </Card>
           <Card style={{ width: '24px', position: 'absolute', bottom: 0 }} >
             <button onClick={this.panReset} className="zoom" style={{ width: '24px' }}>

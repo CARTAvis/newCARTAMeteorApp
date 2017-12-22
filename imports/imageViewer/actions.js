@@ -20,7 +20,7 @@ export function setupImageViewerDB() {
 }
 function setGridControlsId(response) {
   const { data } = response;
-  console.log('Test to get grid control', data);  
+  console.log('Test to get grid control', data);
   mongoUpsert(GridDB, { gridControlsID: data }, 'SET_GRID_CONTROLS_ID');
 }
 function setRegionControlsId(response) {
