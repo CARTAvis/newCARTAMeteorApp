@@ -151,6 +151,8 @@ class GridControl extends Component {
           />
         </div>);
     } else if (this.state.option === 'labels') {
+      const LeftRightMenu = this.setLabelLeftRightOptions();
+      const TopBottomMenu = this.setLabelTopBottomOptions();
       content = (
         <div>
           <p>Family: </p>
@@ -179,28 +181,28 @@ class GridControl extends Component {
             value={this.state.labelLeft}
             onChange={this.handleLabelLeft}
           >
-            {this.setLabelLeftRightOptions()}
+            {LeftRightMenu}
           </DropDownMenu>
           <p>Right: </p>
           <DropDownMenu
             value={this.state.labelRight}
             onChange={this.handleLabelRight}
           >
-            {this.setLabelLeftRightOptions()}
+            {LeftRightMenu}
           </DropDownMenu>
           <p>Top: </p>
           <DropDownMenu
             value={this.state.labelTop}
             onChange={this.handleLabelTop}
           >
-            {this.setLabelTopBottomOptions()}
+            {TopBottomMenu}
           </DropDownMenu>
           <p>Bottom: </p>
           <DropDownMenu
             value={this.state.labelBottom}
             onChange={this.handleLabelBottom}
           >
-            {this.setLabelTopBottomOptions()}
+            {TopBottomMenu}
           </DropDownMenu>
         </div>
       );
