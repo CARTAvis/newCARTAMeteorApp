@@ -65,7 +65,7 @@ export default class ImageSettings extends Component {
             <MenuItem primaryText="regions" />
           </Menu>
         </Paper>
-        {/* <div style={style}><GridControl option={this.state.subOption} /></div> */}
+        <div style={style}><GridControl option={this.state.subOption} /></div>
       </div>
     );
   }

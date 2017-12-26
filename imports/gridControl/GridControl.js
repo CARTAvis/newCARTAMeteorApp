@@ -50,6 +50,12 @@ class GridControl extends Component {
         }));
       }
     }
+    if (nextProps.dataGrid.xAxis || nextProps.dataGrid.yAxis) {
+      this.setState({
+        xValue: nextProps.dataGrid.xAxis,
+        yValue: nextProps.dataGrid.yAxis,
+      });
+    }
     if (this.props.dataGrid.labelFormats) {
       console.log(this.props.dataGrid.labelFormats.left);
     }
@@ -67,7 +73,8 @@ class GridControl extends Component {
     <MenuItem value="No Label" primaryText="No Label" />
   </div>)
   handleXValChange = (event, index, value) => {
-    this.setState({ xValue: value });
+    // this.setState({ xValue: value });
+    this.props.dispatch(actions.setAxisX(value));
   }
   handleYValChange = (event, index, value) => {
     this.setState({ yValue: value });

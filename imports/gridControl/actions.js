@@ -30,8 +30,27 @@ function getDataGrid() {
       });
   };
 }
+
+function setAxisX(name) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const oldName = getState().GridDB.DataGrid.xAxis;
+    if (oldName !== name) {
+      const command = `${controllerID}:setAxisX`;
+      api.instance().sendCommand(command, name)
+        .then((response) => {
+          // const { xAxis, yAxis } = response;
+          // console.log('Test to get response', response);
+          const { data } = response;
+          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+        });
+    }
+  };
+}
+
 const actions = {
   getDataGrid,
+  setAxisX,
 };
 
 export default actions;
