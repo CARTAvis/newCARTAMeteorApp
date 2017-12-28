@@ -152,7 +152,12 @@ class GridControl extends Component {
           <Slider
             min={0}
             max={255}
-            onChange={(event, newValue) => this.setState({ opacity: newValue })}
+            onChange={(event, newValue) => {
+              // I don't no whether I should change state from mongo
+              // That might be annoying
+              this.setState({ opacity: newValue });
+              this.props.dispatch(actions.setTickTransparency(newValue));
+            }}
             value={this.state.opacity}
             step={1}
           />

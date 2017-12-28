@@ -48,9 +48,26 @@ function setAxisX(name) {
   };
 }
 
+function setTickTransparency(value) {
+  return (dispatch, getState) => {
+    // Should this part use dispatch?
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const oldValue = getState().GridDB.DataGrid.tick.alpha;
+    if (oldValue !== value) {
+      const command = `${controllerID}:setTickTransparency`;
+      api.instance().sendCommand(command, value)
+        .then((response) => {
+          const { data } = response;
+          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+        });
+    }
+  };
+}
+
 const actions = {
   getDataGrid,
   setAxisX,
+  setTickTransparency,
 };
 
 export default actions;
