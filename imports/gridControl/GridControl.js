@@ -139,7 +139,10 @@ class GridControl extends Component {
           <Slider
             min={1}
             max={10}
-            onChange={(event, newValue) => this.setState({ thickness: newValue })}
+            onChange={(event, newValue) => {
+              this.setState({ thickness: newValue });
+              this.props.dispatch(actions.setTickThickness(newValue));
+            }}
             value={this.state.thickness}
             step={1}
           />

@@ -50,7 +50,6 @@ function setAxisX(name) {
 
 function setTickTransparency(value) {
   return (dispatch, getState) => {
-    // Should this part use dispatch?
     const controllerID = getState().ImageViewerDB.controllerID;
     const oldValue = getState().GridDB.DataGrid.tick.alpha;
     if (oldValue !== value) {
@@ -64,10 +63,26 @@ function setTickTransparency(value) {
   };
 }
 
+function setTickThickness(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const oldValue = getState().GridDB.DataGrid.tick.width;
+    if (oldValue !== value) {
+      const command = `${controllerID}:setTickThickness`;
+      api.instance().sendCommand(command, value)
+        .then((response) => {
+          const { data } = response;
+          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+        });
+    }
+  };
+}
+
 const actions = {
   getDataGrid,
   setAxisX,
   setTickTransparency,
+  setTickThickness,
 };
 
 export default actions;
