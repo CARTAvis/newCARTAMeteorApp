@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import Checkbox from 'material-ui/Checkbox';
+import Toggle from 'material-ui/Toggle';
 import Slider from 'material-ui/Slider';
 import TextField from 'material-ui/TextField';
 import DropDownMenu from 'material-ui/DropDownMenu';
@@ -112,11 +113,19 @@ class GridControl extends Component {
     if (this.state.option === 'ticks') {
       content =
         (<div>
-          <Checkbox
+          <Toggle
+            label="Show Ticks"
+            defaultToggled={this.props.dataGrid.showTicks}
+            style={{ marginBottom: 16 }}
+            onToggle={(event, newValue) => {
+              this.props.dispatch(actions.setShowTicks(newValue));
+            }}
+          />
+          {/* <Checkbox
             label="Show Ticks"
             style={{ width: 150 }}
             defaultChecked={this.props.dataGrid.showTicks}
-          />
+          /> */}
           <TextField
             floatingLabelText="length"
             onChange={(event, newValue) => this.setState({ length: newValue })}
