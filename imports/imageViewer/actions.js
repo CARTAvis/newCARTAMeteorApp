@@ -3,6 +3,7 @@ import { RegionDB } from '../api/RegionDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
+import regionActions from '../region/actions';
 
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
@@ -95,7 +96,9 @@ function regionZoom() {
     const arg = '';
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
-        console.log('REGION ZOOM RESP: ', resp);
+        const { data } = resp;
+        mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
+        dispatch(regionActions.updateRegionOnZoom());
       });
   };
 }
@@ -108,6 +111,7 @@ function zoom(zoomFactor) {
 
     api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom result:', resp);
+      dispatch(regionZoom());
     });
   };
 }
@@ -118,16 +122,8 @@ function panZoom(x, y, zoomFactor) {
     const cmd = `${controllerID}:${Commands.PAN_ZOOM}`;
     const arg = `${x} ${y} ${zoomFactor}`;
 
-    api.instance().sendCommand(cmd, arg, (resp) => {
-      console.log('get set zoom result:', resp);
-      const cmd2 = `${controllerID}:${Commands.REGION_ZOOM}`;
-      const arg2 = '';
-      api.instance().sendCommand(cmd2, arg2)
-        .then((resp2) => {
-          const { data } = resp2;
-          console.log('REGION ZOOM RESP: ', data);
-          mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
-        });
+    api.instance().sendCommand(cmd, arg, () => {
+      dispatch(regionZoom());
     });
   };
 }
@@ -141,6 +137,7 @@ function zoomReset() {
 
     api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom level result:', resp);
+      dispatch(regionZoom());
     });
   };
 }
@@ -149,14 +146,8 @@ function panReset() {
     const controllerID = getState().ImageViewerDB.controllerID;
     const cmd = `${controllerID}:${Commands.PAN_RESET}`;
     const arg = '';
-    api.instance().sendCommand(cmd, arg, (resp) => {
-      console.log('get set zoom result:', resp);
-      const cmd2 = `${controllerID}:${Commands.REGION_ZOOM}`;
-      const arg2 = '';
-      api.instance().sendCommand(cmd2, arg2)
-        .then((resp2) => {
-          console.log('REGION ZOOM RESP: ', resp2);
-        });
+    api.instance().sendCommand(cmd, arg, () => {
+      dispatch(regionZoom());
     });
   };
 }

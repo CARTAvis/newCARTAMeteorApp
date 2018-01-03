@@ -414,12 +414,12 @@ class Region extends Component {
                   if (this.state.regionListener) {
                     this.onMouseMove(e.evt);
                   }
-                  // if (this.props.stack) {
-                  //   if (this.props.stack.layers.length > 0 && !this.props.mouseIsDown) {
-                  //     this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-                  //     this.showCursorInfo();
-                  //   }
-                  // }
+                  if (this.props.stack) {
+                    if (this.props.stack.layers.length > 0 && !this.props.mouseIsDown) {
+                      this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                      this.showCursorInfo();
+                    }
+                  }
                 }}
                 onMouseUp={(e) => {
                   if (this.state.regionListener) {
@@ -435,19 +435,9 @@ class Region extends Component {
                 }}
               >
                 <ImageViewer />
-                {/* <ImageViewer2 /> */}
                 {(this.props.mouseIsDown === 1) ? this.rect : false}
                 {this.props.regionArray ?
                   this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
-                {this.props.newPt ? <Circle
-                  x={this.props.newPt.x}
-                  y={this.props.newPt.y}
-                  stroke="#666"
-                  fill="#ddd"
-                  strokeWidth={2}
-                  radius={8}
-                  draggable
-                /> : null}
               </Group>
               <Colormap />
             </Layer>
@@ -534,6 +524,5 @@ const mapStateToProps = state => ({
   requestingFile: state.ImageViewerDB.requestingFile,
   stack: state.ImageViewerDB.stack,
   profileReady: state.RegionDB.profileReady,
-  newPt: state.RegionDB.newPt,
 });
 export default connect(mapStateToProps)(Region);
