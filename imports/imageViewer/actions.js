@@ -88,7 +88,17 @@ function setZoomLevel(zoomLevel, layerID) {
     });
   };
 }
-
+function regionZoom() {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
+    const arg = '';
+    api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        console.log('REGION ZOOM RESP: ', resp);
+      });
+  };
+}
 function zoom(zoomFactor) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -110,6 +120,14 @@ function panZoom(x, y, zoomFactor) {
 
     api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom result:', resp);
+      const cmd2 = `${controllerID}:${Commands.REGION_ZOOM}`;
+      const arg2 = '';
+      api.instance().sendCommand(cmd2, arg2)
+        .then((resp2) => {
+          const { data } = resp2;
+          console.log('REGION ZOOM RESP: ', data);
+          mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
+        });
     });
   };
 }
@@ -133,6 +151,12 @@ function panReset() {
     const arg = '';
     api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom result:', resp);
+      const cmd2 = `${controllerID}:${Commands.REGION_ZOOM}`;
+      const arg2 = '';
+      api.instance().sendCommand(cmd2, arg2)
+        .then((resp2) => {
+          console.log('REGION ZOOM RESP: ', resp2);
+        });
     });
   };
 }
