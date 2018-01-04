@@ -135,9 +135,9 @@ class GridControl extends Component {
           label="Show Coordinate System"
           defaultToggled={this.props.dataGrid.showCoordinateSystem}
           style={{ marginBottom: 16 }}
-          // onToggle={(event, newValue) => {
-          //   this.props.dispatch(actions.setShowTicks(newValue));
-          // }}
+          onToggle={(event, newValue) => {
+            this.props.dispatch(actions.setShowCoordinateSystem(newValue));
+          }}
         />
         <Toggle
           label="Use Default Coordinate System"
@@ -165,9 +165,9 @@ class GridControl extends Component {
             label="Show Grid Lines"
             defaultToggled={this.props.dataGrid.showGridLines}
             style={{ marginBottom: 16 }}
-            // onToggle={(event, newValue) => {
-            //   this.props.dispatch(actions.setShowTicks(newValue));
-            // }}
+            onToggle={(event, newValue) => {
+              this.props.dispatch(actions.setShowGridLines(newValue));
+            }}
           />
           <TextField
             floatingLabelText="length"
@@ -220,7 +220,23 @@ class GridControl extends Component {
     } else if (this.state.option === 'axes') {
       content = (
         <div>
-          <Checkbox
+          <Toggle
+            label="Show Axes/Border"
+            defaultToggled={this.props.dataGrid.showAxis}
+            style={{ marginBottom: 16 }}
+            onToggle={(event, newValue) => {
+              this.props.dispatch(actions.setShowAxis(newValue));
+            }}
+          />
+          <Toggle
+            label="Use Internal Axes"
+            defaultToggled={this.state.useDefaultCoordinateSystem}
+            style={{ marginBottom: 16 }}
+            // onToggle={(event, newValue) => {
+            //   this.props.dispatch(actions.setShowTicks(newValue));
+            // }}
+          />
+          {/* <Checkbox
             label="Axes/Border"
             style={{ width: 150 }}
             defaultChecked={this.props.dataGrid.showAxis}
@@ -229,7 +245,7 @@ class GridControl extends Component {
             label="Internal Axes"
             style={{ width: 150 }}
             defaultChecked={this.props.dataGrid.showInternalLabels}
-          />
+          /> */}
           <TextField
             floatingLabelText="thickness"
             onChange={(event, newValue) => this.setState({ thickness: newValue })}
@@ -340,22 +356,21 @@ class GridControl extends Component {
               this.props.dispatch(actions.setShowTicks(newValue));
             }}
           />
-          {/* <Checkbox
-            label="Show Ticks"
-            style={{ width: 150 }}
-            defaultChecked={this.props.dataGrid.showTicks}
-          /> */}
           <TextField
             floatingLabelText="length"
-            onChange={(event, newValue) => this.setState({ length: newValue })}
-            value={this.state.length}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setTickLength(newValue));
+            }}
+            value={this.props.dataGrid.tickLength}
             // defaultValue={}
           />
           <Slider
             min={0}
             max={50}
-            onChange={(event, newValue) => this.setState({ length: newValue })}
-            value={this.state.length}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setTickLength(newValue));
+            }}
+            value={this.props.dataGrid.tickLength}
             step={1}
           />
           <TextField
