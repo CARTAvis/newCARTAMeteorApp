@@ -5,6 +5,7 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import Checkbox from 'material-ui/Checkbox';
 import Toggle from 'material-ui/Toggle';
 import Slider from 'material-ui/Slider';
+import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -21,6 +22,9 @@ class GridControl extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      // coordinateSystem: this.props.dataGrid.skyCS,
+      useDefaultCoordinateSystem: true,
+      coords: [],
       length: this.props.dataGrid.tickLength,
       thickness: 1,
       opacity: 255,
@@ -28,19 +32,30 @@ class GridControl extends Component {
       family: this.props.dataGrid.font.family,
       fontSize: this.props.dataGrid.font.size,
       precision: this.props.dataGrid.decimals,
-      xValue: this.props.dataGrid.xAxis,
-      yValue: this.props.dataGrid.yAxis,
+      // xValue: this.props.dataGrid.xAxis,
+      // yValue: this.props.dataGrid.yAxis,
       labelLeft: this.props.dataGrid.labelFormats.left.format,
       labelRight: this.props.dataGrid.labelFormats.right.format,
       labelTop: this.props.dataGrid.labelFormats.top.format,
       labelBottom: this.props.dataGrid.labelFormats.bottom.format,
     };
-    // this.props.dispatch(actions.setupAnimator());
   }
   componentWillReceiveProps = (nextProps) => {
     const option = nextProps.option;
     if (option) {
       this.setState({ option });
+    }
+    // if (nextProps.dataGrid.skyCS) {
+    //   this.setState({ coordinateSystem: nextProps.dataGrid.skyCS });
+    // }
+    if (nextProps.dataGrid.supportedCS) {
+      const supportedCS = nextProps.dataGrid.supportedCS;
+      for (let i = 0; i < supportedCS.length; i += 1) {
+        this.setState(prevState => ({
+          coords: prevState.coords.concat(
+            <MenuItem value={supportedCS[i]} primaryText={supportedCS[i]} key={i} />),
+        }));
+      }
     }
     if (nextProps.dataGrid.supportedAxes) {
       const supportedAxes = nextProps.dataGrid.supportedAxes;
@@ -51,12 +66,12 @@ class GridControl extends Component {
         }));
       }
     }
-    if (nextProps.dataGrid.xAxis || nextProps.dataGrid.yAxis) {
-      this.setState({
-        xValue: nextProps.dataGrid.xAxis,
-        yValue: nextProps.dataGrid.yAxis,
-      });
-    }
+    // if (nextProps.dataGrid.xAxis || nextProps.dataGrid.yAxis) {
+    //   this.setState({
+    //     xValue: nextProps.dataGrid.xAxis,
+    //     yValue: nextProps.dataGrid.yAxis,
+    //   });
+    // }
     if (this.props.dataGrid.labelFormats) {
       console.log(this.props.dataGrid.labelFormats.left);
     }
@@ -73,6 +88,9 @@ class GridControl extends Component {
     <MenuItem value="Default" primaryText="Default" />
     <MenuItem value="No Label" primaryText="No Label" />
   </div>)
+  // handleCoordinateSystemChange = (event, index, value) => {
+  //   this.props.dispatch(actions.setCoordinateSystem(value));
+  // }
   handleXValChange = (event, index, value) => {
     // this.setState({ xValue: value });
     this.props.dispatch(actions.setAxisX(value));
@@ -110,22 +128,47 @@ class GridControl extends Component {
   display = () => {
     let content = null;
     // console.log('INSIDE DISPLAY');
-    if (this.state.option === 'ticks') {
+    if (this.state.option === 'canvas') {
+      content =
+      (<div>
+        <Toggle
+          label="Show Coordinate System"
+          defaultToggled={this.props.dataGrid.showCoordinateSystem}
+          style={{ marginBottom: 16 }}
+          // onToggle={(event, newValue) => {
+          //   this.props.dispatch(actions.setShowTicks(newValue));
+          // }}
+        />
+        <Toggle
+          label="Use Default Coordinate System"
+          defaultToggled={this.state.useDefaultCoordinateSystem}
+          style={{ marginBottom: 16 }}
+          // onToggle={(event, newValue) => {
+          //   this.props.dispatch(actions.setShowTicks(newValue));
+          // }}
+        />
+        <SelectField
+          floatingLabelText="Current Coordinate System"
+          value={this.props.dataGrid.skyCS}
+          disabled={this.state.useDefaultCoordinateSystem}
+          onChange={(event, index, value) => {
+            this.props.dispatch(actions.setCoordinateSystem(value));
+          }}
+        >
+          {this.state.coords.map(item => item)}
+        </SelectField>
+      </div>);
+    } else if (this.state.option === 'grid') {
       content =
         (<div>
           <Toggle
-            label="Show Ticks"
-            defaultToggled={this.props.dataGrid.showTicks}
+            label="Show Grid Lines"
+            defaultToggled={this.props.dataGrid.showGridLines}
             style={{ marginBottom: 16 }}
-            onToggle={(event, newValue) => {
-              this.props.dispatch(actions.setShowTicks(newValue));
-            }}
+            // onToggle={(event, newValue) => {
+            //   this.props.dispatch(actions.setShowTicks(newValue));
+            // }}
           />
-          {/* <Checkbox
-            label="Show Ticks"
-            style={{ width: 150 }}
-            defaultChecked={this.props.dataGrid.showTicks}
-          /> */}
           <TextField
             floatingLabelText="length"
             onChange={(event, newValue) => this.setState({ length: newValue })}
@@ -148,10 +191,10 @@ class GridControl extends Component {
           <Slider
             min={1}
             max={10}
-            onChange={(event, newValue) => {
-              this.setState({ thickness: newValue });
-              this.props.dispatch(actions.setTickThickness(newValue));
-            }}
+            // onChange={(event, newValue) => {
+            //   this.setState({ thickness: newValue });
+            //   this.props.dispatch(actions.setTickThickness(newValue));
+            // }}
             value={this.state.thickness}
             step={1}
           />
@@ -164,16 +207,72 @@ class GridControl extends Component {
           <Slider
             min={0}
             max={255}
-            onChange={(event, newValue) => {
-              // I don't no whether I should change state from mongo
-              // That might be annoying
-              this.setState({ opacity: newValue });
-              this.props.dispatch(actions.setTickTransparency(newValue));
-            }}
+            // onChange={(event, newValue) => {
+            //   // I don't no whether I should change state from mongo
+            //   // That might be annoying
+            //   this.setState({ opacity: newValue });
+            //   this.props.dispatch(actions.setTickTransparency(newValue));
+            // }}
             value={this.state.opacity}
             step={1}
           />
         </div>);
+    } else if (this.state.option === 'axes') {
+      content = (
+        <div>
+          <Checkbox
+            label="Axes/Border"
+            style={{ width: 150 }}
+            defaultChecked={this.props.dataGrid.showAxis}
+          />
+          <Checkbox
+            label="Internal Axes"
+            style={{ width: 150 }}
+            defaultChecked={this.props.dataGrid.showInternalLabels}
+          />
+          <TextField
+            floatingLabelText="thickness"
+            onChange={(event, newValue) => this.setState({ thickness: newValue })}
+            value={this.state.thickness}
+            // defaultValue={1}
+          />
+          <Slider
+            min={1}
+            max={10}
+            onChange={(event, newValue) => this.setState({ thickness: newValue })}
+            value={this.state.thickness}
+            step={1}
+          />
+          <TextField
+            floatingLabelText="opacity"
+            onChange={(event, newValue) => this.setState({ opacity: newValue })}
+            value={this.state.opacity}
+            // defaultValue={1}
+          />
+          <Slider
+            min={0}
+            max={255}
+            onChange={(event, newValue) => this.setState({ opacity: newValue })}
+            value={this.state.opacity}
+            step={1}
+          />
+          <p>X Axis: </p>
+          <DropDownMenu
+            value={this.props.dataGrid.xAxis}
+            onChange={this.handleXValChange}
+          >
+            {this.state.axes.map(item => item)}
+          </DropDownMenu>
+          <p>Y Axis: </p>
+          <DropDownMenu
+            value={this.props.dataGrid.yAxis}
+            onChange={this.handleYValChange}
+          >
+            {this.state.axes.map(item => item)}
+          </DropDownMenu>
+
+        </div>
+      );
     } else if (this.state.option === 'labels') {
       const LeftRightMenu = this.setLabelLeftRightOptions();
       const TopBottomMenu = this.setLabelTopBottomOptions();
@@ -230,62 +329,69 @@ class GridControl extends Component {
           </DropDownMenu>
         </div>
       );
-    } else if (this.state.option === 'axes') {
-      content = (
-        <div>
-          <Checkbox
-            label="Axes/Border"
-            style={{ width: 150 }}
-            defaultChecked={this.props.dataGrid.showAxis}
+    } else if (this.state.option === 'ticks') {
+      content =
+        (<div>
+          <Toggle
+            label="Show Ticks"
+            defaultToggled={this.props.dataGrid.showTicks}
+            style={{ marginBottom: 16 }}
+            onToggle={(event, newValue) => {
+              this.props.dispatch(actions.setShowTicks(newValue));
+            }}
           />
-          <Checkbox
-            label="Internal Axes"
+          {/* <Checkbox
+            label="Show Ticks"
             style={{ width: 150 }}
-            defaultChecked={this.props.dataGrid.showInternalLabels}
+            defaultChecked={this.props.dataGrid.showTicks}
+          /> */}
+          <TextField
+            floatingLabelText="length"
+            onChange={(event, newValue) => this.setState({ length: newValue })}
+            value={this.state.length}
+            // defaultValue={}
+          />
+          <Slider
+            min={0}
+            max={50}
+            onChange={(event, newValue) => this.setState({ length: newValue })}
+            value={this.state.length}
+            step={1}
           />
           <TextField
             floatingLabelText="thickness"
-            onChange={(event, newValue) => this.setState({ thickness: newValue })}
-            value={this.state.thickness}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setTickThickness(newValue));
+            }}
+            value={this.props.dataGrid.tick.width}
             // defaultValue={1}
           />
           <Slider
             min={1}
             max={10}
-            onChange={(event, newValue) => this.setState({ thickness: newValue })}
-            value={this.state.thickness}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setTickThickness(newValue));
+            }}
+            value={this.props.dataGrid.tick.width}
             step={1}
           />
           <TextField
             floatingLabelText="opacity"
-            onChange={(event, newValue) => this.setState({ opacity: newValue })}
-            value={this.state.opacity}
-            // defaultValue={1}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setTickTransparency(newValue));
+            }}
+            value={this.props.dataGrid.tick.alpha}
           />
           <Slider
             min={0}
             max={255}
-            onChange={(event, newValue) => this.setState({ opacity: newValue })}
-            value={this.state.opacity}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setTickTransparency(newValue));
+            }}
+            value={this.props.dataGrid.tick.alpha}
             step={1}
           />
-          <p>X Axis: </p>
-          <DropDownMenu
-            value={this.state.xValue}
-            onChange={this.handleXValChange}
-          >
-            {this.state.axes.map(item => item)}
-          </DropDownMenu>
-          <p>Y Axis: </p>
-          <DropDownMenu
-            value={this.state.yValue}
-            onChange={this.handleYValChange}
-          >
-            {this.state.axes.map(item => item)}
-          </DropDownMenu>
-
-        </div>
-      );
+        </div>);
     }
     return content;
     // this.props.getContent(a);

@@ -31,6 +31,18 @@ function getDataGrid() {
   };
 }
 
+function setCoordinateSystem(name) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setCoordinateSystem`;
+    api.instance().sendCommand(command, name)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
 function setAxisX(name) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -52,7 +64,6 @@ function setShowTicks(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     const command = `${controllerID}:setShowTicks`;
-    console.log('ttttttttttttttttttttttttttttttttttttttttttt', value);
     api.instance().sendCommand(command, value)
       .then((response) => {
         const { data } = response;
@@ -87,6 +98,7 @@ function setTickThickness(value) {
 
 const actions = {
   getDataGrid,
+  setCoordinateSystem,
   setAxisX,
   setShowTicks,
   setTickTransparency,
