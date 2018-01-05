@@ -31,6 +31,54 @@ function getDataGrid() {
   };
 }
 
+function setShowCoordinateSystem(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setShowCoordinateSystem`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setCoordinateSystem(name) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setCoordinateSystem`;
+    api.instance().sendCommand(command, name)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setShowGridLines(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setShowGridLines`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setShowAxis(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setShowAxis`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
 function setAxisX(name) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -52,7 +100,18 @@ function setShowTicks(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     const command = `${controllerID}:setShowTicks`;
-    console.log('ttttttttttttttttttttttttttttttttttttttttttt', value);
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setTickLength(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setTickLength`;
     api.instance().sendCommand(command, value)
       .then((response) => {
         const { data } = response;
@@ -87,8 +146,13 @@ function setTickThickness(value) {
 
 const actions = {
   getDataGrid,
+  setShowCoordinateSystem,
+  setCoordinateSystem,
+  setShowGridLines,
+  setShowAxis,
   setAxisX,
   setShowTicks,
+  setTickLength,
   setTickTransparency,
   setTickThickness,
 };
