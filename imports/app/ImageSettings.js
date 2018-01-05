@@ -12,9 +12,7 @@ export default class ImageSettings extends Component {
       subOption: '',
     };
   }
-  // getContent = info =>
-  //   this.setState({ info });
-  //   info
+
   setOption = (option) => {
     this.setState({ option });
   }
@@ -29,11 +27,6 @@ export default class ImageSettings extends Component {
   }
   render() {
     // console.log('suboption: ', this.state.subOption);
-    const style = {
-      display: 'inline-block',
-      float: 'left',
-      margin: '5px 5px 5px 5px',
-    };
     // const grid = <GridControl option={this.state.subOption} />;
     return (
       <div className="test2">
@@ -66,7 +59,7 @@ export default class ImageSettings extends Component {
               <MenuItem primaryText="regions" />
             </Menu>
           </div>
-          <div className="test5">
+          <div id="data" className="test5">
             <GridControl option={this.state.subOption} />
           </div>
         </div>
