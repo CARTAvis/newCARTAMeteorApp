@@ -67,6 +67,55 @@ function setShowGridLines(value) {
   };
 }
 
+function setGridThickness(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setGridThickness`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setGridTransparency(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setGridTransparency`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+
+function setAxesThickness(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setAxesThickness`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setAxesTransparency(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setAxesTransparency`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
 function setShowAxis(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -93,6 +142,30 @@ function setAxisX(name) {
           mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
         });
     }
+  };
+}
+
+function setFontSize(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setFontSize`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setLabelDecimals(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setLabelDecimals`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
   };
 }
 
@@ -149,8 +222,14 @@ const actions = {
   setShowCoordinateSystem,
   setCoordinateSystem,
   setShowGridLines,
+  setGridThickness,
+  setGridTransparency,
+  setAxesThickness,
+  setAxesTransparency,
   setShowAxis,
   setAxisX,
+  setFontSize,
+  setLabelDecimals,
   setShowTicks,
   setTickLength,
   setTickTransparency,

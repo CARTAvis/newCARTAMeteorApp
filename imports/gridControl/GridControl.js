@@ -25,13 +25,13 @@ class GridControl extends Component {
       // coordinateSystem: this.props.dataGrid.skyCS,
       useDefaultCoordinateSystem: true,
       coords: [],
-      length: this.props.dataGrid.tickLength,
+      // length: this.props.dataGrid.tickLength,
       thickness: 1,
       opacity: 255,
       axes: [],
       family: this.props.dataGrid.font.family,
-      fontSize: this.props.dataGrid.font.size,
-      precision: this.props.dataGrid.decimals,
+      // fontSize: this.props.dataGrid.font.size,
+      // precision: this.props.dataGrid.decimals,
       // xValue: this.props.dataGrid.xAxis,
       // yValue: this.props.dataGrid.yAxis,
       labelLeft: this.props.dataGrid.labelFormats.left.format,
@@ -133,7 +133,7 @@ class GridControl extends Component {
       (<div>
         <Toggle
           label="Show Coordinate System"
-          defaultToggled={this.props.dataGrid.showCoordinateSystem}
+          toggled={this.props.dataGrid.showCoordinateSystem}
           style={{ marginBottom: 16 }}
           onToggle={(event, newValue) => {
             this.props.dispatch(actions.setShowCoordinateSystem(newValue));
@@ -141,7 +141,7 @@ class GridControl extends Component {
         />
         <Toggle
           label="Use Default Coordinate System"
-          defaultToggled={this.state.useDefaultCoordinateSystem}
+          toggled={this.state.useDefaultCoordinateSystem}
           style={{ marginBottom: 16 }}
           // onToggle={(event, newValue) => {
           //   this.props.dispatch(actions.setShowTicks(newValue));
@@ -163,7 +163,7 @@ class GridControl extends Component {
         (<div>
           <Toggle
             label="Show Grid Lines"
-            defaultToggled={this.props.dataGrid.showGridLines}
+            toggled={this.props.dataGrid.showGridLines}
             style={{ marginBottom: 16 }}
             onToggle={(event, newValue) => {
               this.props.dispatch(actions.setShowGridLines(newValue));
@@ -177,43 +177,44 @@ class GridControl extends Component {
           />
           <Slider
             min={0}
-            max={50}
-            onChange={(event, newValue) => this.setState({ length: newValue })}
-            value={this.state.length}
-            step={1}
+            max={1}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setGridSpacing(newValue));
+            }}
+            value={this.props.dataGrid.spacing}
+            step={0.01}
           />
           <TextField
             floatingLabelText="thickness"
-            onChange={(event, newValue) => this.setState({ thickness: newValue })}
-            value={this.state.thickness}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setGridThickness(newValue));
+            }}
+            value={this.props.dataGrid.grid.width}
             // defaultValue={1}
           />
           <Slider
             min={1}
             max={10}
-            // onChange={(event, newValue) => {
-            //   this.setState({ thickness: newValue });
-            //   this.props.dispatch(actions.setTickThickness(newValue));
-            // }}
-            value={this.state.thickness}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setGridThickness(newValue));
+            }}
+            value={this.props.dataGrid.grid.width}
             step={1}
           />
           <TextField
             floatingLabelText="opacity"
-            onChange={(event, newValue) => this.setState({ opacity: newValue })}
-            value={this.state.opacity}
-            // defaultValue={1}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setGridTransparency(newValue));
+            }}
+            value={this.props.dataGrid.grid.alpha}
           />
           <Slider
             min={0}
             max={255}
-            // onChange={(event, newValue) => {
-            //   // I don't no whether I should change state from mongo
-            //   // That might be annoying
-            //   this.setState({ opacity: newValue });
-            //   this.props.dispatch(actions.setTickTransparency(newValue));
-            // }}
-            value={this.state.opacity}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setGridTransparency(newValue));
+            }}
+            value={this.props.dataGrid.grid.alpha}
             step={1}
           />
         </div>);
@@ -222,7 +223,7 @@ class GridControl extends Component {
         <div>
           <Toggle
             label="Show Axes/Border"
-            defaultToggled={this.props.dataGrid.showAxis}
+            toggled={this.props.dataGrid.showAxis}
             style={{ marginBottom: 16 }}
             onToggle={(event, newValue) => {
               this.props.dispatch(actions.setShowAxis(newValue));
@@ -230,7 +231,7 @@ class GridControl extends Component {
           />
           <Toggle
             label="Use Internal Axes"
-            defaultToggled={this.state.useDefaultCoordinateSystem}
+            toggled={this.state.useDefaultCoordinateSystem}
             style={{ marginBottom: 16 }}
             // onToggle={(event, newValue) => {
             //   this.props.dispatch(actions.setShowTicks(newValue));
@@ -248,28 +249,36 @@ class GridControl extends Component {
           /> */}
           <TextField
             floatingLabelText="thickness"
-            onChange={(event, newValue) => this.setState({ thickness: newValue })}
-            value={this.state.thickness}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setAxesThickness(newValue));
+            }}
+            value={this.props.dataGrid.axes.width}
             // defaultValue={1}
           />
           <Slider
             min={1}
             max={10}
-            onChange={(event, newValue) => this.setState({ thickness: newValue })}
-            value={this.state.thickness}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setAxesThickness(newValue));
+            }}
+            value={this.props.dataGrid.axes.width}
             step={1}
           />
           <TextField
             floatingLabelText="opacity"
-            onChange={(event, newValue) => this.setState({ opacity: newValue })}
-            value={this.state.opacity}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setAxesTransparency(newValue));
+            }}
+            value={this.props.dataGrid.axes.alpha}
             // defaultValue={1}
           />
           <Slider
             min={0}
             max={255}
-            onChange={(event, newValue) => this.setState({ opacity: newValue })}
-            value={this.state.opacity}
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setAxesTransparency(newValue));
+            }}
+            value={this.props.dataGrid.axes.alpha}
             step={1}
           />
           <p>X Axis: </p>
@@ -306,13 +315,19 @@ class GridControl extends Component {
           <NumericInput
             min={0}
             max={20}
-            value={this.state.fontSize}
+            value={this.props.dataGrid.font.size}
+            onChange={(event, value) => {
+              this.props.dispatch(actions.setFontSize(value));
+            }}
             style={numericInputStyle}
           />
           <NumericInput
             min={0}
             max={this.props.dataGrid.decimalsMax}
-            value={this.state.precision}
+            value={this.props.dataGrid.decimals}
+            onChange={(event, value) => {
+              this.props.dispatch(actions.setLabelDecimals(value));
+            }}
             style={numericInputStyle}
           />
           <p>Left: </p>
@@ -350,7 +365,7 @@ class GridControl extends Component {
         (<div>
           <Toggle
             label="Show Ticks"
-            defaultToggled={this.props.dataGrid.showTicks}
+            toggled={this.props.dataGrid.showTicks}
             style={{ marginBottom: 16 }}
             onToggle={(event, newValue) => {
               this.props.dispatch(actions.setShowTicks(newValue));
