@@ -212,9 +212,6 @@ class MainPage extends Component {
           // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
         />
-        <div id="hid-box" className="hide">
-          {content}
-        </div>
         <div className="layout-fill">
           <Topbar style={toolbarStyle} />
           <LayoutWrapper
@@ -267,6 +264,9 @@ class MainPage extends Component {
               {midPanel}
             </div>
           </LayoutWrapper>
+        </div>
+        <div id="hid-box" className="hide">
+          {content}
         </div>
       </div>
     );

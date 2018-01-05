@@ -36,36 +36,41 @@ export default class ImageSettings extends Component {
     };
     // const grid = <GridControl option={this.state.subOption} />;
     return (
-      <div>
-        <Paper style={style}>
-          <Menu
-            onChange={(event, value) => { this.setOption(value); }}
-          >
-            {/* <MenuItem
-              primaryText="grid"
-              rightIcon={<ArrowDropRight />}
-              menuItems={[
-                <GridControl getContent={this.getContent} />,
-              ]}
-            /> */}
-            <MenuItem
-              primaryText="grid"
-              rightIcon={<ArrowDropRight />}
-              value="grid"
-              menuItems={[
-                <MenuItem primaryText="canvas" onClick={() => { this.setSubOption('canvas'); }} />,
-                <MenuItem primaryText="grid" onClick={() => { this.setSubOption('grid'); }} />,
-                <MenuItem primaryText="axes/border" onClick={() => { this.setSubOption('axes'); }} />,
-                <MenuItem primaryText="labels" onClick={() => { this.setSubOption('labels'); }} />,
-                <MenuItem primaryText="ticks" onClick={() => { this.setSubOption('ticks'); }} />,
-              ]}
-            />
-            <MenuItem primaryText="contour" value="contour" />
-            <MenuItem primaryText="stack" />
-            <MenuItem primaryText="regions" />
-          </Menu>
-        </Paper>
-        <div style={style}><GridControl option={this.state.subOption} /></div>
+      <div className="test2">
+        <div className="test3">
+          <div className="test4">
+            <Menu
+              onChange={(event, value) => { this.setOption(value); }}
+            >
+              {/* <MenuItem
+                primaryText="grid"
+                rightIcon={<ArrowDropRight />}
+                menuItems={[
+                  <GridControl getContent={this.getContent} />,
+                ]}
+              /> */}
+              <MenuItem
+                primaryText="grid"
+                rightIcon={<ArrowDropRight />}
+                value="grid"
+                menuItems={[
+                  <MenuItem primaryText="canvas" onClick={() => { this.setSubOption('canvas'); }} />,
+                  <MenuItem primaryText="grid" onClick={() => { this.setSubOption('grid'); }} />,
+                  <MenuItem primaryText="axes/border" onClick={() => { this.setSubOption('axes'); }} />,
+                  <MenuItem primaryText="labels" onClick={() => { this.setSubOption('labels'); }} />,
+                  <MenuItem primaryText="ticks" onClick={() => { this.setSubOption('ticks'); }} />,
+                ]}
+              />
+              <MenuItem primaryText="contour" value="contour" />
+              <MenuItem primaryText="stack" />
+              <MenuItem primaryText="regions" />
+            </Menu>
+          </div>
+          <div className="test5">
+            <GridControl option={this.state.subOption} />
+          </div>
+        </div>
+        {/* <div style={style}><GridControl option={this.state.subOption} /></div> */}
       </div>
     );
   }
