@@ -79,6 +79,21 @@ function setGridThickness(value) {
   };
 }
 
+function setGridSpacing(value) {
+  return (dispatch, getState) => {
+    // Javascipt number is not precise, get fixed decimals to send command
+    // so that the response can find the target callback.
+    value = value.toFixed(2);
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setGridSpacing`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
 function setGridTransparency(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -120,6 +135,18 @@ function setShowAxis(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     const command = `${controllerID}:setShowAxis`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
+
+function setShowInternalLabels(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setShowInternalLabels`;
     api.instance().sendCommand(command, value)
       .then((response) => {
         const { data } = response;
@@ -223,10 +250,12 @@ const actions = {
   setCoordinateSystem,
   setShowGridLines,
   setGridThickness,
+  setGridSpacing,
   setGridTransparency,
   setAxesThickness,
   setAxesTransparency,
   setShowAxis,
+  setShowInternalLabels,
   setAxisX,
   setFontSize,
   setLabelDecimals,

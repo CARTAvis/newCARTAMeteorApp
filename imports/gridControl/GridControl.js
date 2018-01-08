@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Paper from 'material-ui/Paper';
-import { Tabs, Tab } from 'material-ui/Tabs';
-import Checkbox from 'material-ui/Checkbox';
 import Toggle from 'material-ui/Toggle';
 import Slider from 'material-ui/Slider';
 import SelectField from 'material-ui/SelectField';
@@ -45,9 +42,6 @@ class GridControl extends Component {
     if (option) {
       this.setState({ option });
     }
-    // if (nextProps.dataGrid.skyCS) {
-    //   this.setState({ coordinateSystem: nextProps.dataGrid.skyCS });
-    // }
     if (nextProps.dataGrid.supportedCS) {
       const supportedCS = nextProps.dataGrid.supportedCS;
       for (let i = 0; i < supportedCS.length; i += 1) {
@@ -66,12 +60,6 @@ class GridControl extends Component {
         }));
       }
     }
-    // if (nextProps.dataGrid.xAxis || nextProps.dataGrid.yAxis) {
-    //   this.setState({
-    //     xValue: nextProps.dataGrid.xAxis,
-    //     yValue: nextProps.dataGrid.yAxis,
-    //   });
-    // }
     if (this.props.dataGrid.labelFormats) {
       console.log(this.props.dataGrid.labelFormats.left);
     }
@@ -88,9 +76,6 @@ class GridControl extends Component {
     <MenuItem value="Default" primaryText="Default" />
     <MenuItem value="No Label" primaryText="No Label" />
   </div>)
-  // handleCoordinateSystemChange = (event, index, value) => {
-  //   this.props.dispatch(actions.setCoordinateSystem(value));
-  // }
   handleXValChange = (event, index, value) => {
     // this.setState({ xValue: value });
     this.props.dispatch(actions.setAxisX(value));
@@ -170,10 +155,11 @@ class GridControl extends Component {
             }}
           />
           <TextField
-            floatingLabelText="length"
-            onChange={(event, newValue) => this.setState({ length: newValue })}
-            value={this.state.length}
-            // defaultValue={}
+            floatingLabelText="spacing"
+            onChange={(event, newValue) => {
+              this.props.dispatch(actions.setGridSpacing(newValue));
+            }}
+            value={this.props.dataGrid.spacing}
           />
           <Slider
             min={0}
@@ -231,22 +217,12 @@ class GridControl extends Component {
           />
           <Toggle
             label="Use Internal Axes"
-            toggled={this.state.useDefaultCoordinateSystem}
+            toggled={this.props.dataGrid.showInternalLabels}
             style={{ marginBottom: 16 }}
-            // onToggle={(event, newValue) => {
-            //   this.props.dispatch(actions.setShowTicks(newValue));
-            // }}
+            onToggle={(event, newValue) => {
+              this.props.dispatch(actions.setShowInternalLabels(newValue));
+            }}
           />
-          {/* <Checkbox
-            label="Axes/Border"
-            style={{ width: 150 }}
-            defaultChecked={this.props.dataGrid.showAxis}
-          />
-          <Checkbox
-            label="Internal Axes"
-            style={{ width: 150 }}
-            defaultChecked={this.props.dataGrid.showInternalLabels}
-          /> */}
           <TextField
             floatingLabelText="thickness"
             onChange={(event, newValue) => {
