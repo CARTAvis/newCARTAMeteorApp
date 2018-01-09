@@ -1,5 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// import React from 'react';
+import React, { Component } from 'react';
+import * as PropTypes from "prop-types";
+// import PropTypes from 'prop-types';
 import Pane from './Pane';
 import '../stylesheets/index.css';
 
@@ -18,7 +20,7 @@ function clearSelection() {
 
 const DEFAULT_SPLITTER_SIZE = 4;
 
-class SplitterLayout extends React.Component {
+class SplitterLayout extends Component {
   constructor(props) {
     super(props);
     this.handleResize = this.handleResize.bind(this);

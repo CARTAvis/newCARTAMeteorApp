@@ -1,10 +1,12 @@
+
 {
-  "module": "commonjs",
-  "target": "es5",
-  "moduleResolution": "node",
-  "experimentalDecorators": true,
-  "emitDecoratorMetadata": true,
-  "sourceMap": true,
-  "allowJs": true,
-  "types": ["meteor-typings"]
+    "compilerOptions": {
+        "target": "es6",
+        "allowJs": true,
+        "jsx": "preserve",
+        "moduleResolution": "node",
+        "types": [
+            "node"
+         ]
+    }
 }
