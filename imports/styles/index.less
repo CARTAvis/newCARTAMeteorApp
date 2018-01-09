@@ -68,16 +68,17 @@ p {
   // margin-top: 0;
   // margin-bottom: 0;
   transition: all .3s ease-out;
-  position: absolute;
+  position: fixed;
   border: 1px solid red;
   bottom: 0;
   width: 600px;
   height: 450px;
+  max-height: 100%;
   z-index: 2;
   left: 50vh;
   background-color: white;
-  overflow-y: scroll;
-  // overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .hide {
   // position: relative;
@@ -90,10 +91,33 @@ p {
   position: absolute;
   overflow: hidden;
 }
-.test {
-  flex-grow: 1;
+.test2 {
+  flex: 1;
+}
+.test3 {
   display: flex;
   flex-direction: row;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.test4 {
+  flex: 1;
+  height: 100vh;
+  border-right: 1px solid red;
+}
+.test5 {
+  flex: 4;
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 350px;
+  overflow-y: scroll;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 // .box:hover > #hid-box {
 //   top: 0;

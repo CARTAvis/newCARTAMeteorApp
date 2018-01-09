@@ -37,7 +37,6 @@ class MainPage extends Component {
       value: 3,
       setting: '',
       open: false,
-      tabs: [],
       settingsArray: [],
     };
   }
@@ -61,7 +60,6 @@ class MainPage extends Component {
     else if (type === 'Image') el = <ImageSettings />;
     // add new settings to a new tab
     this.setState(prevState => ({
-      tabs: prevState.tabs.concat(type),
       settingsArray: prevState.settingsArray.concat({
         type,
         setting: el,
@@ -70,7 +68,7 @@ class MainPage extends Component {
     }));
     // set new settings
     this.setState({ setting: type });
-    if (this.state.tabs.length === 0) {
+    if (this.state.settingsArray.length === 0) {
       // show settings
       this.show();
     }
@@ -80,19 +78,20 @@ class MainPage extends Component {
   }
   removeSetting = (type) => {
     console.log('REMOVING: ', type);
-    if (this.state.tabs.length === 1 && (this.state.tabs[0] === 'Profiler' || this.state.tabs[0] === 'Histogram')) {
+    const arr = this.state.settingsArray;
+    if (arr.length === 1 && (arr[0].type === 'Profiler' || arr[0].type === 'Histogram')) {
       this.hide();
     } else {
       let index = 0;
-      for (let i = 0; i < this.state.tabs.length; i += 1) {
-        if (this.state.tabs[i] === type) {
-          if (i === this.state.tabs.length - 1) index = i - 1;
+      for (let i = 0; i < arr.length; i += 1) {
+        if (arr[i].type === type) {
+          if (i === arr.length - 1) index = i - 1;
           else index = i + 1;
         }
       }
       this.setState(prevState => ({
-        tabs: prevState.tabs.filter(item => item !== type),
-        setting: prevState.tabs[index],
+        settingsArray: prevState.settingsArray.filter(item => item.type !== type),
+        setting: prevState.settingsArray[index].type,
       }));
     }
   }
@@ -116,7 +115,7 @@ class MainPage extends Component {
       // else if (setting === 'Image') return <ImageSettings />;
       for (let i = 0; i < this.state.settingsArray.length; i += 1) {
         if (this.state.settingsArray[i].type === setting) {
-          console.log('KEY: ', this.state.settingsArray[i].key);
+          // console.log('KEY: ', this.state.settingsArray[i].key);
           return this.state.settingsArray[i].setting;
         }
       }
@@ -146,7 +145,7 @@ class MainPage extends Component {
     const box2 = document.getElementById('hid-box');
     box2.className = 'hide';
     this.setState({
-      tabs: [],
+      settingsArray: [],
       setting: '',
     });
   }
@@ -184,9 +183,9 @@ class MainPage extends Component {
         value={this.state.setting}
         onChange={this.settingChanged}
       >
-        {this.state.tabs.map((value, index) =>
-          (<Tab label={value} value={value} key={Math.floor(Math.random() * 100)}>
-            {this.showSetting(value)}
+        {this.state.settingsArray.map(item =>
+          (<Tab label={item.type} value={item.type} key={Math.floor(Math.random() * 100)}>
+            {this.showSetting(item.type)}
           </Tab>),
         )}
       </Tabs>
@@ -201,7 +200,7 @@ class MainPage extends Component {
           label="close"
         />
         {/* {this.state.tabs.length > 1 ? tabs : this.state.first} */}
-        {tabs}
+        {this.state.settingsArray.length > 1 ? tabs : this.showSetting(setting)}
       </div>
     );
     return (
@@ -212,9 +211,6 @@ class MainPage extends Component {
           // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
         />
-        <div id="hid-box" className="hide">
-          {content}
-        </div>
         <div className="layout-fill">
           <Topbar style={toolbarStyle} />
           <LayoutWrapper
@@ -267,6 +263,9 @@ class MainPage extends Component {
               {midPanel}
             </div>
           </LayoutWrapper>
+        </div>
+        <div id="hid-box" className="hide">
+          {content}
         </div>
       </div>
     );
