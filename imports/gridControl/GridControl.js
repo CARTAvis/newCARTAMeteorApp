@@ -20,7 +20,7 @@ class GridControl extends Component {
     super(props);
     this.state = {
       // coordinateSystem: this.props.dataGrid.skyCS,
-      useDefaultCoordinateSystem: true,
+      // useDefaultCoordinateSystem: false,
       coords: [],
       // length: this.props.dataGrid.tickLength,
       thickness: 1,
@@ -126,16 +126,16 @@ class GridControl extends Component {
         />
         <Toggle
           label="Use Default Coordinate System"
-          toggled={this.state.useDefaultCoordinateSystem}
+          toggled={this.props.useDefaultCoordinateSystem}
           style={{ marginBottom: 16 }}
-          // onToggle={(event, newValue) => {
-          //   this.props.dispatch(actions.setShowTicks(newValue));
-          // }}
+          onToggle={(event, newValue) => {
+            this.props.dispatch(actions.setDefaultCoordinateSystem(newValue));
+          }}
         />
         <SelectField
           floatingLabelText="Current Coordinate System"
           value={this.props.dataGrid.skyCS}
-          disabled={this.state.useDefaultCoordinateSystem}
+          disabled={this.props.useDefaultCoordinateSystem}
           onChange={(event, index, value) => {
             this.props.dispatch(actions.setCoordinateSystem(value));
           }}
@@ -420,6 +420,7 @@ class GridControl extends Component {
 
 const mapStateToProps = state => ({
   dataGrid: state.GridDB.DataGrid,
+  useDefaultCoordinateSystem: state.GridDB.useDefaultCoordinateSystem,
 //   animatorTypeList: state.AnimatorDB.animatorTypeList,
 //   currentAnimatorType: state.AnimatorDB.currentAnimatorType,
 });

@@ -8,8 +8,10 @@ import api from '../api/ApiService';
 
 // redux part
 const DATAGRID_CHANGE = 'DATAGRID_CHANGE';
+const SET_USEDEFAULTCS = 'SET_USEDEFAULTCS';
 export const ActionType = {
   DATAGRID_CHANGE,
+  SET_USEDEFAULTCS,
 };
 
 export function setupGridDB() {
@@ -40,6 +42,24 @@ function setShowCoordinateSystem(value) {
         const { data } = response;
         mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
       });
+  };
+}
+
+function setDefaultCoordinateSystem(value) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    if (!value) {
+      mongoUpsert(GridDB, { useDefaultCoordinateSystem: value }, SET_USEDEFAULTCS);
+    } else {
+      const command = `${controllerID}:setCoordinateSystem`;
+      mongoUpsert(GridDB, { useDefaultCoordinateSystem: value }, SET_USEDEFAULTCS);
+      const name = 'Native';
+      api.instance().sendCommand(command, name)
+        .then((response) => {
+          const { data } = response;
+          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+        });
+    }
   };
 }
 
@@ -247,6 +267,7 @@ function setTickThickness(value) {
 const actions = {
   getDataGrid,
   setShowCoordinateSystem,
+  setDefaultCoordinateSystem,
   setCoordinateSystem,
   setShowGridLines,
   setGridThickness,
