@@ -411,6 +411,7 @@ class Region extends Component {
                   }
                 }}
                 onMouseMove={(e) => {
+                  window.onwheel = () => true;
                   if (this.state.regionListener) {
                     this.onMouseMove(e.evt);
                   }
@@ -428,9 +429,14 @@ class Region extends Component {
                 }}
                 onWheel={(e) => {
                   // console.log('ONWHEEL ', e);
-                  if (this.lastCall + 200 < Date.now()) {
-                    this.lastCall = Date.now();
-                    this.panZoom(e.evt);
+                  if (this.props.stack) {
+                    if (this.props.stack.layers.length > 0) {
+                      window.onwheel = () => false;
+                      if (this.lastCall + 200 < Date.now()) {
+                        this.lastCall = Date.now();
+                        this.panZoom(e.evt);
+                      }
+                    }
                   }
                 }}
               >

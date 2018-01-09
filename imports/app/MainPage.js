@@ -70,7 +70,7 @@ class MainPage extends Component {
   removeSetting = (type) => {
     if (this.state.tabs.length === 1) {
       this.hide();
-    } else {
+    } else if (arr.length > 0) {
       let index = 0;
       for (let i = 0; i < this.state.tabs.length; i += 1) {
         if (this.state.tabs[i] === type) {
