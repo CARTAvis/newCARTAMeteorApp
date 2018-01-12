@@ -19,18 +19,7 @@ class GridControl extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // coordinateSystem: this.props.dataGrid.skyCS,
-      // useDefaultCoordinateSystem: false,
-      coords: [],
-      // length: this.props.dataGrid.tickLength,
-      thickness: 1,
-      opacity: 255,
-      axes: [],
       family: this.props.dataGrid.font.family,
-      // fontSize: this.props.dataGrid.font.size,
-      // precision: this.props.dataGrid.decimals,
-      // xValue: this.props.dataGrid.xAxis,
-      // yValue: this.props.dataGrid.yAxis,
       labelLeft: this.props.dataGrid.labelFormats.left.format,
       labelRight: this.props.dataGrid.labelFormats.right.format,
       labelTop: this.props.dataGrid.labelFormats.top.format,
@@ -41,24 +30,6 @@ class GridControl extends Component {
     const option = nextProps.option;
     if (option) {
       this.setState({ option });
-    }
-    if (nextProps.dataGrid.supportedCS) {
-      const supportedCS = nextProps.dataGrid.supportedCS;
-      for (let i = 0; i < supportedCS.length; i += 1) {
-        this.setState(prevState => ({
-          coords: prevState.coords.concat(
-            <MenuItem value={supportedCS[i]} primaryText={supportedCS[i]} key={i} />),
-        }));
-      }
-    }
-    if (nextProps.dataGrid.supportedAxes) {
-      const supportedAxes = nextProps.dataGrid.supportedAxes;
-      for (let i = 0; i < supportedAxes.length; i += 1) {
-        this.setState(prevState => ({
-          axes: prevState.axes.concat(
-            <MenuItem value={supportedAxes[i]} primaryText={supportedAxes[i]} key={i} />),
-        }));
-      }
     }
     if (this.props.dataGrid.labelFormats) {
       console.log(this.props.dataGrid.labelFormats.left);
@@ -76,13 +47,6 @@ class GridControl extends Component {
     <MenuItem value="Default" primaryText="Default" />
     <MenuItem value="No Label" primaryText="No Label" />
   </div>)
-  handleXValChange = (event, index, value) => {
-    // this.setState({ xValue: value });
-    this.props.dispatch(actions.setAxisX(value));
-  }
-  handleYValChange = (event, index, value) => {
-    this.setState({ yValue: value });
-  }
   handleFontChange = (event, index, value) => {
     this.setState({ family: value });
   }
@@ -114,6 +78,13 @@ class GridControl extends Component {
     let content = null;
     // console.log('INSIDE DISPLAY');
     if (this.state.option === 'canvas') {
+      const coordinateSystems = [];
+      const supportedCS = this.props.dataGrid.supportedCS;
+      for (let i = 0; i < supportedCS.length; i += 1) {
+        coordinateSystems.push(
+          <MenuItem value={supportedCS[i]} primaryText={supportedCS[i]} key={i} />);
+      }
+
       content =
       (<div>
         <Toggle
@@ -140,7 +111,7 @@ class GridControl extends Component {
             this.props.dispatch(actions.setCoordinateSystem(value));
           }}
         >
-          {this.state.coords.map(item => item)}
+          {coordinateSystems}
         </SelectField>
       </div>);
     } else if (this.state.option === 'grid') {
@@ -205,6 +176,13 @@ class GridControl extends Component {
           />
         </div>);
     } else if (this.state.option === 'axes') {
+      const axes = [];
+      const supportedAxes = this.props.dataGrid.supportedAxes;
+      for (let i = 0; i < supportedAxes.length; i += 1) {
+        axes.push(
+          <MenuItem value={supportedAxes[i]} primaryText={supportedAxes[i]} key={i} />)
+      }
+
       content = (
         <div>
           <Toggle
@@ -257,21 +235,24 @@ class GridControl extends Component {
             value={this.props.dataGrid.axes.alpha}
             step={1}
           />
-          <p>X Axis: </p>
-          <DropDownMenu
+          <SelectField
+            floatingLabelText="X Axis"
             value={this.props.dataGrid.xAxis}
-            onChange={this.handleXValChange}
+            onChange={(event, index, value) => {
+              this.props.dispatch(actions.setAxisX(value));
+            }}
           >
-            {this.state.axes.map(item => item)}
-          </DropDownMenu>
-          <p>Y Axis: </p>
-          <DropDownMenu
+            {axes}
+          </SelectField>
+          <SelectField
+            floatingLabelText="Y Axis"
             value={this.props.dataGrid.yAxis}
-            onChange={this.handleYValChange}
+            onChange={(event, index, value) => {
+              this.props.dispatch(actions.setAxisY(value));
+            }}
           >
-            {this.state.axes.map(item => item)}
-          </DropDownMenu>
-
+            {axes}
+          </SelectField>
         </div>
       );
     } else if (this.state.option === 'labels') {
@@ -281,12 +262,15 @@ class GridControl extends Component {
         <div>
           <p>Family: </p>
           <DropDownMenu
-            value={this.state.family}
-            onChange={this.handleFontChange}
+            value={this.props.dataGrid.font.family}
+            onChange={(event, value) => {
+              this.props.dispatch(actions.setFontFamily(value));
+            }}
           >
-            <MenuItem value="Helvetica" primaryText="Helvetica" />
-            <MenuItem value="Times New Roman" primaryText="Times New Roman" />
-            <MenuItem value="Courier New" primaryText="Courier New" />
+            {/* TODO: the function is unfinished */}
+            <MenuItem value={'Helvetica'} primaryText="Helvetica" key={0} />
+            <MenuItem value={'Times New Roman'} primaryText="Times New Roman" key={1} />
+            <MenuItem value={'Courier New'} primaryText="Courier New" key={2} />
           </DropDownMenu>
           <NumericInput
             min={0}
@@ -308,7 +292,7 @@ class GridControl extends Component {
           />
           <p>Left: </p>
           <DropDownMenu
-            value={this.state.labelLeft}
+            value={this.props.dataGrid.labelFormats.left.format}
             onChange={this.handleLabelLeft}
           >
             {LeftRightMenu}

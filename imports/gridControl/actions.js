@@ -126,7 +126,6 @@ function setGridTransparency(value) {
   };
 }
 
-
 function setAxesThickness(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -189,6 +188,35 @@ function setAxisX(name) {
           mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
         });
     }
+  };
+}
+
+function setAxisY(name) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const oldName = getState().GridDB.DataGrid.yAxis;
+    if (oldName !== name) {
+      const command = `${controllerID}:setAxisY`;
+      api.instance().sendCommand(command, name)
+        .then((response) => {
+          const { data } = response;
+          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+        });
+    }
+  };
+}
+
+function setFontFamily(value) {
+  // TODO: the function is unfinished
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setFontFamily`;
+    console.log('+++++++++++++++++++++++++++++++ The command value of setFontFamily', value);
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
   };
 }
 
@@ -278,6 +306,8 @@ const actions = {
   setShowAxis,
   setShowInternalLabels,
   setAxisX,
+  setAxisY,
+  setFontFamily,
   setFontSize,
   setLabelDecimals,
   setShowTicks,

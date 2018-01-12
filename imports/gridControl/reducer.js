@@ -1,6 +1,9 @@
 import { ActionType } from './actions';
 
-const defaultState = { data: {}, useDefaultCoordinateSystem: false };
+const defaultState = {
+  data: {},
+  useDefaultCoordinateSystem: false,
+};
 const GridDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.DATAGRID_CHANGE: {
