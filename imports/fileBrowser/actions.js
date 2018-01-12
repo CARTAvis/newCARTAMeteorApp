@@ -208,7 +208,9 @@ function selectFileToOpen(path) {
           const len = stack.layers.length;
           if (len > 0) {
             const lastLayer = stack.layers[len - 1];
-            if (lastLayer.name === fileName) {
+            const lastLayerNameArray = stack.layers[len - 1].name.split('/');
+            const lastLayerName = lastLayerNameArray[lastLayerNameArray.length - 1];
+            if (lastLayerName === fileName) {
               // const zoomLevel = 3;
               const viewWidth = 482;
               const viewHeight = 477;
