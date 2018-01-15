@@ -36,28 +36,31 @@ class Colormap extends Component {
           <Layer> */
       <Group>
         <Text
-          x={482}
+          // x={482}
           y={310}
           width={50}
           text={min}
         />
         <Text
-          x={482}
+          // x={482}
           y={0}
           width={50}
           text={max}
         />
         <Text
-          x={532}
-          y={0}
+          // x={532}
+          y={320}
           width={100}
+          fill="white"
           text={`Color Name: ${colorMapName}`}
         />
         <Rect
-          x={482}
+          // x={482}
           y={10}
           width={50}
           height={300}
+          fill="blue"
+          stroke="white"
           fillLinearGradientStartPoint={{ x: 0, y: 300 }}
           fillLinearGradientEndPoint={{ x: 0, y: 20 }}
           fillLinearGradientColorStops={newStops}

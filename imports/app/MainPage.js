@@ -26,9 +26,10 @@ import FeatureContainer from '../featureContainer/FeatureContainer';
 import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import SideMenu from './SideMenu';
-import Topbar from './Topbar';
+import Topbar from '../topbar/Topbar';
 // import Region from './Region';
 import Region from '../region/Region';
+import Colormap from '../colormap/Colormap';
 
 class MainPage extends Component {
   constructor(props) {
@@ -70,7 +71,7 @@ class MainPage extends Component {
   removeSetting = (type) => {
     if (this.state.tabs.length === 1) {
       this.hide();
-    } else if (arr.length > 0) {
+    } else {
       let index = 0;
       for (let i = 0; i < this.state.tabs.length; i += 1) {
         if (this.state.tabs[i] === type) {

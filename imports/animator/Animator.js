@@ -140,19 +140,52 @@ class Animator extends Component {
             <Tab label={stokesLabel} value={Stokes} />
             <Tab label={regionLabel} value={Region} />
           </Tabs>
-          <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
-            <DropDownMenu
-              value={currentSelection.frame + 1}
-              underlineStyle={{ color: 'black' }}
-              onChange={this.changeFrame}
-            >
-              {/* <MenuItem value={1} primaryText="Image 0" /> */}
-              {menuItems}
-            </DropDownMenu>
-            {/* <p>&#8804; {currentSelection.frameEnd}</p> */}
+          <div style={{ display: 'flex', flexDirection: 'column', height: '20%' }}>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ flex: 1 }}>
+                <DropDownMenu
+                  value={currentSelection.frame + 1}
+                  underlineStyle={{ color: 'black' }}
+                  onChange={this.changeFrame}
+                >
+                  {/* <MenuItem value={1} primaryText="Image 0" /> */}
+                  {menuItems}
+                </DropDownMenu>
+                {/* <p>&#8804; {currentSelection.frameEnd}</p> */}
+              </div>
+              <div style={{ flex: 4 }}>
+                <IconButton style={{ transform: 'rotate(180deg)' }}>
+                  <PlayForward />
+                </IconButton>
+                <IconButton>
+                  <SkipPrev />
+                </IconButton>
+                <IconButton>
+                  <Stop />
+                </IconButton>
+                <IconButton>
+                  <SkipNext />
+                </IconButton>
+                <IconButton>
+                  <PlayForward />
+                </IconButton>
+              </div>
+            </div>
+            {/* <div style={{ flex: 2 }}>
+              <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <div>
+                  <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameStartUser + 1} />
+                </div>
+                <div>
+                  <Slider sliderStyle={{ width: '300px' }} step={1} min={currentSelection.frameEnd > 1 ? 1 : null} max={currentSelection.frameEnd} value={currentSelection.frame + 1} onChange={this.handleSlider} />
+                </div>
+                <div>
+                  <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameEndUser + 1} />
+                </div>
+              </div>
+            </div> */}
           </div>
-
-          <div style={{ display: 'flex', flexDirection: 'row', height: '20%' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', height: '50%', width: '40%' }}>
             <div style={{ marginTop: '15px' }}>
               <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameStartUser + 1} />
             </div>
@@ -163,29 +196,11 @@ class Animator extends Component {
               <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameEndUser + 1} />
             </div>
           </div>
-          <div style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', height: '50%', margin: 'auto', width: '40%' }}>
-            <IconButton style={{ transform: 'rotate(180deg)' }}>
-              <PlayForward />
-            </IconButton>
-            <IconButton>
-              <SkipPrev />
-            </IconButton>
-            <IconButton>
-              <Stop />
-            </IconButton>
-            <IconButton>
-              <SkipNext />
-            </IconButton>
-            <IconButton>
-              <PlayForward />
-            </IconButton>
-          </div>
         </Paper>
       </div>
     );
   }
 }
-
 const mapStateToProps = state => ({
   animatorTypeList: state.AnimatorDB.animatorTypeList,
   currentAnimatorType: state.AnimatorDB.currentAnimatorType,

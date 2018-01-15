@@ -21,7 +21,7 @@ const RESHAPE = 'RESHAPE';
 const MOVERECT = 'MOVERECT';
 const RESIZERECT = 'RESIZERECT';
 const DELETE = 'DELETE';
-
+const REGION_INIT = 'REGION_INIT';
 export function setupRegionDB() {
   // return (dispatch) => {
 
@@ -227,6 +227,11 @@ function selectRegion(x, y) {
       });
   };
 }
+function initRegion() {
+  return () => {
+    mongoUpsert(RegionDB, { init: false }, REGION_INIT);
+  };
+}
 const actions = {
   drawShape,
   setMouseIsDown,
@@ -237,6 +242,7 @@ const actions = {
   resizeRect,
   selectRegion,
   updateRegionOnZoom,
+  initRegion,
 };
 
 export default actions;

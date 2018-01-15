@@ -76,19 +76,6 @@ export function parseImageToMongo(buffer) {
     console.log('get dummy image response');
   }
 }
-function setZoomLevel(zoomLevel, layerID) {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    // console.log('controllerID: ', controllerID);
-    // console.log('STATE: ', getState());
-    const cmd = `${controllerID}:${Commands.SET_ZOOM_LEVEL}`;
-    const arg = `${zoomLevel} ${layerID}`;
-
-    api.instance().sendCommand(cmd, arg, (resp) => {
-      console.log('get set zoom level result:', resp);
-    });
-  };
-}
 function regionZoom() {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -100,6 +87,20 @@ function regionZoom() {
         mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
         dispatch(regionActions.updateRegionOnZoom());
       });
+  };
+}
+function setZoomLevel(zoomLevel, layerID) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    // console.log('controllerID: ', controllerID);
+    // console.log('STATE: ', getState());
+    const cmd = `${controllerID}:${Commands.SET_ZOOM_LEVEL}`;
+    const arg = `${zoomLevel} ${layerID}`;
+
+    api.instance().sendCommand(cmd, arg, (resp) => {
+      console.log('get set zoom level result:', resp);
+      dispatch(regionZoom());
+    });
   };
 }
 function zoom(zoomFactor) {
