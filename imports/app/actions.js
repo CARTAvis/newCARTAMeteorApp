@@ -12,6 +12,8 @@ import { setupProfilerDB } from '../profiler/actions';
 import { setupRegionDB } from '../region/actions';
 import { setupAnimatorDB } from '../animator/actions';
 import { setupColormapDB } from '../colormap/actions';
+import { setupGridDB } from '../gridControl/actions';
+
 import { setupTopbarDB } from '../topbar/actions';
 import { storeReduxDispatch } from '../api/MongoHelper';
 
@@ -65,6 +67,7 @@ function setupComponentsDB() {
   setupRegionDB();
   setupAnimatorDB();
   setupColormapDB();
+  setupGridDB();
   setupTopbarDB();
 }
 

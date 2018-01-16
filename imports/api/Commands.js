@@ -20,6 +20,7 @@ const PAN_RESET = 'resetPan';
 const INPUT_EVENT = 'inputEvent';
 const SET_REGION_TYPE = 'setRegionType';
 const REGISTER_REGION_CONTROLS = 'registerRegionControls';
+const REGISTER_GRID_CONTROLS = 'registerGridControls';
 const CLOSE_REGION = 'closeRegion';
 const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
 const REGION_ZOOM = 'regionZoom';
@@ -42,6 +43,7 @@ const Commands = {
   INPUT_EVENT,
   SET_REGION_TYPE,
   REGISTER_REGION_CONTROLS,
+  REGISTER_GRID_CONTROLS,
   CLOSE_REGION,
   GET_COLORMAP_All_DATA,
   REGION_ZOOM,

@@ -1,5 +1,6 @@
 import { ImageViewerDB } from '../api/ImageViewerDB';
 import { RegionDB } from '../api/RegionDB';
+import { GridDB } from '../api/GridDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
@@ -31,7 +32,7 @@ function parseReigsterViewResp(resp) {
 
   // step1: save controllerID to mongodb
   mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
-  const command = `${controllerID}:${Commands.REGISTER_REGION_CONTROLS}`;
+  let command = `${controllerID}:${Commands.REGISTER_REGION_CONTROLS}`;
   api.instance().sendCommand(command, '')
     .then((response) => {
       setRegionControlsId(response);

@@ -8,8 +8,6 @@ import { Card, CardText } from 'material-ui/Card';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
-// import Colormap from '../colormap/Colormap';
-
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 // import { connect } from 'react-redux';
@@ -25,6 +23,7 @@ import Animator from '../animator/Animator';
 import FeatureContainer from '../featureContainer/FeatureContainer';
 import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
+import ImageSettings from './ImageSettings';
 import SideMenu from './SideMenu';
 import Topbar from '../topbar/Topbar';
 // import Region from './Region';
@@ -39,7 +38,7 @@ class MainPage extends Component {
       value: 3,
       setting: '',
       open: false,
-      tabs: [],
+      settingsArray: [],
     };
   }
   // define callback
@@ -56,11 +55,21 @@ class MainPage extends Component {
     this.setState({ secondColumnWidth: second });
   }
   setSetting = (type) => {
+    let el = null;
+    if (type === 'Profiler') el = <ProfilerSettings />;
+    else if (type === 'Histogram') el = <HistogramSettings />;
+    else if (type === 'Image') el = <ImageSettings />;
     // add new settings to a new tab
-    this.setState(prevState => ({ tabs: prevState.tabs.concat(type) }));
+    this.setState(prevState => ({
+      settingsArray: prevState.settingsArray.concat({
+        type,
+        setting: el,
+        key: Math.floor(Math.random() * 100),
+      }),
+    }));
     // set new settings
     this.setState({ setting: type });
-    if (this.state.tabs.length === 0) {
+    if (this.state.settingsArray.length === 0) {
       // show settings
       this.show();
     }
@@ -69,19 +78,21 @@ class MainPage extends Component {
     this.setState({ setting: value });
   }
   removeSetting = (type) => {
-    if (this.state.tabs.length === 1) {
+    console.log('REMOVING: ', type);
+    const arr = this.state.settingsArray;
+    if (arr.length === 1 && (arr[0].type === 'Profiler' || arr[0].type === 'Histogram')) {
       this.hide();
     } else {
       let index = 0;
-      for (let i = 0; i < this.state.tabs.length; i += 1) {
-        if (this.state.tabs[i] === type) {
-          if (i === this.state.tabs.length - 1) index = i - 1;
+      for (let i = 0; i < arr.length; i += 1) {
+        if (arr[i].type === type) {
+          if (i === arr.length - 1) index = i - 1;
           else index = i + 1;
         }
       }
       this.setState(prevState => ({
-        tabs: prevState.tabs.filter(item => item !== type),
-        setting: prevState.tabs[index],
+        settingsArray: prevState.settingsArray.filter(item => item.type !== type),
+        setting: prevState.settingsArray[index].type,
       }));
     }
   }
@@ -100,9 +111,15 @@ class MainPage extends Component {
   }
   showSetting = (setting) => {
     if (setting) {
-      if (setting === 'Profiler') return <ProfilerSettings />;
-      else if (setting === 'Histogram') return <HistogramSettings />;
-      return 0;
+      // if (setting === 'Profiler') return <ProfilerSettings />;
+      // else if (setting === 'Histogram') return <HistogramSettings />;
+      // else if (setting === 'Image') return <ImageSettings />;
+      for (let i = 0; i < this.state.settingsArray.length; i += 1) {
+        if (this.state.settingsArray[i].type === setting) {
+          // console.log('KEY: ', this.state.settingsArray[i].key);
+          return this.state.settingsArray[i].setting;
+        }
+      }
     }
     return '';
   }
@@ -128,7 +145,10 @@ class MainPage extends Component {
   hide = () => {
     const box2 = document.getElementById('hid-box');
     box2.className = 'hide';
-    this.setState({ tabs: [] });
+    this.setState({
+      settingsArray: [],
+      setting: '',
+    });
   }
   render() {
     // console.log('IN RENDER');
@@ -164,22 +184,25 @@ class MainPage extends Component {
         value={this.state.setting}
         onChange={this.settingChanged}
       >
-        {this.state.tabs.map(value => <Tab label={value} value={value} key={Math.floor(Math.random() * 100)} />)}
+        {this.state.settingsArray.map(item =>
+          (<Tab label={item.type} value={item.type} key={Math.floor(Math.random() * 100)}>
+            {this.showSetting(item.type)}
+          </Tab>),
+        )}
       </Tabs>
     );
     const content = (
-      <Card
-        style={{ width: 600, height: 450 }}
-      >
+      // <Card
+      //   style={{ width: 600 }}
+      // >
+      <div>
         <RaisedButton
           onClick={this.hide}
           label="close"
         />
-        {this.state.tabs.length > 1 ? tabs : false}
-        <CardText>
-          {this.showSetting(setting)}
-        </CardText>
-      </Card>
+        {/* {this.state.tabs.length > 1 ? tabs : this.state.first} */}
+        {this.state.settingsArray.length > 1 ? tabs : this.showSetting(setting)}
+      </div>
     );
     return (
       <div className="layout-row">
@@ -189,9 +212,6 @@ class MainPage extends Component {
           // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
         />
-        <div id="hid-box" className="hide">
-          {content}
-        </div>
         <div className="layout-fill">
           <Topbar style={toolbarStyle} />
           <LayoutWrapper
@@ -219,8 +239,11 @@ class MainPage extends Component {
                 <Region />
                 <Region />
               </div> */}
-              <Region />
-              {/* <br /> */}
+              <Region
+                setSetting={this.setSetting}
+                removeSetting={this.removeSetting}
+              />
+              <br />
               <Animator />
             </div>
             <div>
@@ -238,11 +261,12 @@ class MainPage extends Component {
                   <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
                 </RaisedButton>
               </div>
-              {/* experimental place for colormap */}
-              {/* <Colormap /> */}
               {midPanel}
             </div>
           </LayoutWrapper>
+        </div>
+        <div id="hid-box" className="hide">
+          {content}
         </div>
       </div>
     );
