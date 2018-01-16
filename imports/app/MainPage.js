@@ -220,7 +220,7 @@ class MainPage extends Component {
                 <Region />
               </div> */}
               <Region />
-              <br />
+              {/* <br /> */}
               <Animator />
             </div>
             <div>

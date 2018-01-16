@@ -403,7 +403,6 @@ class Region extends Component {
       />
     );
     return (
-
       <div>
         <ContextMenuTrigger id="menu2">
           <div
@@ -487,26 +486,30 @@ class Region extends Component {
               </Layer>
             </Stage>
             <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
-              <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-              <button onClick={this.zoomIn} className="zoom" style={{ width: '24px', padding: 0 }}>+</button>
-              <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-              <button onClick={this.zoomOut} className="zoom" style={{ width: '24px', padding: 0 }}>-</button>
-              <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-              <button onClick={this.setSetting} className="zoom" style={{ width: '24px', padding: 0 }}>
-                <img style={{ width: '16px', height: '16px' }} src="/images/tools.png" alt="" />
+              <Divider className="divider" />
+              <button onClick={this.zoomIn} className="zoom">+</button>
+              <Divider className="divider" />
+              <button onClick={this.zoomOut} className="zoom">-</button>
+              <Divider className="divider" />
+              <button onClick={this.setSetting} className="zoom">
+                <img className="iconImg" src="/images/tools.png" alt="" />
+              </button>
+              <Divider className="divider" />
+              <button onClick={this.handleTouchTap} className="zoom">
+                <img className="iconImg" src="/images/save.png" alt="" />
               </button>
             </Card>
             <Card style={{ width: '24px', position: 'absolute', bottom: 0 }} >
-              <button onClick={this.panReset} className="zoom" style={{ width: '24px', padding: 0 }}>
-                <img style={{ width: '16px', height: '16px' }} src="/images/pan_reset.png" alt="" />
+              <button onClick={this.panReset} className="zoom">
+                <img className="iconImg" src="/images/pan_reset.png" alt="" />
               </button>
-              <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-              <button onClick={this.zoomReset} className="zoom" style={{ width: '24px', padding: 0 }}>
-                <img style={{ width: '16px', height: '16px' }} src="/images/zoom_reset.png" alt="" />
+              <Divider className="divider" />
+              <button onClick={this.zoomReset} className="zoom">
+                <img className="iconImg" src="/images/zoom_reset.png" alt="" />
               </button>
-              <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-              <button onClick={this.panZoomReset} className="zoom" style={{ width: '24px', padding: 0 }}>
-                <img style={{ width: '18px', height: '18px' }} src="/images/panzoom_reset.png" alt="" />
+              <Divider className="divider" />
+              <button onClick={this.panZoomReset} className="zoom">
+                <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
               </button>
             </Card>
             <br />
@@ -517,9 +520,6 @@ class Region extends Component {
               <div id="cursorInfo" />
             </CardText>
           </Card>
-          <RaisedButton label="rectangle" onClick={this.init} />
-          <RaisedButton label="delete" onClick={this.delete} />
-          <RaisedButton label="save" onClick={this.handleTouchTap} />
           <Popover
             open={this.state.open}
             anchorEl={this.state.anchorEl}
