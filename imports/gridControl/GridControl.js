@@ -20,10 +20,6 @@ class GridControl extends Component {
     super(props);
     this.state = {
       family: this.props.dataGrid.font.family,
-      labelLeft: this.props.dataGrid.labelFormats.left.format,
-      labelRight: this.props.dataGrid.labelFormats.right.format,
-      labelTop: this.props.dataGrid.labelFormats.top.format,
-      labelBottom: this.props.dataGrid.labelFormats.bottom.format,
     };
   }
   componentWillReceiveProps = (nextProps) => {
@@ -35,44 +31,8 @@ class GridControl extends Component {
       console.log(this.props.dataGrid.labelFormats.left);
     }
   }
-  setLabelLeftRightOptions = () => (<div>
-    <MenuItem value="Hr:Min:Sec" primaryText="Hr:Min:Sec" />
-    <MenuItem value="Decimal Degrees" primaryText="Decimal Degrees" />
-    <MenuItem value="Default" primaryText="Default" />
-    <MenuItem value="No Label" primaryText="No Label" />
-  </div>)
-  setLabelTopBottomOptions = () => (<div>
-    <MenuItem value="Deg:Min:Sec" primaryText="Deg:Min:Sec" />
-    <MenuItem value="Decimal Degrees" primaryText="Decimal Degrees" />
-    <MenuItem value="Default" primaryText="Default" />
-    <MenuItem value="No Label" primaryText="No Label" />
-  </div>)
   handleFontChange = (event, index, value) => {
     this.setState({ family: value });
-  }
-  handleLabelLeft = (event, index, value) => {
-    if (this.state.labelRight !== 'No Label') {
-      this.setState({ labelRight: 'No Label' });
-    }
-    this.setState({ labelLeft: value });
-  }
-  handleLabelRight = (event, index, value) => {
-    if (this.state.labelLeft !== 'No Label') {
-      this.setState({ labelLeft: 'No Label' });
-    }
-    this.setState({ labelRight: value });
-  }
-  handleLabelTop = (event, index, value) => {
-    if (this.state.labelBottom !== 'No Label') {
-      this.setState({ labelBottom: 'No Label' });
-    }
-    this.setState({ labelTop: value });
-  }
-  handleLabelBottom = (event, index, value) => {
-    if (this.state.labelTop !== 'No Label') {
-      this.setState({ labelTop: 'No Label' });
-    }
-    this.setState({ labelBottom: value });
   }
   display = () => {
     let content = null;
@@ -180,7 +140,7 @@ class GridControl extends Component {
       const supportedAxes = this.props.dataGrid.supportedAxes;
       for (let i = 0; i < supportedAxes.length; i += 1) {
         axes.push(
-          <MenuItem value={supportedAxes[i]} primaryText={supportedAxes[i]} key={i} />)
+          <MenuItem value={supportedAxes[i]} primaryText={supportedAxes[i]} key={i} />);
       }
 
       content = (
@@ -256,21 +216,19 @@ class GridControl extends Component {
         </div>
       );
     } else if (this.state.option === 'labels') {
-      const LeftRightMenu = this.setLabelLeftRightOptions();
-      const TopBottomMenu = this.setLabelTopBottomOptions();
       content = (
         <div>
           <p>Family: </p>
           <DropDownMenu
             value={this.props.dataGrid.font.family}
-            onChange={(event, value) => {
+            onChange={(event, key, value) => {
               this.props.dispatch(actions.setFontFamily(value));
             }}
           >
             {/* TODO: the function is unfinished */}
-            <MenuItem value={'Helvetica'} primaryText="Helvetica" key={0} />
-            <MenuItem value={'Times New Roman'} primaryText="Times New Roman" key={1} />
-            <MenuItem value={'Courier New'} primaryText="Courier New" key={2} />
+            <MenuItem value="Helvetica" primaryText="Helvetica" />
+            <MenuItem value="Times New Roman" primaryText="Times New Roman" />
+            <MenuItem value="Courier New" primaryText="Courier New" />
           </DropDownMenu>
           <NumericInput
             min={0}
@@ -293,30 +251,50 @@ class GridControl extends Component {
           <p>Left: </p>
           <DropDownMenu
             value={this.props.dataGrid.labelFormats.left.format}
-            onChange={this.handleLabelLeft}
+            onChange={(event, key, value) => {
+              this.props.dispatch(actions.setGridLabelFormat(value, 'left'));
+            }}
           >
-            {LeftRightMenu}
+            <MenuItem value="Hr:Min:Sec" primaryText="Hr:Min:Sec" />
+            <MenuItem value="Decimal Degrees" primaryText="Decimal Degrees" />
+            <MenuItem value="Default" primaryText="Default" />
+            <MenuItem value="No Label" primaryText="No Label" />
           </DropDownMenu>
           <p>Right: </p>
           <DropDownMenu
-            value={this.state.labelRight}
-            onChange={this.handleLabelRight}
+            value={this.props.dataGrid.labelFormats.right.format}
+            onChange={(event, key, value) => {
+              this.props.dispatch(actions.setGridLabelFormat(value, 'right'));
+            }}
           >
-            {LeftRightMenu}
+            <MenuItem value="Hr:Min:Sec" primaryText="Hr:Min:Sec" />
+            <MenuItem value="Decimal Degrees" primaryText="Decimal Degrees" />
+            <MenuItem value="Default" primaryText="Default" />
+            <MenuItem value="No Label" primaryText="No Label" />
           </DropDownMenu>
           <p>Top: </p>
           <DropDownMenu
-            value={this.state.labelTop}
-            onChange={this.handleLabelTop}
+            value={this.props.dataGrid.labelFormats.top.format}
+            onChange={(event, key, value) => {
+              this.props.dispatch(actions.setGridLabelFormat(value, 'top'));
+            }}
           >
-            {TopBottomMenu}
+            <MenuItem value="Deg:Min:Sec" primaryText="Deg:Min:Sec" />
+            <MenuItem value="Decimal Degrees" primaryText="Decimal Degrees" />
+            <MenuItem value="Default" primaryText="Default" />
+            <MenuItem value="No Label" primaryText="No Label" />
           </DropDownMenu>
           <p>Bottom: </p>
           <DropDownMenu
-            value={this.state.labelBottom}
-            onChange={this.handleLabelBottom}
+            value={this.props.dataGrid.labelFormats.bottom.format}
+            onChange={(event, key, value) => {
+              this.props.dispatch(actions.setGridLabelFormat(value, 'bottom'));
+            }}
           >
-            {TopBottomMenu}
+            <MenuItem value="Deg:Min:Sec" primaryText="Deg:Min:Sec" />
+            <MenuItem value="Decimal Degrees" primaryText="Decimal Degrees" />
+            <MenuItem value="Default" primaryText="Default" />
+            <MenuItem value="No Label" primaryText="No Label" />
           </DropDownMenu>
         </div>
       );

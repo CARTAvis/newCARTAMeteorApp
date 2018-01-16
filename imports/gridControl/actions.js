@@ -291,7 +291,19 @@ function setTickThickness(value) {
       });
   };
 }
-
+function setGridLabelFormat(format, side) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const command = `${controllerID}:setGridLabelFormat`;
+    const arg = `format:${format},side:${side}`;
+    api.instance().sendCommand(command, arg)
+      .then((response) => {
+        const { data } = response;
+        console.log('LABEL RESPONSE: ', data);
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
+  };
+}
 const actions = {
   getDataGrid,
   setShowCoordinateSystem,
@@ -314,6 +326,7 @@ const actions = {
   setTickLength,
   setTickTransparency,
   setTickThickness,
+  setGridLabelFormat,
 };
 
 export default actions;

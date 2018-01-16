@@ -25,7 +25,7 @@ import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import ImageSettings from './ImageSettings';
 import SideMenu from './SideMenu';
-import Topbar from './Topbar';
+import Topbar from '../topbar/Topbar';
 // import Region from './Region';
 import Region from '../region/Region';
 
