@@ -243,7 +243,6 @@ class MainPage extends Component {
                 setSetting={this.setSetting}
                 removeSetting={this.removeSetting}
               />
-              <br />
               <Animator />
             </div>
             <div>

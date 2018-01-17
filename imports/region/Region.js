@@ -436,7 +436,8 @@ class Region extends Component {
                     }
                     if (this.props.stack) {
                       if (this.props.stack.layers.length > 0 && !this.props.mouseIsDown) {
-                        this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
+                        const pos = this.getMousePos(this.div, e.evt);
+                        this.props.dispatch(imageActions.setCursor(pos.x, pos.y));
                         this.showCursorInfo();
                       }
                     }
