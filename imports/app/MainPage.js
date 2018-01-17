@@ -4,7 +4,6 @@ import 'react-contextmenu/public/styles.css';
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Tabs, Tab } from 'material-ui/Tabs';
-import { Card, CardText } from 'material-ui/Card';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
@@ -28,7 +27,6 @@ import SideMenu from './SideMenu';
 import Topbar from '../topbar/Topbar';
 // import Region from './Region';
 import Region from '../region/Region';
-import Colormap from '../colormap/Colormap';
 
 class MainPage extends Component {
   constructor(props) {
