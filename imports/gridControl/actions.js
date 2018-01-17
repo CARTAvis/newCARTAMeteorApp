@@ -295,11 +295,10 @@ function setGridLabelFormat(format, side) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     const command = `${controllerID}:setGridLabelFormat`;
-    const arg = `format:${format},side:${side}`;
+    const arg = `format:${format.replace(/:/g, '-')},side:${side}`;
     api.instance().sendCommand(command, arg)
       .then((response) => {
         const { data } = response;
-        console.log('LABEL RESPONSE: ', data);
         mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
       });
   };
