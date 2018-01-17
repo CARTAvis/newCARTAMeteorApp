@@ -45,21 +45,15 @@ function setShowCoordinateSystem(value) {
   };
 }
 
-function setDefaultCoordinateSystem(value) {
+function setShowDefaultCoordinateSystem(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
-    if (!value) {
-      mongoUpsert(GridDB, { useDefaultCoordinateSystem: value }, SET_USEDEFAULTCS);
-    } else {
-      const command = `${controllerID}:setCoordinateSystem`;
-      mongoUpsert(GridDB, { useDefaultCoordinateSystem: value }, SET_USEDEFAULTCS);
-      const name = 'Native';
-      api.instance().sendCommand(command, name)
-        .then((response) => {
-          const { data } = response;
-          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-        });
-    }
+    const command = `${controllerID}:setShowDefaultCoordinateSystem`;
+    api.instance().sendCommand(command, value)
+      .then((response) => {
+        const { data } = response;
+        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
+      });
   };
 }
 
@@ -307,7 +301,7 @@ function setGridLabelFormat(format, side) {
 const actions = {
   getDataGrid,
   setShowCoordinateSystem,
-  setDefaultCoordinateSystem,
+  setShowDefaultCoordinateSystem,
   setCoordinateSystem,
   setShowGridLines,
   setGridThickness,
