@@ -139,6 +139,7 @@ class Region extends Component {
     const target = this.state.toDelete;
     this.props.dispatch(actions.remove(target));
     this.props.dispatch(profilerActions.getProfile());
+    this.props.dispatch(histogramActions.getHistogramData());
   }
 
   resizeRect = (newX, newY, pos, index) => {
