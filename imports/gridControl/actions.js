@@ -201,11 +201,9 @@ function setAxisY(name) {
 }
 
 function setFontFamily(value) {
-  // TODO: the function is unfinished
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     const command = `${controllerID}:setFontFamily`;
-    console.log('+++++++++++++++++++++++++++++++ The command value of setFontFamily', value);
     api.instance().sendCommand(command, value)
       .then((response) => {
         const { data } = response;

@@ -19,7 +19,6 @@ class GridControl extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      family: this.props.dataGrid.font.family,
     };
   }
   componentWillReceiveProps = (nextProps) => {
@@ -30,9 +29,6 @@ class GridControl extends Component {
     if (this.props.dataGrid.labelFormats) {
       console.log(this.props.dataGrid.labelFormats.left);
     }
-  }
-  handleFontChange = (event, index, value) => {
-    this.setState({ family: value });
   }
   display = () => {
     let content = null;
@@ -167,7 +163,6 @@ class GridControl extends Component {
               this.props.dispatch(actions.setAxesThickness(newValue));
             }}
             value={this.props.dataGrid.axes.width}
-            // defaultValue={1}
           />
           <Slider
             min={1}
@@ -184,7 +179,6 @@ class GridControl extends Component {
               this.props.dispatch(actions.setAxesTransparency(newValue));
             }}
             value={this.props.dataGrid.axes.alpha}
-            // defaultValue={1}
           />
           <Slider
             min={0}
@@ -225,7 +219,7 @@ class GridControl extends Component {
               this.props.dispatch(actions.setFontFamily(value));
             }}
           >
-            {/* TODO: the function is unfinished */}
+            {/* TODO: the hard code may be imporoved */}
             <MenuItem value="Helvetica" primaryText="Helvetica" />
             <MenuItem value="Times New Roman" primaryText="Times New Roman" />
             <MenuItem value="Courier New" primaryText="Courier New" />
@@ -370,11 +364,6 @@ class GridControl extends Component {
     return (
       <div>
         {this.display()}
-        {/* <MenuItem primaryText="canvas" />
-        <MenuItem primaryText="grid" />
-        <MenuItem primaryText="axes/border" />
-        <MenuItem primaryText="labels" />
-        <MenuItem primaryText="ticks" onClick={this.setTicks} /> */}
       </div>
     );
   }
