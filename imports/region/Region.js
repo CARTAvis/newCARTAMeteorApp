@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import { connect } from 'react-redux';
 import { ImageViewerDB } from '../api/ImageViewerDB';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
@@ -12,15 +13,16 @@ import Divider from 'material-ui/Divider';
 import SelectField from 'material-ui/SelectField';
 import MenuItem2 from 'material-ui/MenuItem';
 import LinearProgress from 'material-ui/LinearProgress';
+import DropDownMenu from 'material-ui/DropDownMenu';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
 import histogramActions from '../histogram/actions';
 import Colormap from '../colormap/Colormap';
-
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
+import colormapActions from '../colormap/actions';
 
 const Blob = require('blob');
 
@@ -31,6 +33,7 @@ let startX;
 let endX;
 let startY;
 let endY;
+let selectedColormap;
 class Region extends Component {
   constructor(props) {
     super(props);
@@ -42,6 +45,9 @@ class Region extends Component {
       saveAsInput: '',
       cursorInfo: '',
       regionListener: false,
+      currentColorStops: [],
+      colormaps: [],
+      currentColorName: '',
     };
   }
   componentDidMount = () => {
@@ -52,11 +58,30 @@ class Region extends Component {
         this.delete();
       }
     };
+    HTTP.get(Meteor.absoluteUrl('/colormaps.json'), (err, result) => {
+      if (err) console.log(err);
+      else {
+        this.setState({ colormaps: result.data.colormaps });
+      }
+    });
   }
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.init === true) {
       console.log('TRUE');
       this.init();
+    }
+    if (nextProps.stops) {
+      const newStops = [];
+      if (nextProps.stops) {
+        const total = nextProps.stops.length;
+        for (let i = 0; i < total; i += 1) {
+          newStops.push(i / total, nextProps.stops[i]);
+        }
+      }
+      this.setState({ currentColorStops: newStops });
+    }
+    if (nextProps.colorMapName) {
+      this.setState({ currentColorName: nextProps.colorMapName });
     }
   }
   onMouseDown = (event) => {
@@ -292,6 +317,16 @@ class Region extends Component {
       open: false,
     });
   };
+  handleTouchTapColormaps = (event) => {
+    event.preventDefault();
+    this.setState({
+      colormapsOpen: true,
+      anchorElColomaps: event.currentTarget,
+    });
+  }
+  handleRequestCloseColormaps = () => {
+    this.setState({ colormapsOpen: false });
+  }
   saveAs = (event) => {
     this.setState({
       saveAsInput: event.target.value,
@@ -390,8 +425,25 @@ class Region extends Component {
       }
     }
   }
+  setCurrentColorStops = (stops) => {
+    const total = stops.length;
+    const newStops = [];
+    for (let i = 0; i < total; i += 1) {
+      newStops.push(i / total, stops[i]);
+    }
+    this.setState({
+      currentColorStops: newStops,
+    });
+  }
   render() {
-    const { x, y, width, height } = this.props;
+    const { x, y, width, height, stops } = this.props;
+    const newStops = [];
+    if (stops) {
+      const total = stops.length;
+      for (let i = 0; i < total; i += 1) {
+        newStops.push(i / total, stops[i]);
+      }
+    }
     this.rect = (
       <Rect
         x={x}
@@ -410,7 +462,6 @@ class Region extends Component {
             ref={(node) => { this.div = node; }}
             style={{ position: 'relative', height: 477, display: 'flex', flexDirection: 'row' }}
           >
-
             <Stage
               id="stage"
               width={482}
@@ -514,14 +565,75 @@ class Region extends Component {
                 <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
               </button>
             </Card>
+            <Card style={{ width: '24px', position: 'absolute', bottom: 50, left: '482px' }} >
+              <button onClick={this.handleTouchTapColormaps} className="zoom">
+                <img className="iconImg" src="/images/colorbar.jpg" alt="" />
+              </button>
+            </Card>
             <br />
           </div>
           {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
-          <Card style={{ width: 482 }}>
+          <Card style={{ width: 557 }}>
             <CardText>
               <div id="cursorInfo" />
             </CardText>
           </Card>
+          <Popover
+            open={this.state.colormapsOpen}
+            anchorEl={this.state.anchorElColomaps}
+            anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+            onRequestClose={this.handleRequestCloseColormaps}
+            style={{ width: 150, height: 100 }}
+          >
+            <DropDownMenu
+              value={this.state.currentColorName}
+              maxHeight={250}
+              onChange={(event, key, value) => {
+                selectedColormap = key;
+                this.setState({ currentColorName: this.state.colormaps[key].name });
+                this.setCurrentColorStops(this.state.colormaps[key].stops);
+                if (this.props.stack) {
+                  if (this.props.stack.layers.length > 0) {
+                    this.props.dispatch(colormapActions.setColormap(value));
+                  }
+                }
+              }}
+            >
+              {this.props.colormaps ? this.props.colormaps.map((item, index) =>
+                (<MenuItem2
+                  value={item}
+                  primaryText={item}
+                  key={index}
+                  onMouseEnter={() => {
+                    this.setCurrentColorStops(this.state.colormaps[index].stops);
+                  }}
+                  onMouseLeave={() => {
+                    if (selectedColormap >= 0) {
+                      this.setCurrentColorStops(this.state.colormaps[selectedColormap].stops);
+                    } else {
+                      this.setCurrentColorStops([]);
+                    }
+                  }}
+                />)) : null}
+            </DropDownMenu>
+            <Stage
+              width={100}
+              height={15}
+            >
+              <Layer>
+                <Rect
+                  width={100}
+                  height={15}
+                  stroke="black"
+                  // fill={this.state.color}
+                  fillLinearGradientStartPoint={{ x: 0, y: 477 }}
+                  fillLinearGradientEndPoint={{ x: 100, y: 477 }}
+                  fillLinearGradientColorStops={this.state.currentColorStops}
+                />
+              </Layer>
+            </Stage>
+          </Popover>
           <Popover
             open={this.state.open}
             anchorEl={this.state.anchorEl}
@@ -575,5 +687,8 @@ const mapStateToProps = state => ({
   stack: state.ImageViewerDB.stack,
   profileReady: state.RegionDB.profileReady,
   init: state.RegionDB.init,
+  colormaps: state.ColormapDB.colormaps,
+  colorMapName: state.ColormapDB.colorMapName,
+  stops: state.ColormapDB.stops,
 });
 export default connect(mapStateToProps)(Region);

@@ -1,11 +1,12 @@
 import { ImageViewerDB } from '../api/ImageViewerDB';
 import { RegionDB } from '../api/RegionDB';
 import { GridDB } from '../api/GridDB';
+import { ColormapDB } from '../api/ColormapDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
 import regionActions from '../region/actions';
-
+import colormapActions from '../colormap/actions';
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
 const GET_IMAGE = 'GET_IMAGE';
@@ -23,6 +24,14 @@ function setRegionControlsId(response) {
   const { data } = response;
   mongoUpsert(RegionDB, { regionControlsID: data }, 'SET_REGION_CONTROLS_ID');
 }
+function getColormaps(controllerID) {
+  const cmd = `${controllerID}:${Commands.GET_COLORMAPS}`;
+  api.instance().sendCommand(cmd, '')
+    .then((resp) => {
+      const { data } = resp;
+      mongoUpsert(ColormapDB, { colormaps: data.split(',') }, `Resp_${cmd}`);
+    });
+}
 function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
   // console.log('get register response:', resp.cmd, 'data:', resp.data);
@@ -32,17 +41,20 @@ function parseReigsterViewResp(resp) {
 
   // step1: save controllerID to mongodb
   mongoUpsert(ImageViewerDB, { controllerID }, `Resp_${cmd}`);
-  let command = `${controllerID}:${Commands.REGISTER_REGION_CONTROLS}`;
+  const command = `${controllerID}:${Commands.REGISTER_REGION_CONTROLS}`;
   api.instance().sendCommand(command, '')
     .then((response) => {
       setRegionControlsId(response);
+      // colormapActions.getColormaps();
     });
   // step2
   const viewName = `${controllerID}/view`;
   const width = 482; // TODO same as the experimental setting in ImageViewer, change later
   const height = 477;
   api.instance().setupViewSize(viewName, width, height);
+  getColormaps(controllerID);
 }
+
 function setupImageViewer() {
   return () => {
     // console.log('grimmer setupImageViewer');
