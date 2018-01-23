@@ -10,7 +10,6 @@ import '../imports/api/HistogramDB';
 import '../imports/api/AnimatorDB';
 import '../imports/api/ColormapDB';
 import '../imports/api/ClippingDB';
-import '../imports/api/AutoClippingDB';
 
 import ChannelClient from '../imports/api/ChannelClient';
 // import Commands from '../imports/api/Commands';

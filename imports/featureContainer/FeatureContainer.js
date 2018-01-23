@@ -8,7 +8,6 @@ import actions from './actions';
 import Histogram from '../histogram/Histogram';
 import Profiler from '../profiler/Profiler';
 import Clipping from '../clipping/Clipping';
-import AutoClipping from '../autoClipping/AutoClipping';
 
 // const _ = require('lodash');
 const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
@@ -73,9 +72,6 @@ class FeatureContainer extends Component {
 
         {/* add clipping buttons */}
         <Clipping />
-
-        {/* add clipping per frame buttons */}
-        <AutoClipping />
 
         {/* <button onClick={this.onAddItem('none')}>Add Item</button> */}
         <ReactGridLayout

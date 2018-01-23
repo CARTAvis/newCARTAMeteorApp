@@ -7,13 +7,18 @@ class Clipping extends Component {
     super(props);
     this.state = {
       percentile: [0.9, 0.925, 0.95, 0.96, 0.97, 0.98, 0.99, 0.995, 0.999, 1.0],
+      autoClip: [false, true],
     };
-    // this.props.dispatch(actions.setupClipping(this.state.percentile[9]));
   }
 
   handleClip = (percentile) => {
     this.props.dispatch(actions.updateClipping(percentile));
     this.props.dispatch(actions.getClipState());
+  }
+
+  handleAutoClip = (autoClip) => {
+    this.props.dispatch(actions.updateAutoClipping(autoClip));
+    this.props.dispatch(actions.getAutoClipState());
   }
 
   render() {
@@ -25,10 +30,21 @@ class Clipping extends Component {
       </button>),
     );
 
+    const autoClips = this.state.autoClip;
+    let autoClipButtons = null;
+    autoClipButtons = autoClips.map(autoClip =>
+      (<button className="button" onClick={() => this.handleAutoClip(autoClip)} type="button">
+        {`${autoClip}`}
+      </button>),
+    );
+
     return (
       <div>
         <h3>Clipping for percentile:</h3>
         {percentileButtons}
+
+        <h3>Clipping per frame for percentile:</h3>
+        {autoClipButtons}
       </div>
     );
   }
@@ -36,9 +52,10 @@ class Clipping extends Component {
 
 const mapStateToProps = (state) => {
   const { ClippingDB } = state;
-  const { percentile } = ClippingDB;
+  const { percentile, autoClip } = ClippingDB;
   return {
     percentile,
+    autoClip,
   };
 };
 

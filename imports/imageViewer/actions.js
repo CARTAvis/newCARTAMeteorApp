@@ -4,7 +4,6 @@ import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
 import clipping from '../clipping/actions';
-import autoClipping from '../autoClipping/actions';
 
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
@@ -65,7 +64,7 @@ function setupImageViewer() {
         parseReigsterViewResp(resp);
         // setup the clipping default state
         dispatch(clipping.getClipState());
-        dispatch(autoClipping.getAutoClipState());
+        dispatch(clipping.getAutoClipState());
       });
   };
 }

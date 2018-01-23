@@ -10,7 +10,6 @@ import featureReducer from './featureContainer/reducer';
 import animatorReducer from './animator/reducer';
 import colormapReducer from './colormap/reducer';
 import clippingReducer from './clipping/reducer';
-import autoClippingReducer from './autoClipping/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -23,7 +22,6 @@ const rootReducer = combineReducers({
   ...animatorReducer,
   ...colormapReducer,
   ...clippingReducer,
-  ...autoClippingReducer,
 });
 
 export default rootReducer;

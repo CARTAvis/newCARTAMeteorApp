@@ -13,7 +13,6 @@ import { setupRegionDB } from '../region/actions';
 import { setupAnimatorDB } from '../animator/actions';
 import { setupColormapDB } from '../colormap/actions';
 import { setupClippingDB } from '../clipping/actions';
-import { setupAutoClippingDB } from '../autoClipping/actions';
 
 import { storeReduxDispatch } from '../api/MongoHelper';
 
@@ -68,7 +67,6 @@ function setupComponentsDB() {
   setupAnimatorDB();
   setupColormapDB();
   setupClippingDB();
-  setupAutoClippingDB();
 }
 
 function setupResponseChannnelAndAllDB() {
