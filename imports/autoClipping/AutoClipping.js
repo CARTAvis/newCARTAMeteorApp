@@ -8,28 +8,26 @@ class AutoClipping extends Component {
     this.state = {
       autoClip: [false, true],
     };
-    // this.props.dispatch(actions.setupAutoClipping(this.state.autoClip[0]));
   }
 
-  autoClip0 = () => {
-    this.props.dispatch(actions.updateAutoClipping(this.state.autoClip[0]));
-    this.props.dispatch(actions.getAutoClipState());
-  }
-  autoClip1 = () => {
-    this.props.dispatch(actions.updateAutoClipping(this.state.autoClip[1]));
+  handleAutoClip = (autoClip) => {
+    this.props.dispatch(actions.updateAutoClipping(autoClip));
     this.props.dispatch(actions.getAutoClipState());
   }
 
   render() {
+    const autoClips = this.state.autoClip;
+    let autoClipButtons = null;
+    autoClipButtons = autoClips.map(autoClip =>
+      (<button className="button" onClick={() => this.handleAutoClip(autoClip)} type="button">
+        {`${autoClip}`}
+      </button>),
+    );
+
     return (
       <div>
         <h3>Clipping per frame for percentile:</h3>
-        <button className="button" onClick={this.autoClip0} type="button">
-          {`${this.state.autoClip[0]}`}
-        </button>
-        <button className="button" onClick={this.autoClip1} type="button">
-          {`${this.state.autoClip[1]}`}
-        </button>
+        {autoClipButtons}
       </div>
     );
   }
