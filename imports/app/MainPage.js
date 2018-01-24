@@ -80,7 +80,7 @@ class MainPage extends Component {
     const arr = this.state.settingsArray;
     if (arr.length === 1 && (arr[0].type === 'Profiler' || arr[0].type === 'Histogram')) {
       this.hide();
-    } else {
+    } else if (arr.length > 0) {
       let index = 0;
       for (let i = 0; i < arr.length; i += 1) {
         if (arr[i].type === type) {
