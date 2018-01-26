@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import actions from './actions';
 import Histogram from '../histogram/Histogram';
 import Profiler from '../profiler/Profiler';
-
+import Statistics from '../statistics/Statistics';
 // const _ = require('lodash');
 const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 // const WidthProvider = require('react-grid-layout').WidthProvider;
@@ -16,12 +16,12 @@ const ReactGridLayout = require('react-grid-layout');
 
 class FeatureContainer extends Component {
   mixins: [PureRenderMixin]
-  // onBreakpointChange = (breakpoint, cols) => {
-  //   this.setState({
-  //     breakpoint,
-  //     cols,
-  //   });
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+    this.props.dispatch(actions.onAddItemDB('Statistics'));
+  }
   onRemoveItem(i, type) {
     // this.setState({ items: _.reject(this.state.items, { i }) });
     this.props.dispatch(actions.onRemoveItemDB(i));
@@ -40,6 +40,8 @@ class FeatureContainer extends Component {
       return <Histogram width={this.props.width} />;
     } else if (type === 'Profiler') {
       return <Profiler width={this.props.width} />;
+    } else if (type === 'Statistics') {
+      return <Statistics />;
     }
     return '';
   }

@@ -10,7 +10,7 @@ import '../imports/api/HistogramDB';
 import '../imports/api/AnimatorDB';
 import '../imports/api/ColormapDB';
 import '../imports/api/GridDB';
-
+import '../imports/api/StatsDB';
 import '../imports/api/TopbarDB';
 import ChannelClient from '../imports/api/ChannelClient';
 // import Commands from '../imports/api/Commands';

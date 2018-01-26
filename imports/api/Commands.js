@@ -25,6 +25,7 @@ const CLOSE_REGION = 'closeRegion';
 const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
 const REGION_ZOOM = 'regionZoom';
 const GET_COLORMAPS = 'getColormaps';
+const GET_STATS_INFO = 'getStatsInfo';
 // TODO some commands need parameters, wrap them as a function
 
 const Commands = {
@@ -50,6 +51,7 @@ const Commands = {
   REGION_ZOOM,
   GET_COLORMAPS,
   SET_COLORMAP,
+  GET_STATS_INFO,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

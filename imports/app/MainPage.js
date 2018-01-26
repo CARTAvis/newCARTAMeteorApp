@@ -149,7 +149,7 @@ class MainPage extends Component {
     });
   }
   render() {
-    // console.log('IN RENDER');
+    console.log('IN RENDER');
     const toolbarStyle = {
       backgroundColor: '#EEEEEE',
       bottom: 0,
@@ -173,6 +173,7 @@ class MainPage extends Component {
           <SubMenu title="Layout" hoverDelay={100}>
             <MenuItem onClick={this.handleClick} data={{ type: 'Profiler' }}>Profiler</MenuItem>
             <MenuItem onClick={this.handleClick} data={{ type: 'Histogram' }}>Histogram</MenuItem>
+            <MenuItem onClick={this.handleClick} data={{ type: 'Statistics' }}>Statistics</MenuItem>
           </SubMenu>
         </ContextMenu>
       </div>
