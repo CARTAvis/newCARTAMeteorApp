@@ -1,9 +1,13 @@
+// !!continue to use these previous commands which is used by old CARTA. !!
 // global-like
 const REGISTER_VIEWER = '/CartaObjects/ViewManager:registerView';
 const REQUEST_FILE_LIST = '/CartaObjects/DataLoader:getData';
 const SELECT_FILE_TO_OPEN = '/CartaObjects/ViewManager:dataLoaded';
 // const GET_COLORMAPS = '/CartaObjects/Colormaps:getColormaps';
 // non-global, need object id
+
+// non-global
+//need object id
 const GET_ANIMATORTYPE_ID = 'registerAnimator';
 const SET_ZOOM_LEVEL = 'setZoomLevel';
 const CLOSE_IMAGE = 'closeImage';
