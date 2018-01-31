@@ -23,6 +23,7 @@ import FeatureContainer from '../featureContainer/FeatureContainer';
 import ProfilerSettings from './ProfilerSettings';
 import HistogramSettings from './HistogramSettings';
 import ImageSettings from './ImageSettings';
+import StatsSettings from '../statsSettings/StatsSettings';
 import SideMenu from './SideMenu';
 import Topbar from '../topbar/Topbar';
 // import Region from './Region';
@@ -57,6 +58,7 @@ class MainPage extends Component {
     if (type === 'Profiler') el = <ProfilerSettings />;
     else if (type === 'Histogram') el = <HistogramSettings />;
     else if (type === 'Image') el = <ImageSettings />;
+    else if (type === 'Statistics') el = <StatsSettings />;
     // add new settings to a new tab
     this.setState(prevState => ({
       settingsArray: prevState.settingsArray.concat({
@@ -75,10 +77,12 @@ class MainPage extends Component {
   settingChanged = (value) => {
     this.setState({ setting: value });
   }
+  // this function is for removing settings with the 'x' button on feature container
   removeSetting = (type) => {
     console.log('REMOVING: ', type);
     const arr = this.state.settingsArray;
-    if (arr.length === 1 && (arr[0].type === 'Profiler' || arr[0].type === 'Histogram')) {
+    const arrType = arr[0].type;
+    if (arr.length === 1 && (arrType === 'Profiler' || arrType === 'Histogram' || arrType === 'Statistics')) {
       this.hide();
     } else if (arr.length > 0) {
       let index = 0;

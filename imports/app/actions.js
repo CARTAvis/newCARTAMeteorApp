@@ -15,6 +15,7 @@ import { setupColormapDB } from '../colormap/actions';
 import { setupGridDB } from '../gridControl/actions';
 import { setupStatsDB } from '../statistics/actions';
 import { setupTopbarDB } from '../topbar/actions';
+import { setupStatsSettingsDB } from '../statsSettings/actions';
 import { storeReduxDispatch } from '../api/MongoHelper';
 
 import api from '../api/ApiService';
@@ -70,6 +71,7 @@ function setupComponentsDB() {
   setupGridDB();
   setupTopbarDB();
   setupStatsDB();
+  setupStatsSettingsDB();
 }
 
 function setupResponseChannnelAndAllDB() {

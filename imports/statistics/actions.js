@@ -1,4 +1,5 @@
 import { StatsDB } from '../api/StatsDB';
+import { StatsSettingsDB } from '../api/StatsSettingsDB';
 import Commands from '../api/Commands';
 import { mongoUpsert } from '../api/MongoHelper';
 import api from '../api/ApiService';
@@ -10,6 +11,7 @@ export const ActionType = {
 };
 
 const GET_STATS = 'GET_STATS';
+const GET_STATS_PREF = 'GET_STATS_REF';
 
 export function setupStatsDB() {
   // return (dispatch) => {
@@ -28,13 +30,26 @@ function getStatsInfo() {
       });
   };
 }
+function getStatsPref() {
+  return (dispatch, getState) => {
+    const StatsID = getState().StatsDB.StatsID;
+    const cmd = `${StatsID}:${Commands.GET_STATS_PREF}`;
+    api.instance().sendCommand(cmd, '')
+      .then((resp) => {
+        const dataObj = JSON.parse(resp.data.preferences);
+        console.log('JSON OBJ: ', dataObj);
+        mongoUpsert(StatsSettingsDB, { image: dataObj.image, region: dataObj.region }, GET_STATS_PREF);
+      });
+  };
+}
 function setupStats() {
-  return () => {
+  return (dispatch) => {
     const cmd = Commands.REGISTER_VIEWER;
     const arg = 'pluginId:Statistics,index:0';
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         mongoUpsert(StatsDB, { StatsID: resp.data }, `Resp_${cmd}`);
+        dispatch(getStatsPref());
         // dispatch(getStatsInfo());
       });
   };
@@ -43,6 +58,7 @@ function setupStats() {
 const actions = {
   setupStats,
   getStatsInfo,
+  getStatsPref,
 };
 
 export default actions;

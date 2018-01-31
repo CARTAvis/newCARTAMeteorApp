@@ -12,6 +12,7 @@ import colormapReducer from './colormap/reducer';
 import gridControlReducer from './gridControl/reducer';
 import topbarReducer from './topbar/reducer';
 import statsReducer from './statistics/reducer';
+import statsSettingsReducer from './statsSettings/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   ...gridControlReducer,
   ...topbarReducer,
   ...statsReducer,
+  ...statsSettingsReducer,
 });
 
 export default rootReducer;

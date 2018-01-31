@@ -23,6 +23,7 @@ import Colormap from '../colormap/Colormap';
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
 import colormapActions from '../colormap/actions';
+import statsActions from '../statistics/actions';
 
 const Blob = require('blob');
 
@@ -111,6 +112,7 @@ class Region extends Component {
       const pos = this.getMousePos(this.div, event);
       this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
       this.props.dispatch(profilerActions.getProfile());
+      this.props.dispatch(statsActions.getStatsInfo());
       this.props.dispatch(histogramActions.getHistogramData());
       endX = pos.x;
       endY = pos.y;
