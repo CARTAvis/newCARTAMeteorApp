@@ -4,16 +4,13 @@ import { ClippingDB } from '../api/ClippingDB';
 import { mongoUpsert } from '../api/MongoHelper';
 
 const CLIP_CHANGE = 'CLIP_CHANGE';
-const AUTO_CLIP_CHANGE = 'AUTO_CLIP_CHANGE';
 
 export const ActionType = {
   CLIP_CHANGE,
-  AUTO_CLIP_CHANGE,
 };
 
 export function setupClippingDB() {
   api.instance().setupMongoRedux(ClippingDB, CLIP_CHANGE);
-  api.instance().setupMongoRedux(ClippingDB, AUTO_CLIP_CHANGE);
 }
 
 function updateClipping(percentile) {
