@@ -25,7 +25,7 @@ class Clipping extends Component {
     const percentiles = this.state.percentile;
     let percentileButtons = null;
     percentileButtons = percentiles.map(percentile =>
-      (<button className="button" onClick={() => this.handleClip(percentile)} type="button">
+      (<button key={percentile.toString()} className="button" onClick={() => this.handleClip(percentile)} type="button">
         {`${percentile * 100}%`}
       </button>),
     );
@@ -33,7 +33,7 @@ class Clipping extends Component {
     const autoClips = this.state.autoClip;
     let autoClipButtons = null;
     autoClipButtons = autoClips.map(autoClip =>
-      (<button className="button" onClick={() => this.handleAutoClip(autoClip)} type="button">
+      (<button key={autoClip.toString()} className="button" onClick={() => this.handleAutoClip(autoClip)} type="button">
         {`${autoClip}`}
       </button>),
     );
