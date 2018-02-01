@@ -10,13 +10,13 @@ import Profiler from '../profiler/Profiler';
 import Clipping from '../clipping/Clipping';
 
 // const _ = require('lodash');
-const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
+// const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 // const WidthProvider = require('react-grid-layout').WidthProvider;
 // const ResponsiveReactGridLayout = require('react-grid-layout').Responsive;
 const ReactGridLayout = require('react-grid-layout');
 
 class FeatureContainer extends Component {
-  mixins: [PureRenderMixin]
+  // mixins: [PureRenderMixin]
   // onBreakpointChange = (breakpoint, cols) => {
   //   this.setState({
   //     breakpoint,
@@ -38,7 +38,7 @@ class FeatureContainer extends Component {
   addGraph = (type) => {
     // console.log(`TYPE: ${type}`);
     if (type === 'Histogram') {
-      return <Histogram />;
+      return <Histogram width={this.props.width} />;
     } else if (type === 'Profiler') {
       return <Profiler width={this.props.width} />;
     }
