@@ -40,10 +40,10 @@ class Clipping extends Component {
 
     return (
       <div>
-        <h3>Clipping for percentile:</h3>
+        <h3>{'Clipping for percentile:'}</h3>
         {percentileButtons}
 
-        <h3>Clipping per frame for percentile:</h3>
+        <h3>{'Clipping per frame for percentile:'}</h3>
         {autoClipButtons}
       </div>
     );
