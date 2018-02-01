@@ -2,15 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import actions from './actions';
 
-class Clipping extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      percentile: [0.9, 0.925, 0.95, 0.96, 0.97, 0.98, 0.99, 0.995, 0.999, 1.0],
-      autoClip: [false, true],
-    };
-  }
+const percentileArray = [0.9, 0.925, 0.95, 0.96, 0.97, 0.98, 0.99, 0.995, 0.999, 1.0];
+const autoClipArray = [false, true];
 
+class Clipping extends Component {
   handleClip = (percentile) => {
     this.props.dispatch(actions.updateClipping(percentile));
     this.props.dispatch(actions.getClipState());
@@ -22,7 +17,7 @@ class Clipping extends Component {
   }
 
   render() {
-    const percentiles = this.state.percentile;
+    const percentiles = percentileArray;
     let percentileButtons = null;
     percentileButtons = percentiles.map(percentile =>
       (<button key={percentile.toString()} className="clippingButton" onClick={() => this.handleClip(percentile)} type="button">
@@ -30,7 +25,7 @@ class Clipping extends Component {
       </button>),
     );
 
-    const autoClips = this.state.autoClip;
+    const autoClips = autoClipArray;
     let autoClipButtons = null;
     autoClipButtons = autoClips.map(autoClip =>
       (<button key={autoClip.toString()} className="clippingButton" onClick={() => this.handleAutoClip(autoClip)} type="button">
