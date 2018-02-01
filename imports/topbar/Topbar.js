@@ -123,7 +123,7 @@ class Topbar extends Component {
             <IconButton onClick={this.handleConfig}>
               <More />
             </IconButton>
-          </ToolbarGroup> */}
+          </ToolbarGroup>
         </Toolbar>
         <Popover
           open={this.state.open}

@@ -120,8 +120,11 @@ class Profiler extends Component {
   render() {
     return (
       <div>
-        <div style={{ marginTop: '15px' }} ref={(el) => { this.el = el; }} id="profiler" />
-        <RaisedButton label="save" onClick={this.handleTouchTap} />
+        <button onClick={this.handleTouchTap}>
+          <img className="iconImg" src="/images/save.png" alt="" />
+        </button>
+        {/* <RaisedButton label="save" onClick={this.handleTouchTap} /> */}
+        <div style={{ marginTop: '2px' }} ref={(el) => { this.el = el; }} id="profiler" />
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}

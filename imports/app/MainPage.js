@@ -27,6 +27,7 @@ import ImageSettings from './ImageSettings';
 import StatsSettings from '../statsSettings/StatsSettings';
 import SideMenu from './SideMenu';
 import Topbar from '../topbar/Topbar';
+// import FeatureContainerActions from '../featureContainer/actions';
 // import Region from './Region';
 import Region from '../region/Region';
 
@@ -40,6 +41,11 @@ class MainPage extends Component {
       open: false,
       settingsArray: [],
     };
+  }
+  componentDidMount = () => {
+    if (this.grid) {
+      this.grid.getWrappedInstance().onAddItem('Statistics');
+    }
   }
   // define callback
   // onUpdate = (array) => {
@@ -82,21 +88,23 @@ class MainPage extends Component {
   removeSetting = (type) => {
     console.log('REMOVING: ', type);
     const arr = this.state.settingsArray;
-    const arrType = arr[0].type;
-    if (arr.length === 1 && (arrType === 'Profiler' || arrType === 'Histogram' || arrType === 'Statistics')) {
-      this.hide();
-    } else if (arr.length > 0) {
-      let index = 0;
-      for (let i = 0; i < arr.length; i += 1) {
-        if (arr[i].type === type) {
-          if (i === arr.length - 1) index = i - 1;
-          else index = i + 1;
+    if (arr.length > 0) {
+      const arrType = arr[0].type;
+      if (arr.length === 1 && (arrType === 'Profiler' || arrType === 'Histogram' || arrType === 'Statistics')) {
+        this.hide();
+      } else if (arr.length > 0) {
+        let index = 0;
+        for (let i = 0; i < arr.length; i += 1) {
+          if (arr[i].type === type) {
+            if (i === arr.length - 1) index = i - 1;
+            else index = i + 1;
+          }
         }
+        this.setState(prevState => ({
+          settingsArray: prevState.settingsArray.filter(item => item.type !== type),
+          setting: prevState.settingsArray[index].type,
+        }));
       }
-      this.setState(prevState => ({
-        settingsArray: prevState.settingsArray.filter(item => item.type !== type),
-        setting: prevState.settingsArray[index].type,
-      }));
     }
   }
   handleClick = (e, data) => {
@@ -142,6 +150,7 @@ class MainPage extends Component {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
   show = () => {
+    console.log('SHOWING SETTINGS');
     const box2 = document.getElementById('hid-box');
     box2.className = 'show';
   }

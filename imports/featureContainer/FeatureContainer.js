@@ -15,12 +15,11 @@ import Statistics from '../statistics/Statistics';
 const ReactGridLayout = require('react-grid-layout');
 
 class FeatureContainer extends Component {
-  mixins: [PureRenderMixin]
   constructor(props) {
     super(props);
     this.state = {
     };
-    this.props.dispatch(actions.onAddItemDB('Statistics'));
+    // this.props.dispatch(actions.onAddItemDB('Statistics'));
   }
   onRemoveItem(i, type) {
     // this.setState({ items: _.reject(this.state.items, { i }) });
@@ -77,7 +76,7 @@ class FeatureContainer extends Component {
           // onBreakpointChange={this.onBreakpointChange}
           cols={1}
           width={width}
-          rowHeight={200}
+          rowHeight={210}
           layout={this.props.items}
           onDragStop={(e) => {
             console.log();

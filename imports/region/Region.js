@@ -117,10 +117,6 @@ class Region extends Component {
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
-      this.props.dispatch(actions.initRegion());
-      this.setState({
-        regionListener: false,
-      });
     }
   }
   getMousePos = (canvas, event) => {
@@ -419,9 +415,6 @@ class Region extends Component {
     console.log('INIT');
     if (this.props.stack) {
       if (this.props.stack.layers.length > 0) {
-        this.setState({
-          regionListener: true,
-        });
         this.props.dispatch(imageActions.setRegionType('Rectangle'));
         this.props.dispatch(histogramActions.selectRegionHisto());
       }
@@ -477,15 +470,13 @@ class Region extends Component {
               >
                 <Group
                   onMouseDown={(e) => {
-                  // console.log('MOUSEDOWN');
-                    if (this.state.regionListener) {
-                    // console.log('MOUSE DOWN: ', e);
+                    if (this.props.init) {
                       this.onMouseDown(e.evt);
                     }
                   }}
                   onMouseMove={(e) => {
                     window.onwheel = () => true;
-                    if (this.state.regionListener) {
+                    if (this.props.init) {
                       this.onMouseMove(e.evt);
                     }
                     if (this.props.stack) {
@@ -497,7 +488,7 @@ class Region extends Component {
                     }
                   }}
                   onMouseUp={(e) => {
-                    if (this.state.regionListener) {
+                    if (this.props.init) {
                       this.onMouseUp(e.evt);
                     }
                   }}
