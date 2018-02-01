@@ -17,7 +17,7 @@ import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
 import histogramActions from '../histogram/actions';
 import Colormap from '../colormap/Colormap';
-
+import profilerActions from '../profiler/actions';
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
 
@@ -42,6 +42,13 @@ class Region extends Component {
       cursorInfo: '',
       regionListener: false,
     };
+  }
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.stack) {
+      if (nextProps.stack.layers.length === 0) {
+        this.showCursorInfo(false);
+      }
+    }
   }
   onMouseDown = (event) => {
     this.props.dispatch(actions.setMouseIsDown(1));
@@ -353,7 +360,7 @@ class Region extends Component {
     this.panReset();
     this.zoomReset();
   }
-  showCursorInfo = () => {
+  showCursorInfo = (show) => {
     const htmlObject = document.getElementById('cursorInfo');
     if (this.props.cursorInfo) {
       htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
@@ -415,7 +422,7 @@ class Region extends Component {
                     this.onMouseMove(e.evt);
                   }
                   if (this.props.stack) {
-                    if (this.props.stack.layers.length > 0 && !this.state.regionListener) {
+                    if (this.props.stack.layers.length > 0 && !this.props.mouseIsDown) {
                       this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
                       this.showCursorInfo();
                     }

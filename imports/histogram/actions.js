@@ -33,6 +33,7 @@ function getHistogramData() {
     });
   };
 }
+
 function selectRegionHisto() {
   return (dispatch, getState) => {
     const histogramID = getState().HistogramDB.histogramID;
@@ -45,6 +46,7 @@ function selectRegionHisto() {
     });
   };
 }
+
 export function parseReigsterHistogramResp(resp) {
   console.log('RESGISTERING HISTOGRAM');
   const { cmd, data } = resp;
