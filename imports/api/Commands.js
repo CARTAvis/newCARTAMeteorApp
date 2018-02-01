@@ -13,12 +13,6 @@ const SET_FRAME = 'setFrame';
 const PAN_ZOOM = 'zoom';
 const PAN_RESET = 'resetPan';
 const INPUT_EVENT = 'inputEvent';
-const SET_CLIP_VALUE = 'setClipValue';
-const CLIP_KEY = 'clipValue';
-const GET_CLIP_STATE = 'getClipState';
-const SET_AUTO_CLIP_VALUE = 'setAutoClip';
-const AUTO_CLIP_KEY = 'autoClip';
-const GET_AUTO_CLIP_STATE = 'getAutoClipState';
 
 // !!!! Add New commands for new CARTA, add previous commands above !!!
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
@@ -30,6 +24,12 @@ const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
 const SET_REGION_TYPE = 'setRegionType';
 const REGISTER_REGION_CONTROLS = 'registerRegionControls';
 const CLOSE_REGION = 'closeRegion';
+const SET_CLIP_VALUE = 'setClipValue';
+const CLIP_KEY = 'clipValue';
+const GET_CLIP_STATE = 'getClipState';
+const SET_AUTO_CLIP_VALUE = 'setAutoClip';
+const AUTO_CLIP_KEY = 'autoClip';
+const GET_AUTO_CLIP_STATE = 'getAutoClipState';
 
 // TODO some commands need parameters, wrap them as a function
 
