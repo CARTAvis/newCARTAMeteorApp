@@ -12,6 +12,7 @@ import { setupProfilerDB } from '../profiler/actions';
 import { setupRegionDB } from '../region/actions';
 import { setupAnimatorDB } from '../animator/actions';
 import { setupColormapDB } from '../colormap/actions';
+import { setupClippingDB } from '../clipping/actions';
 
 import { storeReduxDispatch } from '../api/MongoHelper';
 
@@ -65,6 +66,7 @@ function setupComponentsDB() {
   setupRegionDB();
   setupAnimatorDB();
   setupColormapDB();
+  setupClippingDB();
 }
 
 function setupResponseChannnelAndAllDB() {

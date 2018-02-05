@@ -9,6 +9,7 @@ import histogramReducer from './histogram/reducer';
 import featureReducer from './featureContainer/reducer';
 import animatorReducer from './animator/reducer';
 import colormapReducer from './colormap/reducer';
+import clippingReducer from './clipping/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   ...featureReducer,
   ...animatorReducer,
   ...colormapReducer,
+  ...clippingReducer,
 });
 
 export default rootReducer;

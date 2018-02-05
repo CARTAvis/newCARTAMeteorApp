@@ -9,6 +9,7 @@ import '../imports/api/FeatureContainerDB';
 import '../imports/api/HistogramDB';
 import '../imports/api/AnimatorDB';
 import '../imports/api/ColormapDB';
+import '../imports/api/ClippingDB';
 
 import ChannelClient from '../imports/api/ChannelClient';
 // import Commands from '../imports/api/Commands';

@@ -3,6 +3,7 @@ import { RegionDB } from '../api/RegionDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
+import clipping from '../clipping/actions';
 
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
@@ -41,7 +42,7 @@ function parseReigsterViewResp(resp) {
   api.instance().setupViewSize(viewName, width, height);
 }
 function setupImageViewer() {
-  return () => {
+  return (dispatch, getState) => {
     // console.log('setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
@@ -57,6 +58,9 @@ function setupImageViewer() {
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         parseReigsterViewResp(resp);
+        // setup the clipping default state
+        dispatch(clipping.getClipState());
+        dispatch(clipping.getAutoClipState());
       });
   };
 }

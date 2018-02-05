@@ -5,7 +5,7 @@ const REQUEST_FILE_LIST = '/CartaObjects/DataLoader:getData';
 const SELECT_FILE_TO_OPEN = '/CartaObjects/ViewManager:dataLoaded';
 
 // non-global
-//need object id
+// need object id
 const GET_ANIMATORTYPE_ID = 'registerAnimator';
 const SET_ZOOM_LEVEL = 'setZoomLevel';
 const CLOSE_IMAGE = 'closeImage';
@@ -24,6 +24,12 @@ const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
 const SET_REGION_TYPE = 'setRegionType';
 const REGISTER_REGION_CONTROLS = 'registerRegionControls';
 const CLOSE_REGION = 'closeRegion';
+const SET_CLIP_VALUE = 'setClipValue';
+const CLIP_KEY = 'clipValue';
+const GET_CLIP_STATE = 'getClipState';
+const SET_AUTO_CLIP_VALUE = 'setAutoClip';
+const AUTO_CLIP_KEY = 'autoClip';
+const GET_AUTO_CLIP_STATE = 'getAutoClipState';
 
 // TODO some commands need parameters, wrap them as a function
 
@@ -46,6 +52,12 @@ const Commands = {
   SET_REGION_TYPE,
   REGISTER_REGION_CONTROLS,
   CLOSE_REGION,
+  SET_CLIP_VALUE,
+  CLIP_KEY,
+  GET_CLIP_STATE,
+  SET_AUTO_CLIP_VALUE,
+  AUTO_CLIP_KEY,
+  GET_AUTO_CLIP_STATE,
 };
 
 export default Commands;

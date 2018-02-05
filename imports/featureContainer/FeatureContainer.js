@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import actions from './actions';
 import Histogram from '../histogram/Histogram';
 import Profiler from '../profiler/Profiler';
+import Clipping from '../clipping/Clipping';
 
 // const _ = require('lodash');
 // const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
@@ -68,6 +69,10 @@ class FeatureContainer extends Component {
     const width = this.props.width;
     return (
       <div style={{ minHeight: '100vh' }}>
+
+        {/* add clipping buttons */}
+        <Clipping />
+
         {/* <button onClick={this.onAddItem('none')}>Add Item</button> */}
         <ReactGridLayout
           {...this.props}
