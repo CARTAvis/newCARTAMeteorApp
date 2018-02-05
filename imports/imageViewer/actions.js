@@ -42,7 +42,7 @@ function parseReigsterViewResp(resp) {
   api.instance().setupViewSize(viewName, width, height);
 }
 function setupImageViewer() {
-  return () => {
+  return (dispatch, getState) => {
     // console.log('setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
