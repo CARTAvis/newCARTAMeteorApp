@@ -13,13 +13,8 @@ class InteractiveClean extends Component {
     render(){
       const { buttonText } = this.props;
         return(
-          <Text
-            x={532}
-            y={0}
-            width={100}
-            text={`text`}
-          />
-          //            <div><RaisedButton style={buttonStyle} onTouchTap={this.buttonPressed} label="Read" secondary /></div>
+
+            <div><RaisedButton onTouchTap={this.buttonPressed} label="Clean!" secondary /></div>
         );
     }
 

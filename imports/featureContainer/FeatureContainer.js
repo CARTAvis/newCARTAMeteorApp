@@ -9,6 +9,8 @@ import Histogram from '../histogram/Histogram';
 import Profiler from '../profiler/Profiler';
 import Statistics from '../statistics/Statistics';
 import settingsActions from '../settings/actions';
+import InteractiveClean from '../interactiveClean/InteractiveClean';
+
 // const _ = require('lodash');
 // const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 // const WidthProvider = require('react-grid-layout').WidthProvider;
@@ -41,6 +43,8 @@ class FeatureContainer extends Component {
       return <Profiler width={this.props.width} />;
     } else if (type === 'Statistics') {
       return <Statistics />;
+    } else if (type === 'InteractiveClean') {
+      return <InteractiveClean width={this.props.width} />;
     }
     return '';
   }

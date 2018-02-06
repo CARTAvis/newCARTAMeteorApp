@@ -9,7 +9,7 @@ import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contex
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
 import Colormap from '../colormap/Colormap';
-import InteractiveClean from '../interactiveClean/InteractiveClean'
+import InteractiveClean from '../interactiveClean/InteractiveClean';
 
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
@@ -108,6 +108,7 @@ class MainPage extends Component {
             <MenuItem onClick={this.handleClick} data={{ type: 'Profiler' }}>Profiler</MenuItem>
             <MenuItem onClick={this.handleClick} data={{ type: 'Histogram' }}>Histogram</MenuItem>
             <MenuItem onClick={this.handleClick} data={{ type: 'Statistics' }}>Statistics</MenuItem>
+            <MenuItem onClick={this.handleClick} data={{ type: 'InteractiveClean' }}>InteractiveClean</MenuItem>
           </SubMenu>
         </ContextMenu>
       </div>
@@ -151,18 +152,24 @@ class MainPage extends Component {
               <Animator />
             </div>
             <div>
-              <div style={{ marginLeft: '30%', marginTop: '10px' }}>
+              <div style={{ marginLeft: '30%', marginTop: '10px', display: 'flex'}}>
                 <RaisedButton
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Profiler')}
                 >
-                  <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
+                  <img style={{ width: '40px', height: '25px', verticalAlign:'middle' }} src="/images/line.svg" alt="" />
                 </RaisedButton>
                 <RaisedButton
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Histogram')}
                 >
-                  <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
+                  <img style={{ width: '40px', height: '25px', verticalAlign:'middle' }} src="/images/histogram.png" alt="" />
+                </RaisedButton>
+                <RaisedButton
+                  style={{ marginLeft: '10px'}}
+                  onClick={() => this.handleClick2('InteractiveClean')}
+                >
+                  <img style={{ width: '40px', height:'25px', verticalAlign:'middle'}} src="/images/clean.png" alt="Interactive Clean" />
                 </RaisedButton>
               </div>
               {midPanel}
