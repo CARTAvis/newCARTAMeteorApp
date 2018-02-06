@@ -8,6 +8,9 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
+import Colormap from '../colormap/Colormap';
+import InteractiveClean from '../interactiveClean/InteractiveClean'
+
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 // import { connect } from 'react-redux';

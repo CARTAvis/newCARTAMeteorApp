@@ -17,6 +17,8 @@ import '../imports/api/SettingsDB';
 import '../imports/api/ImageSettingsDB';
 import '../imports/api/ImageStatsDB';
 import '../imports/api/RegionStatsDB';
+import '../imports/api/InteractiveCleanDB'
+
 import ChannelClient from '../imports/api/ChannelClient';
 // import Commands from '../imports/api/Commands';
 

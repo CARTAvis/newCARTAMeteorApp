@@ -1,6 +1,7 @@
 import { ActionType } from './actions';
 
 const defaultState = {
+  buttonText: 'interactive clean',
 };
 const InteractiveCleanDB = (state = defaultState, action) => {
   switch (action.type) {

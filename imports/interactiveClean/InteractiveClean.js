@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import actions from './actions';
 import { connect } from 'react-redux';
+import { Layer, Stage, Rect, Group, Text } from 'react-konva';
 
 class InteractiveClean extends Component {
     constructor(props) {
@@ -10,9 +11,16 @@ class InteractiveClean extends Component {
     }
 
     render(){
+      const { buttonText } = this.props;
         return(
-            <div><RaisedButton style={buttonStyle} onTouchTap={this.buttonPressed} label="Read" secondary /></div>
-        )
+          <Text
+            x={532}
+            y={0}
+            width={100}
+            text={`text`}
+          />
+          //            <div><RaisedButton style={buttonStyle} onTouchTap={this.buttonPressed} label="Read" secondary /></div>
+        );
     }
 
     buttonPressed = () =>{
@@ -20,5 +28,9 @@ class InteractiveClean extends Component {
     }
 
 }
+
+const mapStateToProps = state => ({
+  buttonText: state.InteractiveCleanDB.buttonText,
+});
 
 export default connect(mapStateToProps)(InteractiveClean);
