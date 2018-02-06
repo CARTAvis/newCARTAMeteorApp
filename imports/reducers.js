@@ -13,6 +13,8 @@ import gridControlReducer from './gridControl/reducer';
 import topbarReducer from './topbar/reducer';
 import statsReducer from './statistics/reducer';
 import statsSettingsReducer from './statsSettings/reducer';
+import settingsReducer from './settings/reducer';
+import imageSettingsReducer from './imageSettings/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -28,6 +30,8 @@ const rootReducer = combineReducers({
   ...topbarReducer,
   ...statsReducer,
   ...statsSettingsReducer,
+  ...settingsReducer,
+  ...imageSettingsReducer,
 });
 
 export default rootReducer;

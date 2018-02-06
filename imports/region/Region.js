@@ -22,6 +22,7 @@ import histogramActions from '../histogram/actions';
 import Colormap from '../colormap/Colormap';
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
+import settingsActions from '../settings/actions';
 import colormapActions from '../colormap/actions';
 import statsActions from '../statistics/actions';
 
@@ -403,13 +404,13 @@ class Region extends Component {
       htmlObject.innerHTML = '';
     }
   }
-  removeSetting = () => {
-    // this.setState({ items: _.reject(this.state.items, { i }) });
-    this.props.removeSetting('Image');
-  }
+  // removeSetting = () => {
+  //   this.props.removeSetting('Image');
+  // }
   setSetting = () => {
     // console.log('THE TYPE TO BE PASSED: ', type);
-    this.props.setSetting('Image');
+    // this.props.setSetting('Image');
+    this.props.dispatch(settingsActions.setSetting('Image'));
   }
   init = () => {
     console.log('INIT');

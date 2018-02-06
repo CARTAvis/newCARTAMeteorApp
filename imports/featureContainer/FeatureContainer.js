@@ -8,6 +8,7 @@ import actions from './actions';
 import Histogram from '../histogram/Histogram';
 import Profiler from '../profiler/Profiler';
 import Statistics from '../statistics/Statistics';
+import settingsActions from '../settings/actions';
 // const _ = require('lodash');
 // const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 // const WidthProvider = require('react-grid-layout').WidthProvider;
@@ -24,14 +25,13 @@ class FeatureContainer extends Component {
   onRemoveItem(i, type) {
     // this.setState({ items: _.reject(this.state.items, { i }) });
     this.props.dispatch(actions.onRemoveItemDB(i));
-    this.props.removeSetting(type);
+    this.props.dispatch(settingsActions.removeSetting(type));
   }
   onAddItem = (data) => {
     this.props.dispatch(actions.onAddItemDB(data));
   }
-  setSetting(type) {
-    // console.log('THE TYPE TO BE PASSED: ', type);
-    this.props.setSetting(type);
+  setSetting(settingType) {
+    this.props.dispatch(settingsActions.setSetting(settingType));
   }
   addGraph = (type) => {
     // console.log(`TYPE: ${type}`);

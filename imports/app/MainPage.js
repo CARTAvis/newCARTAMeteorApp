@@ -21,10 +21,7 @@ import Animator from '../animator/Animator';
 // import actions from './actions';
 
 import FeatureContainer from '../featureContainer/FeatureContainer';
-import ProfilerSettings from './ProfilerSettings';
-import HistogramSettings from './HistogramSettings';
-import ImageSettings from './ImageSettings';
-import StatsSettings from '../statsSettings/StatsSettings';
+import Settings from '../settings/Settings';
 import SideMenu from './SideMenu';
 import Topbar from '../topbar/Topbar';
 // import FeatureContainerActions from '../featureContainer/actions';
@@ -37,9 +34,7 @@ class MainPage extends Component {
     this.state = {
       // expand: false,
       value: 3,
-      setting: '',
       open: false,
-      settingsArray: [],
     };
   }
   componentDidMount = () => {
@@ -60,53 +55,6 @@ class MainPage extends Component {
   onUpdate = (second) => {
     this.setState({ secondColumnWidth: second });
   }
-  setSetting = (type) => {
-    let el = null;
-    if (type === 'Profiler') el = <ProfilerSettings />;
-    else if (type === 'Histogram') el = <HistogramSettings />;
-    else if (type === 'Image') el = <ImageSettings />;
-    else if (type === 'Statistics') el = <StatsSettings />;
-    // add new settings to a new tab
-    this.setState(prevState => ({
-      settingsArray: prevState.settingsArray.concat({
-        type,
-        setting: el,
-        key: Math.floor(Math.random() * 100),
-      }),
-    }));
-    // set new settings
-    this.setState({ setting: type });
-    if (this.state.settingsArray.length === 0) {
-      // show settings
-      this.show();
-    }
-  }
-  settingChanged = (value) => {
-    this.setState({ setting: value });
-  }
-  // this function is for removing settings with the 'x' button on feature container
-  removeSetting = (type) => {
-    console.log('REMOVING: ', type);
-    const arr = this.state.settingsArray;
-    if (arr.length > 0) {
-      const arrType = arr[0].type;
-      if (arr.length === 1 && (arrType === 'Profiler' || arrType === 'Histogram' || arrType === 'Statistics')) {
-        this.hide();
-      } else if (arr.length > 0) {
-        let index = 0;
-        for (let i = 0; i < arr.length; i += 1) {
-          if (arr[i].type === type) {
-            if (i === arr.length - 1) index = i - 1;
-            else index = i + 1;
-          }
-        }
-        this.setState(prevState => ({
-          settingsArray: prevState.settingsArray.filter(item => item.type !== type),
-          setting: prevState.settingsArray[index].type,
-        }));
-      }
-    }
-  }
   handleClick = (e, data) => {
     this.grid.getWrappedInstance().onAddItem(data.type);
   }
@@ -119,20 +67,6 @@ class MainPage extends Component {
   }
   expandToTrue = () => {
     this.setState({ expand: true });
-  }
-  showSetting = (setting) => {
-    if (setting) {
-      // if (setting === 'Profiler') return <ProfilerSettings />;
-      // else if (setting === 'Histogram') return <HistogramSettings />;
-      // else if (setting === 'Image') return <ImageSettings />;
-      for (let i = 0; i < this.state.settingsArray.length; i += 1) {
-        if (this.state.settingsArray[i].type === setting) {
-          // console.log('KEY: ', this.state.settingsArray[i].key);
-          return this.state.settingsArray[i].setting;
-        }
-      }
-    }
-    return '';
   }
   drage2ndeHandler = (first, second, third) => {
     console.log('drage2nd handler:', first, ';second:', second, ';third:', third);
@@ -149,19 +83,6 @@ class MainPage extends Component {
   resizeHandler = (first, second, third) => {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
-  show = () => {
-    console.log('SHOWING SETTINGS');
-    const box2 = document.getElementById('hid-box');
-    box2.className = 'show';
-  }
-  hide = () => {
-    const box2 = document.getElementById('hid-box');
-    box2.className = 'hide';
-    this.setState({
-      settingsArray: [],
-      setting: '',
-    });
-  }
   render() {
     console.log('IN RENDER');
     const toolbarStyle = {
@@ -170,7 +91,6 @@ class MainPage extends Component {
       width: '100%',
     };
     // const expanded = this.state.expand;
-    const setting = this.state.setting;
     const midPanel = (
       <div>
         <div>
@@ -178,8 +98,6 @@ class MainPage extends Component {
             <FeatureContainer
               ref={(node) => { if (node) this.grid = node; }}
               width={this.state.secondColumnWidth}
-              setSetting={this.setSetting}
-              removeSetting={this.removeSetting}
             />
           </ContextMenuTrigger>
         </div>
@@ -190,31 +108,6 @@ class MainPage extends Component {
             <MenuItem onClick={this.handleClick} data={{ type: 'Statistics' }}>Statistics</MenuItem>
           </SubMenu>
         </ContextMenu>
-      </div>
-    );
-    const tabs = (
-      <Tabs
-        value={this.state.setting}
-        onChange={this.settingChanged}
-      >
-        {this.state.settingsArray.map(item =>
-          (<Tab label={item.type} value={item.type} key={Math.floor(Math.random() * 100)}>
-            {this.showSetting(item.type)}
-          </Tab>),
-        )}
-      </Tabs>
-    );
-    const content = (
-      // <Card
-      //   style={{ width: 600 }}
-      // >
-      <div>
-        <RaisedButton
-          onClick={this.hide}
-          label="close"
-        />
-        {/* {this.state.tabs.length > 1 ? tabs : this.state.first} */}
-        {this.state.settingsArray.length > 1 ? tabs : this.showSetting(setting)}
       </div>
     );
     return (
@@ -252,10 +145,7 @@ class MainPage extends Component {
                 <Region />
                 <Region />
               </div> */}
-              <Region
-                setSetting={this.setSetting}
-                removeSetting={this.removeSetting}
-              />
+              <Region />
               <Animator />
             </div>
             <div>
@@ -277,9 +167,7 @@ class MainPage extends Component {
             </div>
           </LayoutWrapper>
         </div>
-        <div id="hid-box" className="hide">
-          {content}
-        </div>
+        <Settings />
       </div>
     );
   }
