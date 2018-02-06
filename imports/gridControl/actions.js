@@ -3,15 +3,12 @@ import { mongoUpsert } from '../api/MongoHelper';
 // import SessionManager from '../api/SessionManager';
 import { ImageViewerDB } from '../api/ImageViewerDB';
 import { GridDB } from '../api/GridDB';
-import Commands from '../api/Commands';
 import api from '../api/ApiService';
 
 // redux part
 const DATAGRID_CHANGE = 'DATAGRID_CHANGE';
-const SET_USEDEFAULTCS = 'SET_USEDEFAULTCS';
 export const ActionType = {
   DATAGRID_CHANGE,
-  SET_USEDEFAULTCS,
 };
 
 export function setupGridDB() {
@@ -204,6 +201,7 @@ function setFontFamily(value) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
     const command = `${controllerID}:setFontFamily`;
+    // console.log('+++++++++++++++++++++++++++++++ The command value of setFontFamily', value);
     api.instance().sendCommand(command, value)
       .then((response) => {
         const { data } = response;

@@ -33,9 +33,10 @@ class GridControl extends Component {
   display = () => {
     let content = null;
     // console.log('INSIDE DISPLAY');
+    const { dataGrid } = this.props;
     if (this.state.option === 'canvas') {
       const coordinateSystems = [];
-      const supportedCS = this.props.dataGrid.supportedCS;
+      const supportedCS = dataGrid.supportedCS;
       for (let i = 0; i < supportedCS.length; i += 1) {
         coordinateSystems.push(
           <MenuItem value={supportedCS[i]} primaryText={supportedCS[i]} key={i} />);
@@ -45,7 +46,7 @@ class GridControl extends Component {
       (<div>
         <Toggle
           label="Show Coordinate System"
-          toggled={this.props.dataGrid.showCoordinateSystem}
+          toggled={dataGrid.showCoordinateSystem}
           style={{ marginBottom: 16 }}
           onToggle={(event, newValue) => {
             this.props.dispatch(actions.setShowCoordinateSystem(newValue));
@@ -53,7 +54,7 @@ class GridControl extends Component {
         />
         <Toggle
           label="Use Default Coordinate System"
-          toggled={this.props.dataGrid.showDefaultCS}
+          toggled={dataGrid.showDefaultCS}
           style={{ marginBottom: 16 }}
           onToggle={(event, newValue) => {
             this.props.dispatch(actions.setShowDefaultCoordinateSystem(newValue));
@@ -61,8 +62,8 @@ class GridControl extends Component {
         />
         <SelectField
           floatingLabelText="Current Coordinate System"
-          value={this.props.dataGrid.skyCS}
-          disabled={this.props.dataGrid.showDefaultCS}
+          value={dataGrid.skyCS}
+          disabled={dataGrid.showDefaultCS}
           onChange={(event, index, value) => {
             this.props.dispatch(actions.setCoordinateSystem(value));
           }}
@@ -75,7 +76,7 @@ class GridControl extends Component {
         (<div>
           <Toggle
             label="Show Grid Lines"
-            toggled={this.props.dataGrid.showGridLines}
+            toggled={dataGrid.showGridLines}
             style={{ marginBottom: 16 }}
             onToggle={(event, newValue) => {
               this.props.dispatch(actions.setShowGridLines(newValue));
@@ -86,7 +87,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setGridSpacing(newValue));
             }}
-            value={this.props.dataGrid.spacing}
+            value={dataGrid.spacing}
           />
           <Slider
             min={0}
@@ -94,7 +95,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setGridSpacing(newValue));
             }}
-            value={this.props.dataGrid.spacing}
+            value={dataGrid.spacing}
             step={0.01}
           />
           <TextField
@@ -102,7 +103,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setGridThickness(newValue));
             }}
-            value={this.props.dataGrid.grid.width}
+            value={dataGrid.grid.width}
             // defaultValue={1}
           />
           <Slider
@@ -111,7 +112,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setGridThickness(newValue));
             }}
-            value={this.props.dataGrid.grid.width}
+            value={dataGrid.grid.width}
             step={1}
           />
           <TextField
@@ -119,7 +120,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setGridTransparency(newValue));
             }}
-            value={this.props.dataGrid.grid.alpha}
+            value={dataGrid.grid.alpha}
           />
           <Slider
             min={0}
@@ -127,13 +128,13 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setGridTransparency(newValue));
             }}
-            value={this.props.dataGrid.grid.alpha}
+            value={dataGrid.grid.alpha}
             step={1}
           />
         </div>);
     } else if (this.state.option === 'axes') {
       const axes = [];
-      const supportedAxes = this.props.dataGrid.supportedAxes;
+      const supportedAxes = dataGrid.supportedAxes;
       for (let i = 0; i < supportedAxes.length; i += 1) {
         axes.push(
           <MenuItem value={supportedAxes[i]} primaryText={supportedAxes[i]} key={i} />);
@@ -143,7 +144,7 @@ class GridControl extends Component {
         <div>
           <Toggle
             label="Show Axes/Border"
-            toggled={this.props.dataGrid.showAxis}
+            toggled={dataGrid.showAxis}
             style={{ marginBottom: 16 }}
             onToggle={(event, newValue) => {
               this.props.dispatch(actions.setShowAxis(newValue));
@@ -151,7 +152,7 @@ class GridControl extends Component {
           />
           <Toggle
             label="Use Internal Axes"
-            toggled={this.props.dataGrid.showInternalLabels}
+            toggled={dataGrid.showInternalLabels}
             style={{ marginBottom: 16 }}
             onToggle={(event, newValue) => {
               this.props.dispatch(actions.setShowInternalLabels(newValue));
@@ -162,7 +163,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setAxesThickness(newValue));
             }}
-            value={this.props.dataGrid.axes.width}
+            value={dataGrid.axes.width}
           />
           <Slider
             min={1}
@@ -170,7 +171,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setAxesThickness(newValue));
             }}
-            value={this.props.dataGrid.axes.width}
+            value={dataGrid.axes.width}
             step={1}
           />
           <TextField
@@ -178,7 +179,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setAxesTransparency(newValue));
             }}
-            value={this.props.dataGrid.axes.alpha}
+            value={dataGrid.axes.alpha}
           />
           <Slider
             min={0}
@@ -186,12 +187,12 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setAxesTransparency(newValue));
             }}
-            value={this.props.dataGrid.axes.alpha}
+            value={dataGrid.axes.alpha}
             step={1}
           />
           <SelectField
             floatingLabelText="X Axis"
-            value={this.props.dataGrid.xAxis}
+            value={dataGrid.xAxis}
             onChange={(event, index, value) => {
               this.props.dispatch(actions.setAxisX(value));
             }}
@@ -200,7 +201,7 @@ class GridControl extends Component {
           </SelectField>
           <SelectField
             floatingLabelText="Y Axis"
-            value={this.props.dataGrid.yAxis}
+            value={dataGrid.yAxis}
             onChange={(event, index, value) => {
               this.props.dispatch(actions.setAxisY(value));
             }}
@@ -214,7 +215,7 @@ class GridControl extends Component {
         <div>
           <p>Family: </p>
           <DropDownMenu
-            value={this.props.dataGrid.font.family}
+            value={dataGrid.font.family}
             onChange={(event, key, value) => {
               this.props.dispatch(actions.setFontFamily(value));
             }}
@@ -227,7 +228,7 @@ class GridControl extends Component {
           <NumericInput
             min={0}
             max={20}
-            value={this.props.dataGrid.font.size}
+            value={dataGrid.font.size}
             onChange={(event, value) => {
               this.props.dispatch(actions.setFontSize(value));
             }}
@@ -235,16 +236,19 @@ class GridControl extends Component {
           />
           <NumericInput
             min={0}
-            max={this.props.dataGrid.decimalsMax}
-            value={this.props.dataGrid.decimals}
+            max={dataGrid.decimalsMax}
+            value={dataGrid.decimals}
             onChange={(event, value) => {
               this.props.dispatch(actions.setLabelDecimals(value));
             }}
             style={numericInputStyle}
           />
+          {/* TODO: The function is unfinished.
+          The hard code in label format menu should be modified to match 
+          the permuted image and spectral axis, etc. */}
           <p>Left: </p>
           <DropDownMenu
-            value={this.props.dataGrid.labelFormats.left.format}
+            value={dataGrid.labelFormats.left.format}
             onChange={(event, key, value) => {
               this.props.dispatch(actions.setGridLabelFormat(value, 'left'));
             }}
@@ -256,7 +260,7 @@ class GridControl extends Component {
           </DropDownMenu>
           <p>Right: </p>
           <DropDownMenu
-            value={this.props.dataGrid.labelFormats.right.format}
+            value={dataGrid.labelFormats.right.format}
             onChange={(event, key, value) => {
               this.props.dispatch(actions.setGridLabelFormat(value, 'right'));
             }}
@@ -268,7 +272,7 @@ class GridControl extends Component {
           </DropDownMenu>
           <p>Top: </p>
           <DropDownMenu
-            value={this.props.dataGrid.labelFormats.top.format}
+            value={dataGrid.labelFormats.top.format}
             onChange={(event, key, value) => {
               this.props.dispatch(actions.setGridLabelFormat(value, 'top'));
             }}
@@ -280,7 +284,7 @@ class GridControl extends Component {
           </DropDownMenu>
           <p>Bottom: </p>
           <DropDownMenu
-            value={this.props.dataGrid.labelFormats.bottom.format}
+            value={dataGrid.labelFormats.bottom.format}
             onChange={(event, key, value) => {
               this.props.dispatch(actions.setGridLabelFormat(value, 'bottom'));
             }}
@@ -297,7 +301,7 @@ class GridControl extends Component {
         (<div>
           <Toggle
             label="Show Ticks"
-            toggled={this.props.dataGrid.showTicks}
+            toggled={dataGrid.showTicks}
             style={{ marginBottom: 16 }}
             onToggle={(event, newValue) => {
               this.props.dispatch(actions.setShowTicks(newValue));
@@ -308,7 +312,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setTickLength(newValue));
             }}
-            value={this.props.dataGrid.tickLength}
+            value={dataGrid.tickLength}
             // defaultValue={}
           />
           <Slider
@@ -317,7 +321,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setTickLength(newValue));
             }}
-            value={this.props.dataGrid.tickLength}
+            value={dataGrid.tickLength}
             step={1}
           />
           <TextField
@@ -325,7 +329,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setTickThickness(newValue));
             }}
-            value={this.props.dataGrid.tick.width}
+            value={dataGrid.tick.width}
             // defaultValue={1}
           />
           <Slider
@@ -334,7 +338,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setTickThickness(newValue));
             }}
-            value={this.props.dataGrid.tick.width}
+            value={dataGrid.tick.width}
             step={1}
           />
           <TextField
@@ -342,7 +346,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setTickTransparency(newValue));
             }}
-            value={this.props.dataGrid.tick.alpha}
+            value={dataGrid.tick.alpha}
           />
           <Slider
             min={0}
@@ -350,7 +354,7 @@ class GridControl extends Component {
             onChange={(event, newValue) => {
               this.props.dispatch(actions.setTickTransparency(newValue));
             }}
-            value={this.props.dataGrid.tick.alpha}
+            value={dataGrid.tick.alpha}
             step={1}
           />
         </div>);
