@@ -10,26 +10,24 @@ export const ActionType = {
   STATISTICS_CHANGE,
 };
 
-const GET_STATS = 'GET_STATS';
 const GET_STATS_PREF = 'GET_STATS_REF';
 
 export function setupStatsDB() {
   // return (dispatch) => {
-
   api.instance().setupMongoRedux(StatsDB, STATISTICS_CHANGE);
+
   // };
 }
-function getStatsInfo() {
-  return (dispatch, getState) => {
-    const StatsID = getState().StatsDB.StatsID;
-    const cmd = `${StatsID}:${Commands.GET_STATS_INFO}`;
-    api.instance().sendCommand(cmd, '')
-      .then((resp) => {
-        console.log('STATS INFO: ', resp.data);
-        mongoUpsert(StatsDB, { stats: resp.data.stats, selectedIndex: resp.data.selectedIndex }, GET_STATS);
-      });
-  };
-}
+// function getStatsInfo() {
+//   return (dispatch, getState) => {
+//     const StatsID = getState().StatsDB.StatsID;
+//     const cmd = `${StatsID}:${Commands.GET_STATS_INFO}`;
+//     api.instance().sendCommand(cmd, '')
+//       .then((resp) => {
+//         mongoUpsert(StatsDB, { stats: resp.data.stats, selectedIndex: resp.data.selectedIndex }, GET_STATS);
+//       });
+//   };
+// }
 function getStatsPref() {
   return (dispatch, getState) => {
     const StatsID = getState().StatsDB.StatsID;
@@ -57,7 +55,6 @@ function setupStats() {
 
 const actions = {
   setupStats,
-  getStatsInfo,
   getStatsPref,
 };
 

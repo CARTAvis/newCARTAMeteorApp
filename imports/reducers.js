@@ -15,6 +15,8 @@ import statsReducer from './statistics/reducer';
 import statsSettingsReducer from './statsSettings/reducer';
 import settingsReducer from './settings/reducer';
 import imageSettingsReducer from './imageSettings/reducer';
+import imageStatsReducer from './imageStats/reducer';
+import regionStatsReducer from './regionStats/reducer';
 
 const rootReducer = combineReducers({
   ...sessionReducer,
@@ -32,6 +34,8 @@ const rootReducer = combineReducers({
   ...statsSettingsReducer,
   ...settingsReducer,
   ...imageSettingsReducer,
+  ...imageStatsReducer,
+  ...regionStatsReducer,
 });
 
 export default rootReducer;

@@ -24,7 +24,7 @@ import Colormap from '../colormap/Colormap';
 import ImageViewer from '../imageViewer/ImageViewer';
 import settingsActions from '../settings/actions';
 import colormapActions from '../colormap/actions';
-import statsActions from '../statistics/actions';
+import regionStatsActions from '../regionStats/actions';
 
 const Blob = require('blob');
 
@@ -113,7 +113,7 @@ class Region extends Component {
       const pos = this.getMousePos(this.div, event);
       this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
       this.props.dispatch(profilerActions.getProfile());
-      this.props.dispatch(statsActions.getStatsInfo());
+      // this.props.dispatch(statsActions.getStatsInfo());
       this.props.dispatch(histogramActions.getHistogramData());
       endX = pos.x;
       endY = pos.y;
@@ -397,11 +397,10 @@ class Region extends Component {
     this.zoomReset();
   }
   showCursorInfo = () => {
-    const htmlObject = document.getElementById('cursorInfo');
     if (this.props.cursorInfo) {
-      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
+      this.cursorInfo.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
     } else {
-      htmlObject.innerHTML = '';
+      this.cursorInfo.innerHTML = '';
     }
   }
   // removeSetting = () => {
@@ -417,7 +416,7 @@ class Region extends Component {
     if (this.props.stack) {
       if (this.props.stack.layers.length > 0) {
         this.props.dispatch(imageActions.setRegionType('Rectangle'));
-        this.props.dispatch(histogramActions.selectRegionHisto());
+        this.props.dispatch(histogramActions.selectRegionHistoram());
       }
     }
   }
@@ -491,6 +490,7 @@ class Region extends Component {
                   onMouseUp={(e) => {
                     if (this.props.init) {
                       this.onMouseUp(e.evt);
+                      this.props.dispatch(regionStatsActions.getRegionStats());
                     }
                   }}
                   onWheel={(e) => {
@@ -569,7 +569,7 @@ class Region extends Component {
           {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
           <Card style={{ width: 557 }}>
             <CardText>
-              <div id="cursorInfo" />
+              <div ref={(node) => { if (node) { this.cursorInfo = node; } }} />
             </CardText>
           </Card>
           <Popover

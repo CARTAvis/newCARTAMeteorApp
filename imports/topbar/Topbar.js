@@ -68,11 +68,10 @@ class Topbar extends Component {
     });
   }
   drawRect = () => {
-    const button = document.getElementById('rect');
-    if (!button.style.background || button.style.background === 'none') {
-      button.style.background = '#D3D3D3';
+    if (!this.rect.style.background || this.rect.style.background === 'none') {
+      this.rect.style.background = '#D3D3D3';
     } else {
-      button.style.background = 'none';
+      this.rect.style.background = 'none';
     }
     this.props.dispatch(actions.initRegion());
   }
@@ -92,7 +91,7 @@ class Topbar extends Component {
               </div>
               <div>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                  <button id="rect" onClick={this.drawRect} className="region">
+                  <button ref={(node) => { if (node) { this.rect = node; } }} onClick={this.drawRect} className="region">
                     <img className="iconImg" src="/images/rectangle.png" alt="" />
                   </button>
                   <button className="region">

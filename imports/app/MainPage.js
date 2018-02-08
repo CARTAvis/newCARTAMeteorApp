@@ -33,7 +33,6 @@ class MainPage extends Component {
     super(props);
     this.state = {
       // expand: false,
-      value: 3,
       open: false,
     };
   }
