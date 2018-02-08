@@ -11,7 +11,7 @@ import imageViewer from '../imageViewer/actions';
 import profiler from '../profiler/actions';
 import histogramActions from '../histogram/actions';
 import gridControl from '../gridControl/actions';
-
+import imageStatsActions from '../imageStats/actions';
 import colormap from '../colormap/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
@@ -87,6 +87,7 @@ function closeFile() {
             console.log('animator.updateAnimator !!!:', resp);
             // update animatorType-Selections.
             dispatch(colormap.updateColormap());
+            dispatch(imageStatsActions.getImageStats());
             dispatch(animator.updateAnimator(resp));
           });
       } else {
@@ -136,7 +137,7 @@ function selectFileToOpen(path) {
         dispatch(profiler.getProfile());
         dispatch(histogramActions.getHistogramData());
         dispatch(gridControl.getDataGrid());
-
+        dispatch(imageStatsActions.getImageStats());
         dispatch(colormap.updateColormap());
 
         return dispatch(imageViewer.updateStack());

@@ -22,22 +22,14 @@ class GridControl extends Component {
       family: this.props.dataGrid.font.family,
     };
   }
-  componentWillReceiveProps = (nextProps) => {
-    const option = nextProps.option;
-    if (option) {
-      this.setState({ option });
-    }
-    if (this.props.dataGrid.labelFormats) {
-      console.log(this.props.dataGrid.labelFormats.left);
-    }
-  }
   handleFontChange = (event, index, value) => {
     this.setState({ family: value });
   }
-  display = () => {
+  render() {
     let content = null;
+    const subSetting = this.props.subSetting;
     // console.log('INSIDE DISPLAY');
-    if (this.state.option === 'canvas') {
+    if (subSetting === 'canvas') {
       const coordinateSystems = [];
       const supportedCS = this.props.dataGrid.supportedCS;
       for (let i = 0; i < supportedCS.length; i += 1) {
@@ -74,7 +66,7 @@ class GridControl extends Component {
           {coordinateSystems}
         </SelectField>
       </div>);
-    } else if (this.state.option === 'grid') {
+    } else if (subSetting === 'grid') {
       content =
         (<div>
           <Toggle
@@ -135,7 +127,7 @@ class GridControl extends Component {
             step={1}
           />
         </div>);
-    } else if (this.state.option === 'axes') {
+    } else if (subSetting === 'axes') {
       const axes = [];
       const supportedAxes = this.props.dataGrid.supportedAxes;
       for (let i = 0; i < supportedAxes.length; i += 1) {
@@ -213,7 +205,7 @@ class GridControl extends Component {
           </SelectField>
         </div>
       );
-    } else if (this.state.option === 'labels') {
+    } else if (subSetting === 'labels') {
       content = (
         <div>
           <p>Family: </p>
@@ -296,7 +288,7 @@ class GridControl extends Component {
           </DropDownMenu>
         </div>
       );
-    } else if (this.state.option === 'ticks') {
+    } else if (subSetting === 'ticks') {
       content =
         (<div>
           <Toggle
@@ -358,20 +350,9 @@ class GridControl extends Component {
           />
         </div>);
     }
-    return content;
-    // this.props.getContent(a);
-  }
-  render() {
-    // const { dataGrid } = this.props;
-    // const currentskyCoorinateSystem = dataGrid.skyCS;
     return (
       <div>
-        {this.display()}
-        {/* <MenuItem primaryText="canvas" />
-        <MenuItem primaryText="grid" />
-        <MenuItem primaryText="axes/border" />
-        <MenuItem primaryText="labels" />
-        <MenuItem primaryText="ticks" onClick={this.setTicks} /> */}
+        {content}
       </div>
     );
   }
@@ -380,6 +361,7 @@ class GridControl extends Component {
 const mapStateToProps = state => ({
   dataGrid: state.GridDB.DataGrid,
   useDefaultCoordinateSystem: state.GridDB.useDefaultCoordinateSystem,
+  subSetting: state.ImageSettingsDB.subSetting,
 //   animatorTypeList: state.AnimatorDB.animatorTypeList,
 //   currentAnimatorType: state.AnimatorDB.currentAnimatorType,
 });

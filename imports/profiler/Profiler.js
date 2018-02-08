@@ -42,7 +42,9 @@ class Profiler extends Component {
     });
   }
   componentWillReceiveProps = (nextProps) => {
-    if (nextProps.profileData) {
+    console.log('THIS.PROPS: ', this.props);
+    console.log('NEXT PROPS: ', nextProps);
+    if (JSON.stringify(nextProps.profileData) !== JSON.stringify(this.props.profileData)) {
       Plotly.deleteTraces(this.el, -1);
       Plotly.addTraces(this.el, nextProps.profileData);
     }
@@ -53,7 +55,7 @@ class Profiler extends Component {
       Plotly.relayout(this.el, layout);
     }
     if (nextProps.data) {
-      Plotly.Fx.hover(this.el, [nextProps.data]);
+      Plotly.Fx.hover(this.el, nextProps.data);
     }
     if (nextProps.zoomPanData) {
       // console.log('ZOOMPANDATA: ', nextProps.zoomPanData);
@@ -118,8 +120,11 @@ class Profiler extends Component {
   render() {
     return (
       <div>
-        <div style={{ marginTop: '15px' }} ref={(el) => { this.el = el; }} id="profiler" />
-        <RaisedButton label="save" onClick={this.handleTouchTap} />
+        <button onClick={this.handleTouchTap}>
+          <img className="iconImg" src="/images/save.png" alt="" />
+        </button>
+        {/* <RaisedButton label="save" onClick={this.handleTouchTap} /> */}
+        <div style={{ marginTop: '2px' }} ref={(el) => { this.el = el; }} id="profiler" />
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}

@@ -7,7 +7,8 @@ import { connect } from 'react-redux';
 import actions from './actions';
 import Histogram from '../histogram/Histogram';
 import Profiler from '../profiler/Profiler';
-
+import Statistics from '../statistics/Statistics';
+import settingsActions from '../settings/actions';
 // const _ = require('lodash');
 // const PureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 // const WidthProvider = require('react-grid-layout').WidthProvider;
@@ -15,24 +16,22 @@ import Profiler from '../profiler/Profiler';
 const ReactGridLayout = require('react-grid-layout');
 
 class FeatureContainer extends Component {
-  // mixins: [PureRenderMixin]
-  // onBreakpointChange = (breakpoint, cols) => {
-  //   this.setState({
-  //     breakpoint,
-  //     cols,
-  //   });
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+    // this.props.dispatch(actions.onAddItemDB('Statistics'));
+  }
   onRemoveItem(i, type) {
     // this.setState({ items: _.reject(this.state.items, { i }) });
     this.props.dispatch(actions.onRemoveItemDB(i));
-    this.props.removeSetting(type);
+    this.props.dispatch(settingsActions.removeSetting(type));
   }
   onAddItem = (data) => {
     this.props.dispatch(actions.onAddItemDB(data));
   }
-  setSetting(type) {
-    // console.log('THE TYPE TO BE PASSED: ', type);
-    this.props.setSetting(type);
+  setSetting(settingType) {
+    this.props.dispatch(settingsActions.setSetting(settingType));
   }
   addGraph = (type) => {
     // console.log(`TYPE: ${type}`);
@@ -40,6 +39,8 @@ class FeatureContainer extends Component {
       return <Histogram width={this.props.width} />;
     } else if (type === 'Profiler') {
       return <Profiler width={this.props.width} />;
+    } else if (type === 'Statistics') {
+      return <Statistics />;
     }
     return '';
   }
@@ -75,7 +76,7 @@ class FeatureContainer extends Component {
           // onBreakpointChange={this.onBreakpointChange}
           cols={1}
           width={width}
-          rowHeight={200}
+          rowHeight={210}
           layout={this.props.items}
           onDragStop={(e) => {
             console.log();

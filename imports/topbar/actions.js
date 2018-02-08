@@ -19,8 +19,9 @@ export function setupTopbarDB() {
 }
 
 function initRegion() {
-  return () => {
-    mongoUpsert(RegionDB, { init: true }, REGION_INIT);
+  return (dispatch, getState) => {
+    const val = getState().RegionDB.init;
+    mongoUpsert(RegionDB, { init: !val }, REGION_INIT);
   };
 }
 const actions = {

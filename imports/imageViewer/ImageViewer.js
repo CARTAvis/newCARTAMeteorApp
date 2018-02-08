@@ -34,6 +34,7 @@ class ImageViewer extends Component {
   //   };
   // }
   render() {
+    console.log('RENDERING IMAGE VIEWER');
     return (
       // <Image
       //   image={this.state.image}

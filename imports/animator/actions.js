@@ -1,4 +1,5 @@
 import { AnimatorDB } from '../api/AnimatorDB';
+import { ImageStatsDB } from '../api/ImageStatsDB';
 import api from '../api/ApiService';
 import Commands from '../api/Commands';
 import { mongoUpsert } from '../api/MongoHelper';
@@ -264,6 +265,7 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
       .then((resp) => {
         console.log('get changeFrame result:', resp);
         dispatch(colormap.updateColormap());
+        mongoUpsert(ImageStatsDB, { selectedIndex: newFrameIndex }, 'SET_SELECTED_INDEX');
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {
