@@ -4,11 +4,10 @@ import 'react-grid-layout/css/styles.css';
 import '../styles/react-contextmenu.css';
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
+import { Tabs, Tab } from 'material-ui/Tabs';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
-import Colormap from '../colormap/Colormap';
-
 // import { Meteor } from 'meteor/meteor';
 // import { Tracker } from 'meteor/tracker';
 // import { connect } from 'react-redux';
@@ -22,10 +21,10 @@ import Colormap from '../colormap/Colormap';
 // import actions from './actions';
 
 import FeatureContainer from '../featureContainer/FeatureContainer';
-import ProfilerSettings from './ProfilerSettings';
-import HistogramSettings from './HistogramSettings';
+import Settings from '../settings/Settings';
 import SideMenu from './SideMenu';
-import Topbar from './Topbar';
+import Topbar from '../topbar/Topbar';
+// import FeatureContainerActions from '../featureContainer/actions';
 // import Region from './Region';
 import Region from '../region/Region';
 
@@ -34,9 +33,13 @@ class MainPage extends Component {
     super(props);
     this.state = {
       // expand: false,
-      value: 3,
-      setting: '',
+      open: false,
     };
+  }
+  componentDidMount = () => {
+    if (this.grid) {
+      this.grid.getWrappedInstance().onAddItem('Statistics');
+    }
   }
   // define callback
   // onUpdate = (array) => {
@@ -51,14 +54,6 @@ class MainPage extends Component {
   onUpdate = (second) => {
     this.setState({ secondColumnWidth: second });
   }
-  setSetting = (type) => {
-    // if (type === 'Profiler') {
-    //   console.log('WILL LOAD PROFILER SETTING');
-    // } else {
-    //   console.log('WILL LOAD HISTOGRAM SETTING');
-    // }
-    this.setState({ setting: type });
-  }
   handleClick = (e, data) => {
     this.grid.getWrappedInstance().onAddItem(data.type);
   }
@@ -71,14 +66,6 @@ class MainPage extends Component {
   }
   expandToTrue = () => {
     this.setState({ expand: true });
-  }
-  showSetting = (setting) => {
-    if (setting) {
-      if (setting === 'Profiler') return <ProfilerSettings />;
-      else if (setting === 'Histogram') return <HistogramSettings />;
-      return 0;
-    }
-    return '';
   }
   drage2ndeHandler = (first, second, third) => {
     console.log('drage2nd handler:', first, ';second:', second, ';third:', third);
@@ -96,14 +83,13 @@ class MainPage extends Component {
     console.log('resize handler:', first, ';second:', second, ';third:', third);
   }
   render() {
-    // console.log('IN RENDER');
+    console.log('IN RENDER');
     const toolbarStyle = {
       backgroundColor: '#EEEEEE',
       bottom: 0,
       width: '100%',
     };
     // const expanded = this.state.expand;
-    const setting = this.state.setting;
     const midPanel = (
       <div>
         <div>
@@ -111,7 +97,6 @@ class MainPage extends Component {
             <FeatureContainer
               ref={(node) => { if (node) this.grid = node; }}
               width={this.state.secondColumnWidth}
-              setSetting={this.setSetting}
             />
           </ContextMenuTrigger>
         </div>
@@ -119,6 +104,7 @@ class MainPage extends Component {
           <SubMenu title="Layout" hoverDelay={100}>
             <MenuItem onClick={this.handleClick} data={{ type: 'Profiler' }}>Profiler</MenuItem>
             <MenuItem onClick={this.handleClick} data={{ type: 'Histogram' }}>Histogram</MenuItem>
+            <MenuItem onClick={this.handleClick} data={{ type: 'Statistics' }}>Statistics</MenuItem>
           </SubMenu>
         </ContextMenu>
       </div>
@@ -134,8 +120,8 @@ class MainPage extends Component {
         <div className="layout-fill">
           <Topbar style={toolbarStyle} />
           <LayoutWrapper
-            firstPercentage={40}
-            secondPercentage={40}
+            firstPercentage={50}
+            secondPercentage={50}
             mountHandler={this.mountHandler}
             resizeHandler={this.resizeHandler}
             drage1stHandler={this.drage1stHandler}
@@ -159,7 +145,6 @@ class MainPage extends Component {
                 <Region />
               </div> */}
               <Region />
-              <br />
               <Animator />
             </div>
             <div>
@@ -177,15 +162,11 @@ class MainPage extends Component {
                   <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
                 </RaisedButton>
               </div>
-              {/* experimental place for colormap */}
-              {/* <Colormap /> */}
               {midPanel}
-            </div>
-            <div>
-              {this.showSetting(setting)}
             </div>
           </LayoutWrapper>
         </div>
+        <Settings />
       </div>
     );
   }

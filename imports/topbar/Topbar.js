@@ -1,17 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import More from 'material-ui/svg-icons/navigation/more-horiz';
 import TextField from 'material-ui/TextField';
+import Card from 'material-ui/Card';
+import Divider from 'material-ui/Divider';
+import Popover from 'material-ui/Popover';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 // import Dialog from 'material-ui/Dialog';
-import Popover from 'material-ui/Popover';
-import SessionUI from './SessionUI';
+import actions from './actions';
+import SessionUI from '../app/SessionUI';
 
-
-export default class Topbar extends Component {
+class Topbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -64,6 +67,14 @@ export default class Topbar extends Component {
       remoteDisabled: true,
     });
   }
+  drawRect = () => {
+    if (!this.rect.style.background || this.rect.style.background === 'none') {
+      this.rect.style.background = '#D3D3D3';
+    } else {
+      this.rect.style.background = 'none';
+    }
+    this.props.dispatch(actions.initRegion());
+  }
   render() {
     // console.log('METEOR: ', Meteor.users.find({ _id: Meteor.userId() }).fetch());
     return (
@@ -74,15 +85,44 @@ export default class Topbar extends Component {
               <p style={{ borderRadius: '12px', border: '2px solid red', padding: '2px' }}>{this.state.username ? `Hi, ${this.state.username}` : ''}</p>
               <SessionUI />
             </div>
+            <div>
+              <div>
+                Region
+              </div>
+              <div>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  <button ref={(node) => { if (node) { this.rect = node; } }} onClick={this.drawRect} className="region">
+                    <img className="iconImg" src="/images/rectangle.png" alt="" />
+                  </button>
+                  <button className="region">
+                    <img className="iconImg" src="/images/point.png" alt="" />
+                  </button>
+                  <button className="region">
+                    <img className="iconImg" src="/images/ellipse.png" alt="" />
+                  </button>
+                  <button className="region">
+                    <img className="iconImg" src="/images/polygon.png" alt="" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </ToolbarGroup>
-          {/* <ToolbarGroup lastChild>
+          {/* <ToolbarGroup style={{ display: 'flex', flexDirection: 'column' }}>
+            <div>
+              <p>Region</p>
+            </div>
+            <div>
+              <p>test</p>
+            </div>
+          </ToolbarGroup> */}
+          <ToolbarGroup lastChild>
             <RaisedButton label="Local" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleLocal} disabled={this.state.localDisabled} />
             <ToolbarSeparator style={{ margin: 0 }} />
             <RaisedButton label="Remote" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleRemote} disabled={this.state.remoteDisabled} />
             <IconButton onClick={this.handleConfig}>
               <More />
             </IconButton>
-          </ToolbarGroup> */}
+          </ToolbarGroup>
         </Toolbar>
         <Popover
           open={this.state.open}
@@ -107,3 +147,7 @@ export default class Topbar extends Component {
     );
   }
 }
+// const mapStateToProps = state => ({
+//
+// });
+export default connect()(Topbar);

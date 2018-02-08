@@ -10,7 +10,8 @@ import imageViewer from '../imageViewer/actions';
 
 import profiler from '../profiler/actions';
 import histogramActions from '../histogram/actions';
-
+import gridControl from '../gridControl/actions';
+import imageStatsActions from '../imageStats/actions';
 import colormap from '../colormap/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
@@ -86,6 +87,7 @@ function closeFile() {
             console.log('animator.updateAnimator !!!:', resp);
             // update animatorType-Selections.
             dispatch(colormap.updateColormap());
+            dispatch(imageStatsActions.getImageStats());
             dispatch(animator.updateAnimator(resp));
           });
       } else {
@@ -134,9 +136,10 @@ function selectFileToOpen(path) {
 
         dispatch(profiler.getProfile());
         dispatch(histogramActions.getHistogramData());
-
+        dispatch(gridControl.getDataGrid());
+        dispatch(imageStatsActions.getImageStats());
         dispatch(colormap.updateColormap());
-      
+
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {
@@ -148,7 +151,10 @@ function selectFileToOpen(path) {
           const len = stack.layers.length;
           if (len > 0) {
             const lastLayer = stack.layers[len - 1];
-            if (lastLayer.name === fileName) {
+            const lastLayerNameArray = stack.layers[len - 1].name.split('/');
+            const lastLayerName = lastLayerNameArray[lastLayerNameArray.length - 1];
+            if (lastLayerName === fileName) {
+              // const zoomLevel = 3;
               const viewWidth = 482;
               const viewHeight = 477;
               const zoomLevel = _calculateFitZoomLevel(viewWidth, viewHeight, lastLayer);

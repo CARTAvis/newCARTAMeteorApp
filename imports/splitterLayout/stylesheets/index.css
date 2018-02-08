@@ -12,10 +12,7 @@
 
 .splitter-layout .layout-pane {
   position: relative;
-  /*margin-right: 0;*/
   flex: 0 0 auto;
-  /*margin: 0;
-  padding: 0;*/
   overflow: auto;
 }
 

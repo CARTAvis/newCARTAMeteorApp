@@ -3,12 +3,40 @@
 p {
     font-family: 'Roboto', sans-serif;
 }
+.divider {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.iconImg {
+  width: 16px;
+  height: 16px;
+}
 .zoom {
   border: none;
   background: none;
   font-size: 18px;
   position: relative;
   overflow: hidden;
+  width: 24px;
+  padding: 0;
+}
+.region {
+  border: none;
+  background: none;
+  font-size: 18px;
+  position: relative;
+  overflow: hidden;
+  width: 24px;
+  padding: 0;
+}
+.region:focus {
+  outline: 0;
+}
+.region:hover {
+  border: 1px solid #808080;
+}
+.region:active {
+  background: none;
 }
 // #pan.zoom {
 //   background-image: url(/images/pan.png);
@@ -61,4 +89,62 @@ p {
 .layout-fill {
   flex: 1 1;
 }
+.showSettingsUI {
+  // max-height: 0;
+  // padding-top: 0;
+  // padding-bottom: 0;
+  // margin-top: 0;
+  // margin-bottom: 0;
+  transition: all .3s ease-out;
+  position: fixed;
+  border: 1px solid red;
+  bottom: 0;
+  width: 600px;
+  height: 450px;
+  max-height: 100%;
+  z-index: 2;
+  left: 50vh;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+.hideSettingsUI {
+  // position: relative;
+  transition: all .3s ease-out;
+  // width: 450px;
+  // height: 600px;
+  top: 100vh;
+  height: 0;
+  left: 50vh;
+  position: absolute;
+  overflow: hidden;
+}
+.rowLayout {
+  display: flex;
+  flex-direction: row;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.settingsUISideMenu {
+  flex: 1;
+  height: 100vh;
+  border-right: 1px solid red;
+}
+.settingsUIContent {
+  flex: 4;
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 350px;
+  overflow-y: scroll;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+// .box:hover > #hid-box {
+//   top: 0;
+// }
 // align-items: center;

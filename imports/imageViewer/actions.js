@@ -1,9 +1,12 @@
 import { ImageViewerDB } from '../api/ImageViewerDB';
 import { RegionDB } from '../api/RegionDB';
+import { GridDB } from '../api/GridDB';
+import { ColormapDB } from '../api/ColormapDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
 import { mongoUpsert } from '../api/MongoHelper';
-
+import regionActions from '../region/actions';
+import colormapActions from '../colormap/actions';
 // only for saving action history in mongo
 // const RESPONSE_REGISTER_VIEWER = 'RESPONSE_REGISTER_VIEWER';
 const GET_IMAGE = 'GET_IMAGE';
@@ -20,6 +23,14 @@ function setRegionControlsId(response) {
   const { data } = response;
   mongoUpsert(RegionDB, { regionControlsID: data }, 'SET_REGION_CONTROLS_ID');
 }
+function getColormaps(controllerID) {
+  const cmd = `${controllerID}:${Commands.GET_COLORMAPS}`;
+  api.instance().sendCommand(cmd, '')
+    .then((resp) => {
+      const { data } = resp;
+      mongoUpsert(ColormapDB, { colormaps: data.split(',') }, `Resp_${cmd}`);
+    });
+}
 function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
   // console.log('get register response:', resp.cmd, 'data:', resp.data);
@@ -33,13 +44,16 @@ function parseReigsterViewResp(resp) {
   api.instance().sendCommand(command, '')
     .then((response) => {
       setRegionControlsId(response);
+      // colormapActions.getColormaps();
     });
   // step2
   const viewName = `${controllerID}/view`;
   const width = 482; // TODO same as the experimental setting in ImageViewer, change later
   const height = 477;
   api.instance().setupViewSize(viewName, width, height);
+  getColormaps(controllerID);
 }
+
 function setupImageViewer() {
   return () => {
     // console.log('setupImageViewer');
@@ -71,6 +85,19 @@ export function parseImageToMongo(buffer) {
     console.log('get dummy image response');
   }
 }
+function regionZoom() {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
+    const arg = '';
+    api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
+        dispatch(regionActions.updateRegionOnZoom());
+      });
+  };
+}
 function setZoomLevel(zoomLevel, layerID) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -81,10 +108,10 @@ function setZoomLevel(zoomLevel, layerID) {
 
     api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom level result:', resp);
+      dispatch(regionZoom());
     });
   };
 }
-
 function zoom(zoomFactor) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -94,6 +121,7 @@ function zoom(zoomFactor) {
 
     api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom result:', resp);
+      dispatch(regionZoom());
     });
   };
 }
@@ -104,8 +132,8 @@ function panZoom(x, y, zoomFactor) {
     const cmd = `${controllerID}:${Commands.PAN_ZOOM}`;
     const arg = `${x} ${y} ${zoomFactor}`;
 
-    api.instance().sendCommand(cmd, arg, (resp) => {
-      console.log('get set zoom result:', resp);
+    api.instance().sendCommand(cmd, arg, () => {
+      dispatch(regionZoom());
     });
   };
 }
@@ -119,6 +147,7 @@ function zoomReset() {
 
     api.instance().sendCommand(cmd, arg, (resp) => {
       console.log('get set zoom level result:', resp);
+      dispatch(regionZoom());
     });
   };
 }
@@ -127,8 +156,8 @@ function panReset() {
     const controllerID = getState().ImageViewerDB.controllerID;
     const cmd = `${controllerID}:${Commands.PAN_RESET}`;
     const arg = '';
-    api.instance().sendCommand(cmd, arg, (resp) => {
-      console.log('get set zoom result:', resp);
+    api.instance().sendCommand(cmd, arg, () => {
+      dispatch(regionZoom());
     });
   };
 }

@@ -21,7 +21,6 @@ const RESHAPE = 'RESHAPE';
 const MOVERECT = 'MOVERECT';
 const RESIZERECT = 'RESIZERECT';
 const DELETE = 'DELETE';
-
 export function setupRegionDB() {
   // return (dispatch) => {
 
@@ -171,7 +170,28 @@ function resizeRect(newX, newY, pos, index) {
     mongoUpsert(RegionDB, { regionArray: data }, RESIZERECT);
   };
 }
-
+function updateRegionOnZoom() {
+  return (dispatch, getState) => {
+    const array = getState().RegionDB.regionArray;
+    const newData = getState().RegionDB.regionZoomData;
+    let item = null;
+    let newDataArray = array;
+    let newCircles = null;
+    for (let i = 0; i < array.length; i += 1) {
+      newCircles = makeCircles(newData[i].x, newData[i].y, newData[i].width, newData[i].height);
+      item = update(array[i], {
+        x: { $set: newData[i].x },
+        y: { $set: newData[i].y },
+        w: { $set: newData[i].width },
+        h: { $set: newData[i].height },
+        circles: { $set: newCircles },
+      });
+      // remove item at index i and replace it with 'item'
+      newDataArray = update(newDataArray, { $splice: [[i, 1, item]] });
+    }
+    mongoUpsert(RegionDB, { regionArray: newDataArray }, RESIZERECT);
+  };
+}
 function moveRect(newX, newY, index) {
   return (dispatch, getState) => {
     const array = getState().RegionDB.regionArray;
@@ -215,6 +235,7 @@ const actions = {
   moveRect,
   resizeRect,
   selectRegion,
+  updateRegionOnZoom,
 };
 
 export default actions;

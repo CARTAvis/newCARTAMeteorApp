@@ -9,7 +9,14 @@ import '../imports/api/FeatureContainerDB';
 import '../imports/api/HistogramDB';
 import '../imports/api/AnimatorDB';
 import '../imports/api/ColormapDB';
-
+import '../imports/api/GridDB';
+import '../imports/api/StatsDB';
+import '../imports/api/TopbarDB';
+import '../imports/api/StatsSettingsDB';
+import '../imports/api/SettingsDB';
+import '../imports/api/ImageSettingsDB';
+import '../imports/api/ImageStatsDB';
+import '../imports/api/RegionStatsDB';
 import ChannelClient from '../imports/api/ChannelClient';
 // import Commands from '../imports/api/Commands';
 
@@ -192,4 +199,33 @@ Meteor.methods({
     }
     return '';
   },
+  /* for generating a json file of the stops of each color in colormaps */
+  // initColormapJson() {
+  //   if (Meteor.isServer) {
+  //     const obj = { colormaps: [] };
+  //     const json = JSON.stringify(obj);
+  //     fs.writeFile('colormaps.json', json, 'utf8', (err) => {
+  //       if (err) console.log(err);
+  //       console.log('The file was successfully saved!');
+  //     });
+  //   }
+  // },
+  // writeColormapJson(name, stops) {
+  //   if (Meteor.isServer) {
+  //     fs.readFile('colormaps.json', (err, data) => {
+  //       if (err) {
+  //         throw err;
+  //       } else {
+  //         const obj = JSON.parse(data);
+  //         obj.colormaps.push({ name, stops });
+  //         const json = JSON.stringify(obj);
+  //         console.log(json);
+  //         fs.writeFile('colormaps.json', json, 'utf8', (error) => {
+  //           if (error) console.log(error);
+  //           console.log('The file was successfully saved!');
+  //         });
+  //       }
+  //     });
+  //   }
+  // },
 });

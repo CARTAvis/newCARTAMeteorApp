@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import actions from './actions';
+import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
-import { Layer, Stage, Rect, Group, Text } from 'react-konva';
+import { Rect, Group, Text } from 'react-konva';
+import actions from './actions';
+
 
 class Colormap extends Component {
   constructor(props) {
@@ -22,7 +23,7 @@ class Colormap extends Component {
       total = stops.length;
     }
     const newStops = [];
-    for (let i = 0; i < total; i++) {
+    for (let i = 0; i < total; i += 1) {
       newStops.push(i / total, stops[i]);
     }
     return (
@@ -36,28 +37,29 @@ class Colormap extends Component {
           <Layer> */
       <Group>
         <Text
-          x={482}
-          y={310}
-          width={50}
-          text={min}
-        />
-        <Text
-          x={482}
           y={0}
           width={50}
+          fill="white"
           text={max}
         />
         <Text
-          x={532}
-          y={0}
+          y={320}
+          width={50}
+          fill="white"
+          text={min}
+        />
+        <Text
+          y={340}
           width={100}
-          text={`Color Name: ${colorMapName}`}
+          fill="white"
+          text={colorMapName}
         />
         <Rect
-          x={482}
-          y={10}
+          // x={482}
+          y={20}
           width={50}
           height={300}
+          stroke="white"
           fillLinearGradientStartPoint={{ x: 0, y: 300 }}
           fillLinearGradientEndPoint={{ x: 0, y: 20 }}
           fillLinearGradientColorStops={newStops}
