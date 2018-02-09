@@ -189,10 +189,8 @@ class LayoutWrapper extends Component {
       >{secondChild}{thirdCihld}</SplitterLayout>) : { secondChild });
     }
 
-    // console.log('grimmer 2nd percentage,', secondColumnPercentange);
+    // console.log('grimmer 2nd percentage,', second ColumnPercentange);
     // console.log('grimmer 3rd percentage,', thirdColumnPercentange);
-
-
     return (
       <div>
         {
@@ -222,5 +220,4 @@ class LayoutWrapper extends Component {
     );
   }
 }
-
 export default LayoutWrapper;

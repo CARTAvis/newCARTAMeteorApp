@@ -33,8 +33,7 @@ function getHistogramData() {
     });
   };
 }
-
-function selectRegionHisto() {
+function selectRegionHistoram() {
   return (dispatch, getState) => {
     const histogramID = getState().HistogramDB.histogramID;
     const cmd = `${histogramID}:set2DFootPrint`;
@@ -111,7 +110,7 @@ const actions = {
   getHistogramData,
   onHover,
   onZoomPan,
-  selectRegionHisto,
+  selectRegionHistoram,
 };
 
 export default actions;

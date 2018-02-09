@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import { connect } from 'react-redux';
 import { ImageViewerDB } from '../api/ImageViewerDB';
+import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import TextField from 'material-ui/TextField';
@@ -9,17 +11,20 @@ import FlatButton from 'material-ui/FlatButton';
 import { Card, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
+import MenuItem2 from 'material-ui/MenuItem';
 import LinearProgress from 'material-ui/LinearProgress';
+import DropDownMenu from 'material-ui/DropDownMenu';
 import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
 import histogramActions from '../histogram/actions';
 import Colormap from '../colormap/Colormap';
-import profilerActions from '../profiler/actions';
 // import _ from 'lodash';
 import ImageViewer from '../imageViewer/ImageViewer';
+import settingsActions from '../settings/actions';
+import colormapActions from '../colormap/actions';
+import regionStatsActions from '../regionStats/actions';
 
 const Blob = require('blob');
 
@@ -30,6 +35,7 @@ let startX;
 let endX;
 let startY;
 let endY;
+let selectedColormap;
 class Region extends Component {
   constructor(props) {
     super(props);
@@ -41,13 +47,43 @@ class Region extends Component {
       saveAsInput: '',
       cursorInfo: '',
       regionListener: false,
+      currentColorStops: [],
+      colormaps: [],
+      currentColorName: '',
     };
   }
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.stack) {
-      if (nextProps.stack.layers.length === 0) {
-        this.showCursorInfo(false);
+  componentDidMount = () => {
+    document.body.onkeydown = (e) => {
+      // need to fix the 'if' logic here later
+      if (e.keyCode === 8 && (this.props.regionArray.length > 0)) {
+        console.log('DELETE');
+        this.delete();
       }
+    };
+    HTTP.get(Meteor.absoluteUrl('/colormaps.json'), (err, result) => {
+      if (err) console.log(err);
+      else {
+        this.setState({ colormaps: result.data.colormaps });
+      }
+    });
+  }
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.init === true) {
+      console.log('TRUE');
+      this.init();
+    }
+    if (nextProps.stops) {
+      const newStops = [];
+      if (nextProps.stops) {
+        const total = nextProps.stops.length;
+        for (let i = 0; i < total; i += 1) {
+          newStops.push(i / total, nextProps.stops[i]);
+        }
+      }
+      this.setState({ currentColorStops: newStops });
+    }
+    if (nextProps.colorMapName) {
+      this.setState({ currentColorName: nextProps.colorMapName });
     }
   }
   onMouseDown = (event) => {
@@ -77,13 +113,11 @@ class Region extends Component {
       const pos = this.getMousePos(this.div, event);
       this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
       this.props.dispatch(profilerActions.getProfile());
+      // this.props.dispatch(statsActions.getStatsInfo());
       this.props.dispatch(histogramActions.getHistogramData());
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
-      this.setState({
-        regionListener: false,
-      });
     }
   }
   getMousePos = (canvas, event) => {
@@ -105,17 +139,6 @@ class Region extends Component {
   //     key: Math.floor(Math.random() * 10000),
   //   });
   // }
-  init = () => {
-    if (this.props.stack) {
-      if (this.props.stack.layers.length > 0) {
-        this.setState({
-          regionListener: true,
-        });
-        this.props.dispatch(imageActions.setRegionType('Rectangle'));
-        this.props.dispatch(histogramActions.selectRegionHisto());
-      }
-    }
-  }
   drawRect = () => {
     const w = endX - startX;
     const h = endY - startY;
@@ -140,6 +163,7 @@ class Region extends Component {
     const target = this.state.toDelete;
     this.props.dispatch(actions.remove(target));
     this.props.dispatch(profilerActions.getProfile());
+    this.props.dispatch(histogramActions.getHistogramData());
   }
 
   resizeRect = (newX, newY, pos, index) => {
@@ -215,13 +239,14 @@ class Region extends Component {
     const result = (
       <Group
         key={item.key}
+        width={482}
       >
         <Rect
           x={item.x}
           y={item.y}
           width={item.w}
           height={item.h}
-          stroke="red"
+          stroke={this.state.toDelete === item.key ? 'green' : 'red'}
           draggable
           listening
           onDragMove={(e) => {
@@ -291,6 +316,16 @@ class Region extends Component {
       open: false,
     });
   };
+  handleTouchTapColormaps = (event) => {
+    event.preventDefault();
+    this.setState({
+      colormapsOpen: true,
+      anchorElColomaps: event.currentTarget,
+    });
+  }
+  handleRequestCloseColormaps = () => {
+    this.setState({ colormapsOpen: false });
+  }
   saveAs = (event) => {
     this.setState({
       saveAsInput: event.target.value,
@@ -304,14 +339,15 @@ class Region extends Component {
   }
   convertToImage = () => {
     if (this.layer) {
-      // const resizedCanvas = document.createElement('canvas');
-      // const resizedContext = resizedCanvas.getContext('2d');
-      // resizedCanvas.height = '477';
-      // resizedCanvas.width = '482';
+      const imageViewerCanvas = this.layer.toCanvas();
+      const colormapCanvas = this.colormap.toCanvas();
+      const canvas = document.createElement('canvas');
+      canvas.width = 557;
+      canvas.height = 477;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imageViewerCanvas, 0, 0);
+      ctx.drawImage(colormapCanvas, 482, 0);
       // const canvas = this.layer.getCanvas();
-      // resizedContext.drawImage(canvas._canvas, 0, 0, 477, 482);
-      // const url = resizedCanvas.toDataURL('image/png', 1);
-      const canvas = this.layer.getCanvas();
       const url = canvas.toDataURL('image/png', 1);
       if (this.state.value === 'png') {
         const a = document.createElement('a');
@@ -360,24 +396,49 @@ class Region extends Component {
     this.panReset();
     this.zoomReset();
   }
-  showCursorInfo = (show) => {
-    const htmlObject = document.getElementById('cursorInfo');
+  showCursorInfo = () => {
     if (this.props.cursorInfo) {
-      htmlObject.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
+      this.cursorInfo.innerHTML = this.props.cursorInfo.replace(/[ ]<br \/>.+\.[A-Za-z]+/, '');
     } else {
-      htmlObject.innerHTML = '';
+      this.cursorInfo.innerHTML = '';
     }
   }
-  removeSetting = () => {
-    // this.setState({ items: _.reject(this.state.items, { i }) });
-    this.props.removeSetting('Image');
-  }
+  // removeSetting = () => {
+  //   this.props.removeSetting('Image');
+  // }
   setSetting = () => {
     // console.log('THE TYPE TO BE PASSED: ', type);
-    this.props.setSetting('Image');
+    // this.props.setSetting('Image');
+    this.props.dispatch(settingsActions.setSetting('Image'));
+  }
+  init = () => {
+    console.log('INIT');
+    if (this.props.stack) {
+      if (this.props.stack.layers.length > 0) {
+        this.props.dispatch(imageActions.setRegionType('Rectangle'));
+        this.props.dispatch(histogramActions.selectRegionHistoram());
+      }
+    }
+  }
+  setCurrentColorStops = (stops) => {
+    const total = stops.length;
+    const newStops = [];
+    for (let i = 0; i < total; i += 1) {
+      newStops.push(i / total, stops[i]);
+    }
+    this.setState({
+      currentColorStops: newStops,
+    });
   }
   render() {
-    const { x, y, width, height } = this.props;
+    const { x, y, width, height, stops } = this.props;
+    const newStops = [];
+    if (stops) {
+      const total = stops.length;
+      for (let i = 0; i < total; i += 1) {
+        newStops.push(i / total, stops[i]);
+      }
+    }
     this.rect = (
       <Rect
         x={x}
@@ -391,132 +452,219 @@ class Region extends Component {
     );
     return (
       <div>
-        <div
-          ref={(node) => { this.div = node; }}
-          style={{ position: 'relative', width: 482, height: 477 }}
-        >
-          <Stage
-            id="stage"
-            width={632}
-            height={477}
-            ref={(node) => {
-              this.stage = node;
-            }}
+        <ContextMenuTrigger id="menu2">
+          <div
+            ref={(node) => { this.div = node; }}
+            style={{ position: 'relative', height: 477, display: 'flex', flexDirection: 'row' }}
           >
-            <Layer
-              id="layer"
-              ref={(node) => {
-                if (node) this.layer = node;
-              }}
+            <Stage
+              id="stage"
+              width={482}
+              height={477}
             >
-              <Group
-                onMouseDown={(e) => {
-                  // console.log('MOUSEDOWN');
-                  if (this.state.regionListener) {
-                    // console.log('MOUSE DOWN: ', e);
-                    this.onMouseDown(e.evt);
-                  }
+              <Layer
+                id="layer"
+                ref={(node) => {
+                  if (node) this.layer = node;
                 }}
-                onMouseMove={(e) => {
-                  if (this.state.regionListener) {
-                    this.onMouseMove(e.evt);
-                  }
-                  if (this.props.stack) {
-                    if (this.props.stack.layers.length > 0 && !this.props.mouseIsDown) {
-                      this.props.dispatch(imageActions.setCursor(e.evt.x, e.evt.y));
-                      this.showCursorInfo();
+              >
+                <Group
+                  onMouseDown={(e) => {
+                    if (this.props.init) {
+                      this.onMouseDown(e.evt);
                     }
-                  }
-                }}
-                onMouseUp={(e) => {
-                  if (this.state.regionListener) {
-                    this.onMouseUp(e.evt);
-                  }
-                }}
-                onWheel={(e) => {
+                  }}
+                  onMouseMove={(e) => {
+                    window.onwheel = () => true;
+                    if (this.props.init) {
+                      this.onMouseMove(e.evt);
+                    }
+                    if (this.props.stack) {
+                      if (this.props.stack.layers.length > 0 && !this.props.mouseIsDown) {
+                        const pos = this.getMousePos(this.div, e.evt);
+                        this.props.dispatch(imageActions.setCursor(pos.x, pos.y));
+                        this.showCursorInfo();
+                      }
+                    }
+                  }}
+                  onMouseUp={(e) => {
+                    if (this.props.init) {
+                      this.onMouseUp(e.evt);
+                      this.props.dispatch(regionStatsActions.getRegionStats());
+                    }
+                  }}
+                  onWheel={(e) => {
                   // console.log('ONWHEEL ', e);
-                  if (this.lastCall + 200 < Date.now()) {
-                    this.lastCall = Date.now();
-                    this.panZoom(e.evt);
+                    if (this.props.stack) {
+                      if (this.props.stack.layers.length > 0) {
+                        window.onwheel = () => false;
+                        if (this.lastCall + 200 < Date.now()) {
+                          this.lastCall = Date.now();
+                          this.panZoom(e.evt);
+                        }
+                      }
+                    }
+                  }}
+                >
+                  <ImageViewer />
+                  {(this.props.mouseIsDown === 1) ? this.rect : false}
+                  {this.props.regionArray ?
+                    this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
+                </Group>
+              </Layer>
+            </Stage>
+            <Stage
+              width={75}
+              height={477}
+            >
+              <Layer
+                ref={(node) => {
+                  if (node) {
+                    this.colormap = node;
                   }
                 }}
               >
-                <ImageViewer />
-                {/* <ImageViewer2 /> */}
-                {(this.props.mouseIsDown === 1) ? this.rect : false}
-                {this.props.regionArray ?
-                  this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
-              </Group>
-              <Colormap />
-            </Layer>
-          </Stage>
-          <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-            <button onClick={this.zoomIn} className="zoom" style={{ width: '24px' }}>+</button>
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-            <button onClick={this.zoomOut} className="zoom" style={{ width: '24px' }}>-</button>
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-            <button onClick={this.setSetting} className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '16px', height: '16px' }} src="/images/tools.png" alt="" />
-            </button>
+                <Rect
+                  width={75}
+                  height={477}
+                  fill="#00000"
+                />
+                <Colormap />
+              </Layer>
+            </Stage>
+            <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
+              <Divider className="divider" />
+              <button onClick={this.zoomIn} className="zoom">+</button>
+              <Divider className="divider" />
+              <button onClick={this.zoomOut} className="zoom">-</button>
+              <Divider className="divider" />
+              <button onClick={this.setSetting} className="zoom">
+                <img className="iconImg" src="/images/tools.png" alt="" />
+              </button>
+              <Divider className="divider" />
+              <button onClick={this.handleTouchTap} className="zoom">
+                <img className="iconImg" src="/images/save.png" alt="" />
+              </button>
+            </Card>
+            <Card style={{ width: '24px', position: 'absolute', bottom: 0 }} >
+              <button onClick={this.panReset} className="zoom">
+                <img className="iconImg" src="/images/pan_reset.png" alt="" />
+              </button>
+              <Divider className="divider" />
+              <button onClick={this.zoomReset} className="zoom">
+                <img className="iconImg" src="/images/zoom_reset.png" alt="" />
+              </button>
+              <Divider className="divider" />
+              <button onClick={this.panZoomReset} className="zoom">
+                <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
+              </button>
+            </Card>
+            <Card style={{ width: '24px', position: 'absolute', bottom: 50, left: '482px' }} >
+              <button onClick={this.handleTouchTapColormaps} className="zoom">
+                <img className="iconImg" src="/images/colorbar.jpg" alt="" />
+              </button>
+            </Card>
+            <br />
+          </div>
+          {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
+          <Card style={{ width: 557 }}>
+            <CardText>
+              <div ref={(node) => { if (node) { this.cursorInfo = node; } }} />
+            </CardText>
           </Card>
-          <Card style={{ width: '24px', position: 'absolute', bottom: 0 }} >
-            <button onClick={this.panReset} className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '16px', height: '16px', margin: 0 }} src="/images/pan_reset.png" alt="" />
-            </button>
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-            <button onClick={this.zoomReset} className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '16px', height: '16px' }} src="/images/zoom_reset.png" alt="" />
-            </button>
-            <Divider style={{ marginLeft: '5px', marginRight: '5px' }} />
-            <button onClick={this.panZoomReset} className="zoom" style={{ width: '24px' }}>
-              <img style={{ width: '18px', height: '18px' }} src="/images/panzoom_reset.png" alt="" />
-            </button>
-          </Card>
-          <br />
-        </div>
-        {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
-        <Card style={{ width: 482 }}>
-          <CardText>
-            <div id="cursorInfo" />
-          </CardText>
-        </Card>
-        <RaisedButton label="rectangle" onClick={this.init} />
-        <RaisedButton label="delete" onClick={this.delete} />
-        <RaisedButton label="save" onClick={this.handleTouchTap} />
-        <Popover
-          open={this.state.open}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={this.handleRequestClose}
-        >
-          <TextField
-            floatingLabelText="Save as..."
-            onChange={this.saveAs}
-            style={{ margin: '10px', verticalAlign: 'middle' }}
-          />
-          <SelectField
-            floatingLabelText="File Type"
-            value={this.state.value}
-            onChange={this.handleChange}
-            autoWidth
-            style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
+          <Popover
+            open={this.state.colormapsOpen}
+            anchorEl={this.state.anchorElColomaps}
+            anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+            onRequestClose={this.handleRequestCloseColormaps}
+            style={{ width: 150, height: 100 }}
           >
-            <MenuItem value="pdf" primaryText="pdf" />
-            <MenuItem value="eps" primaryText="eps" />
-            <MenuItem value="ps" primaryText="ps" />
-            <MenuItem value="png" primaryText="png" />
-          </SelectField>
-          <br />
-          <FlatButton
-            type="submit"
-            label="Save"
-            primary
-            style={{ marginRight: 0 }}
-            onClick={this.convertToImage}
-          />
-        </Popover>
+            <DropDownMenu
+              value={this.state.currentColorName}
+              maxHeight={250}
+              onChange={(event, key, value) => {
+                selectedColormap = key;
+                this.setState({ currentColorName: this.state.colormaps[key].name });
+                this.setCurrentColorStops(this.state.colormaps[key].stops);
+                if (this.props.stack) {
+                  if (this.props.stack.layers.length > 0) {
+                    this.props.dispatch(colormapActions.setColormap(value));
+                  }
+                }
+              }}
+            >
+              {this.props.colormaps ? this.props.colormaps.map((item, index) =>
+                (<MenuItem2
+                  value={item}
+                  primaryText={item}
+                  key={index}
+                  onMouseEnter={() => {
+                    this.setCurrentColorStops(this.state.colormaps[index].stops);
+                  }}
+                  onMouseLeave={() => {
+                    if (selectedColormap >= 0) {
+                      this.setCurrentColorStops(this.state.colormaps[selectedColormap].stops);
+                    } else {
+                      this.setCurrentColorStops([]);
+                    }
+                  }}
+                />)) : null}
+            </DropDownMenu>
+            <Stage
+              width={100}
+              height={15}
+            >
+              <Layer>
+                <Rect
+                  width={100}
+                  height={15}
+                  stroke="black"
+                  // fill={this.state.color}
+                  fillLinearGradientStartPoint={{ x: 0, y: 477 }}
+                  fillLinearGradientEndPoint={{ x: 100, y: 477 }}
+                  fillLinearGradientColorStops={this.state.currentColorStops}
+                />
+              </Layer>
+            </Stage>
+          </Popover>
+          <Popover
+            open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+            onRequestClose={this.handleRequestClose}
+          >
+            <TextField
+              floatingLabelText="Save as..."
+              onChange={this.saveAs}
+              style={{ margin: '10px', verticalAlign: 'middle' }}
+            />
+            <SelectField
+              floatingLabelText="File Type"
+              value={this.state.value}
+              onChange={this.handleChange}
+              autoWidth
+              style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
+            >
+              <MenuItem2 value="pdf" primaryText="pdf" />
+              <MenuItem2 value="eps" primaryText="eps" />
+              <MenuItem2 value="ps" primaryText="ps" />
+              <MenuItem2 value="png" primaryText="png" />
+            </SelectField>
+            <br />
+            <FlatButton
+              type="submit"
+              label="Save"
+              primary
+              style={{ marginRight: 0 }}
+              onClick={this.convertToImage}
+            />
+          </Popover>
+        </ContextMenuTrigger>
+        <ContextMenu id="menu2">
+          <MenuItem onClick={this.delete}>Delete</MenuItem>
+        </ContextMenu>
       </div>
     );
   }
@@ -532,5 +680,9 @@ const mapStateToProps = state => ({
   requestingFile: state.ImageViewerDB.requestingFile,
   stack: state.ImageViewerDB.stack,
   profileReady: state.RegionDB.profileReady,
+  init: state.RegionDB.init,
+  colormaps: state.ColormapDB.colormaps,
+  colorMapName: state.ColormapDB.colorMapName,
+  stops: state.ColormapDB.stops,
 });
 export default connect(mapStateToProps)(Region);

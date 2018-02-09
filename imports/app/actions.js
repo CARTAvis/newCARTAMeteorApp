@@ -13,7 +13,13 @@ import { setupRegionDB } from '../region/actions';
 import { setupAnimatorDB } from '../animator/actions';
 import { setupColormapDB } from '../colormap/actions';
 import { setupGridDB } from '../gridControl/actions';
-
+import { setupStatsDB } from '../statistics/actions';
+import { setupTopbarDB } from '../topbar/actions';
+import { setupStatsSettingsDB } from '../statsSettings/actions';
+import { setupSettingsDB } from '../settings/actions';
+import { setupImageSettingsDB } from '../imageSettings/actions';
+import { setupImageStatsDB } from '../imageStats/actions';
+import { setupRegionStatsDB } from '../regionStats/actions';
 import { storeReduxDispatch } from '../api/MongoHelper';
 
 import api from '../api/ApiService';
@@ -67,6 +73,13 @@ function setupComponentsDB() {
   setupAnimatorDB();
   setupColormapDB();
   setupGridDB();
+  setupTopbarDB();
+  setupStatsDB();
+  setupStatsSettingsDB();
+  setupSettingsDB();
+  setupImageSettingsDB();
+  setupImageStatsDB();
+  setupRegionStatsDB();
 }
 
 function setupResponseChannnelAndAllDB() {

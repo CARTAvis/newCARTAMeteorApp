@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import People from 'material-ui/svg-icons/social/people';
+import Copy from 'material-ui/svg-icons/content/content-copy';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import IconButton from 'material-ui/IconButton';
 import Popover from 'material-ui/Popover';
 import actions from './actions';
@@ -94,6 +96,13 @@ class SessionUI extends Component {
           <p style={{ textAlign: 'center' }}>
             My Session ID: <br />
             {sessionID}
+            <CopyToClipboard
+              text={sessionID}
+            >
+              <IconButton>
+                <Copy />
+              </IconButton>
+            </CopyToClipboard>
           </p>
         </Popover>
       </div>

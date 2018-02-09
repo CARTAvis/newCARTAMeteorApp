@@ -66,9 +66,11 @@ export function setupProfilerDB() {
 
 function onHover(data) {
   return () => {
-    const val = { curveNumber: data.points[0].curveNumber,
-      pointNumber: data.points[0].pointNumber };
-    mongoUpsert(ProfilerDB, { data: val }, SET_HOVER);
+    const val = {
+      curveNumber: data.points[0].curveNumber,
+      pointNumber: data.points[0].pointNumber,
+    };
+    mongoUpsert(ProfilerDB, { data: [val] }, SET_HOVER);
   };
 }
 function onZoomPan(data) {

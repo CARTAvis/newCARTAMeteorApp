@@ -21,15 +21,14 @@ function updateColormap() {
 
     const cmd = `${colormapID}:${Commands.GET_COLORMAP_All_DATA}`;
     const arg = '';
-
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         console.log('colormap:resp:', resp.data);
         const { stops, colorMapName, intensity_data } = resp.data;
-        const stopList = stops.split(",");    
-        const min = intensity_data.intensityMin; 
-        const max = intensity_data.intensityMax;     
-        mongoUpsert(ColormapDB, { stops:stopList, colorMapName, min, max }, `Resp_${cmd}`);
+        const stopList = stops.split(',');
+        const min = intensity_data.intensityMin;
+        const max = intensity_data.intensityMax;
+        mongoUpsert(ColormapDB, { stops: stopList, colorMapName, min, max }, `Resp_${cmd}`);
       });
   };
 }
@@ -45,7 +44,17 @@ function setupColormap() {
       });
   };
 }
-
+function setColormap(colormapName) {
+  return (dispatch, getState) => {
+    const colormapID = getState().ColormapDB.colormapID;
+    const cmd = `${colormapID}:${Commands.SET_COLORMAP}`;
+    const arg = `name:${colormapName}`;
+    api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        dispatch(updateColormap());
+      });
+  };
+}
 function parseReigsterColormap(resp) {
   const { cmd, data } = resp;
   const colormapID = data;
@@ -56,6 +65,7 @@ function parseReigsterColormap(resp) {
 const actions = {
   updateColormap,
   setupColormap,
+  setColormap,
 };
 
 export default actions;

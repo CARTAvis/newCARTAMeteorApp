@@ -1,6 +1,6 @@
 import { ActionType } from './actions';
 
-const defaultState = { x: 0, y: 0, width: 0, height: 0, mouseIsDown: 0, regionArray: [] };
+const defaultState = { x: 0, y: 0, width: 0, height: 0, mouseIsDown: 0, regionArray: [], init: false };
 const RegionDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.REGION_CHANGE: {

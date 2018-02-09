@@ -3,7 +3,7 @@ import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
-import GridControl from '../gridControl/GridControl.js';
+import GridControl from '../gridControl/GridControl';
 
 export default class ImageSettings extends Component {
   constructor(props) {
@@ -12,7 +12,6 @@ export default class ImageSettings extends Component {
       subOption: '',
     };
   }
-
   setOption = (option) => {
     this.setState({ option });
   }
@@ -20,13 +19,14 @@ export default class ImageSettings extends Component {
     this.setState({ subOption });
   }
   showContent = () => {
-    if (this.state.subOption) {
-      return <GridControl option={this.state.subOption} />;
+    if (this.state.option) {
+      if (this.state.subOption) {
+        return <GridControl option={this.state.subOption} />;
+      }
     }
     return null;
   }
   render() {
-    // console.log('suboption: ', this.state.subOption);
     // const grid = <GridControl option={this.state.subOption} />;
     return (
       <div className="test2">
