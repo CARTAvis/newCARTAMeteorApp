@@ -130,21 +130,21 @@ class InteractiveClean extends Component {
         <p style={style.label}>Mask Controls</p>
         <FloatingActionButton
         mini={true}
-        onClick={this.buttonPressed}
+        onClick={() => this.pressMaskButton('showMask')}
         style={style.button}
         >
         <Mask />
         </FloatingActionButton>
         <FloatingActionButton
          mini={true}
-         onClick={this.buttonPressed}
+         onClick={() => this.pressMaskButton('addMask')}
          style={style.button}
          >
          <Add />
          </FloatingActionButton>
         <FloatingActionButton
          mini={true}
-         onClick={this.buttonPressed}
+         onClick={() => this.pressMaskButton('subtractMask')}
          style={style.button}
          >
          <Remove />
@@ -158,7 +158,7 @@ class InteractiveClean extends Component {
         <FloatingActionButton
         backgroundColor="#D50000"
         mini={true}
-        onClick={this.buttonPressed}
+        onClick={() => this.pressCleanButton('stopClean')}
         style={style.button}
         >
         <Stop />
@@ -166,7 +166,7 @@ class InteractiveClean extends Component {
         <FloatingActionButton
          backgroundColor="#5C6BC0"
          mini={true}
-         onClick={this.buttonPressed}
+         onClick={() => this.pressCleanButton('runToEnd')}
          style={style.button}
          >
          <LastPage />
@@ -174,7 +174,7 @@ class InteractiveClean extends Component {
         <FloatingActionButton
          backgroundColor="#00C853"
          mini={true}
-         onClick={this.buttonPressed}
+         onClick={() => this.pressCleanButton('runReturn')}
          >
          <Refresh />
          </FloatingActionButton>
@@ -228,11 +228,16 @@ class InteractiveClean extends Component {
       );
     }
 
-    buttonPressed = () =>{
-      this.props.dispatch(actions.updateInteractiveClean());
-      console.log('button pressed');
+    pressMaskButton = (buttonTitle) =>{
+      this.props.dispatch(actions.sendMaskCommand(buttonTitle));
+      //console.log('button pressed');
     }
 
+    pressCleanButton = (buttonTitle) =>{
+      //this.props.dispatch(actions.updateInteractiveClean());
+      this.props.dispatch(actions.sendCleanCommand(buttonTitle));
+      //console.log('button pressed:', buttonTitle);
+    }
 }
 
 

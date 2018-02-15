@@ -41,6 +41,36 @@ function setupInteractiveClean() {
   };
 }
 
+function sendCleanCommand(command) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const interactiveCleanID = state.InteractiveCleanDB.interactiveCleanID;
+
+    const cmd = `${interactiveCleanID}:cleanCommand`;
+    const arg = command;
+
+    api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        console.log('ic:resp:', resp.data);
+      });
+  };
+}
+
+function sendMaskCommand(command) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const interactiveCleanID = state.InteractiveCleanDB.interactiveCleanID;
+
+    const cmd = `${interactiveCleanID}:maskCommand`;
+    const arg = command;
+
+    api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        console.log('ic:resp:', resp.data);
+      });
+  };
+}
+
 function parseRegisterInteractiveClean(resp) {
   const { cmd, data } = resp;
   const interactiveCleanID = data;
@@ -51,6 +81,8 @@ function parseRegisterInteractiveClean(resp) {
 const actions = {
   updateInteractiveClean,
   setupInteractiveClean,
+  sendCleanCommand,
+  sendMaskCommand,
 };
 
 export default actions;
