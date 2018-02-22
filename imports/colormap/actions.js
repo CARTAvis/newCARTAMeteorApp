@@ -19,7 +19,7 @@ function updateColormap() {
     const state = getState();
     const colormapID = state.ColormapDB.colormapID;
 
-    const cmd = `${colormapID}:${Commands.GET_COLORMAP_All_DATA}`;
+    const cmd = `${colormapID}:${Commands.GET_COLORMAP_ALL_DATA}`;
     const arg = '';
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {

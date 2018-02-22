@@ -14,6 +14,27 @@ const CLOSE_IMAGE = 'closeImage';
 const SET_FRAME = 'setFrame';
 const SET_COLORMAP = 'setColormap';
 const SET_STATS_VISIBLE = 'setStatVisible';
+const SET_SHOW_COORDINATE_SYSTEM = 'setShowCoordinateSystem'; // commands for grid control
+const SET_COORDINATE_SYSTEM = 'setCoordinateSystem';
+const SET_SHOW_GRID_LINES = 'setShowGridLines';
+const SET_GRID_THICKNESS = 'setGridThickness';
+const SET_GRID_SPACING = 'setGridSpacing';
+const SET_GRID_TRANSPARENCY = 'setGridTransparency';
+const SET_AXES_THICKNESS = 'setAxesThickness';
+const SET_AXES_TRANSPARENCY = 'setAxesTransparency';
+const SET_SHOW_AXIS = 'setShowAxis';
+const SET_SHOW_INTERNAL_LABELS = 'setShowInternalLabels';
+const SET_AXIS_X = 'setAxisX';
+const SET_AXIS_Y = 'setAxisY';
+const SET_FONT_FAMILY = 'setFontFamily';
+const SET_FONT_SIZE = 'setFontSize';
+const SET_LABEL_DECIMALS = 'setLabelDecimals';
+const SET_SHOW_TICKS = 'setShowTicks';
+const SET_TICK_LENGTH = 'setTickLength';
+const SET_TICK_TRANSPARENCY = 'setTickTransparency';
+const SET_TICK_THICKNESS = 'setTickThickness';
+const SET_GRID_LABEL_FORMAT = 'setGridLabelFormat';
+
 // New commands for new CARTA:
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
 const QUERY_ANIMATOR_TYPES = 'queryAnimatorTypes';
@@ -25,13 +46,14 @@ const PAN_RESET = 'resetPan';
 const INPUT_EVENT = 'inputEvent';
 const SET_REGION_TYPE = 'setRegionType';
 const REGISTER_REGION_CONTROLS = 'registerRegionControls';
-const REGISTER_GRID_CONTROLS = 'registerGridControls';
 const CLOSE_REGION = 'closeRegion';
-const GET_COLORMAP_All_DATA = 'get_colormap_all_data';
+const GET_COLORMAP_ALL_DATA = 'getColormapAllData';
 const REGION_ZOOM = 'regionZoom';
 const GET_COLORMAPS = 'getColormaps';
 const GET_STATS_INFO = 'getStatsInfo';
 const GET_STATS_PREF = 'getStatsPref';
+const GET_DATA_GRID_STATE = 'getDataGridState'; // commands for grid control
+const SET_SHOW_DEFAULT_COORDINATE_SYSTEM = 'setShowDefaultCoordinateSystem';
 // TODO some commands need parameters, wrap them as a function
 
 const Commands = {
@@ -51,15 +73,36 @@ const Commands = {
   INPUT_EVENT,
   SET_REGION_TYPE,
   REGISTER_REGION_CONTROLS,
-  REGISTER_GRID_CONTROLS,
   CLOSE_REGION,
-  GET_COLORMAP_All_DATA,
+  GET_COLORMAP_ALL_DATA,
   REGION_ZOOM,
   GET_COLORMAPS,
   SET_COLORMAP,
   GET_STATS_INFO,
   GET_STATS_PREF,
   SET_STATS_VISIBLE,
+  GET_DATA_GRID_STATE, // commands of grid control
+  SET_SHOW_COORDINATE_SYSTEM,
+  SET_SHOW_DEFAULT_COORDINATE_SYSTEM,
+  SET_COORDINATE_SYSTEM,
+  SET_SHOW_GRID_LINES,
+  SET_GRID_THICKNESS,
+  SET_GRID_SPACING,
+  SET_GRID_TRANSPARENCY,
+  SET_AXES_THICKNESS,
+  SET_AXES_TRANSPARENCY,
+  SET_SHOW_AXIS,
+  SET_SHOW_INTERNAL_LABELS,
+  SET_AXIS_X,
+  SET_AXIS_Y,
+  SET_FONT_FAMILY,
+  SET_FONT_SIZE,
+  SET_LABEL_DECIMALS,
+  SET_SHOW_TICKS,
+  SET_TICK_LENGTH,
+  SET_TICK_TRANSPARENCY,
+  SET_TICK_THICKNESS,
+  SET_GRID_LABEL_FORMAT,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 
