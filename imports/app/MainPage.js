@@ -51,8 +51,11 @@ class MainPage extends Component {
   //   this.setState({ secondColumnWidth: newWidth });
   //   // use 2nd column's width
   // }
-  onUpdate = (second) => {
-    this.setState({ secondColumnWidth: second });
+  onUpdate = (first, second) => {
+    this.setState({
+      firstColumnWidth: first,
+      secondColumnWidth: second,
+    });
   }
   handleClick = (e, data) => {
     this.grid.getWrappedInstance().onAddItem(data.type);
@@ -144,7 +147,7 @@ class MainPage extends Component {
                 <Region />
                 <Region />
               </div> */}
-              <Region />
+              <Region firstColumnWidth={this.state.firstColumnWidth} />
               <Animator />
             </div>
             <div>

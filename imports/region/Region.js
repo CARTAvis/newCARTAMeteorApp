@@ -68,10 +68,10 @@ class Region extends Component {
     });
   }
   componentWillReceiveProps = (nextProps) => {
-    if (nextProps.init === true) {
-      console.log('TRUE');
-      this.init();
-    }
+    // if (nextProps.init === true) {
+    //   console.log('TRUE');
+    //   this.init();
+    // }
     if (nextProps.stops) {
       const newStops = [];
       if (nextProps.stops) {
@@ -269,6 +269,7 @@ class Region extends Component {
             this.props.dispatch(actions.selectRegion(pos.x, pos.y));
             this.props.dispatch(profilerActions.getProfile());
             this.props.dispatch(histogramActions.getHistogramData());
+            this.props.dispatch(regionStatsActions.setSelectedRegion(index));
           }}
           // ref={(node) => {
           //   if (node && !this.regions[item.key].hasOwnProperty('shape')) {
@@ -459,7 +460,7 @@ class Region extends Component {
           >
             <Stage
               id="stage"
-              width={482}
+              width={this.props.firstColumnWidth - 75}
               height={477}
             >
               <Layer
@@ -471,6 +472,7 @@ class Region extends Component {
                 <Group
                   onMouseDown={(e) => {
                     if (this.props.init) {
+                      this.init();
                       this.onMouseDown(e.evt);
                     }
                   }}
@@ -506,7 +508,7 @@ class Region extends Component {
                     }
                   }}
                 >
-                  <ImageViewer />
+                  <ImageViewer firstColumnWidth={this.props.firstColumnWidth} />
                   {(this.props.mouseIsDown === 1) ? this.rect : false}
                   {this.props.regionArray ?
                     this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
@@ -559,7 +561,7 @@ class Region extends Component {
                 <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
               </button>
             </Card>
-            <Card style={{ width: '24px', position: 'absolute', bottom: 50, left: '482px' }} >
+            <Card style={{ width: '24px', position: 'absolute', bottom: 50, left: `${this.props.firstColumnWidth - 75}` }} >
               <button onClick={this.handleTouchTapColormaps} className="zoom">
                 <img className="iconImg" src="/images/colorbar.jpg" alt="" />
               </button>
@@ -567,7 +569,7 @@ class Region extends Component {
             <br />
           </div>
           {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
-          <Card style={{ width: 557 }}>
+          <Card style={{ width: `${this.props.firstColumnWidth}` }}>
             <CardText>
               <div ref={(node) => { if (node) { this.cursorInfo = node; } }} />
             </CardText>

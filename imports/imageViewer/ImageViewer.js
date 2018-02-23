@@ -43,7 +43,7 @@ class ImageViewer extends Component {
       // <Image image={this.state.image} />
       // <div>
       <Image
-        width={482}
+        width={this.props.firstColumnWidth - 75}
         height={477}
         image={this.state.image}
         // ref={(node) => {
