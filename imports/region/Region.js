@@ -162,6 +162,7 @@ class Region extends Component {
   delete = () => {
     const target = this.state.toDelete;
     this.props.dispatch(actions.remove(target));
+    this.props.dispatch(regionStatsActions.getRegionStats());
     this.props.dispatch(profilerActions.getProfile());
     this.props.dispatch(histogramActions.getHistogramData());
   }
