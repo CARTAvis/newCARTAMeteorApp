@@ -57,8 +57,11 @@ function setShowDefaultCoordinateSystem(value) {
 }
 
 function setCoordinateSystem(name) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_COORDINATE_SYSTEM, name));
+  return (dispatch, getState) => {
+    const oldName = getState().GridDB.DataGrid.skyCS;
+    if (oldName !== name) {
+      dispatch(setDataGrid(Commands.SET_COORDINATE_SYSTEM, name));
+    }
   };
 }
 
@@ -69,8 +72,11 @@ function setShowGridLines(value) {
 }
 
 function setGridThickness(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_GRID_THICKNESS, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.grid.width;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_GRID_THICKNESS, value));
+    }
   };
 }
 
@@ -79,31 +85,37 @@ function setGridSpacing(value) {
     // Javascipt number is not precise, get fixed decimals to send command
     // so that the response can find the target callback.
     value = value.toFixed(2);
-    const { controllerID } = getState().ImageViewerDB;
-    const command = `${controllerID}:${Commands.SET_GRID_SPACING}`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.spacing;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_GRID_SPACING, value));
+    }
   };
 }
 
 function setGridTransparency(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_GRID_TRANSPARENCY, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.grid.alpha;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_GRID_TRANSPARENCY, value));
+    }
   };
 }
 
 function setAxesThickness(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_AXES_THICKNESS, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.axes.width;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_AXES_THICKNESS, value));
+    }
   };
 }
 
 function setAxesTransparency(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_AXES_TRANSPARENCY, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.axes.alpha;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_AXES_TRANSPARENCY, value));
+    }
   };
 }
 
@@ -121,32 +133,18 @@ function setShowInternalLabels(value) {
 
 function setAxisX(name) {
   return (dispatch, getState) => {
-    const { controllerID } = getState().ImageViewerDB;
     const oldName = getState().GridDB.DataGrid.xAxis;
     if (oldName !== name) {
-      const command = `${controllerID}:${Commands.SET_AXIS_X}`;
-      api.instance().sendCommand(command, name)
-        .then((response) => {
-          // const { xAxis, yAxis } = response;
-          // console.log('Test to get response', response);
-          const { data } = response;
-          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-        });
+      dispatch(setDataGrid(Commands.SET_AXIS_X, name));
     }
   };
 }
 
 function setAxisY(name) {
   return (dispatch, getState) => {
-    const { controllerID } = getState().ImageViewerDB;
     const oldName = getState().GridDB.DataGrid.yAxis;
     if (oldName !== name) {
-      const command = `${controllerID}:${Commands.SET_AXIS_Y}`;
-      api.instance().sendCommand(command, name)
-        .then((response) => {
-          const { data } = response;
-          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-        });
+      dispatch(setDataGrid(Commands.SET_AXIS_Y, name));
     }
   };
 }
@@ -165,14 +163,20 @@ function setFontFamily(value) {
 }
 
 function setFontSize(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_FONT_SIZE, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.font.size;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_FONT_SIZE, value));
+    }
   };
 }
 
 function setLabelDecimals(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_LABEL_DECIMALS, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.decimals;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_LABEL_DECIMALS, value));
+    }
   };
 }
 
@@ -183,20 +187,29 @@ function setShowTicks(value) {
 }
 
 function setTickLength(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_TICK_LENGTH, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.tickLength;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_TICK_LENGTH, value));
+    }
   };
 }
 
 function setTickTransparency(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_TICK_TRANSPARENCY, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.tick.alpha;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_TICK_TRANSPARENCY, value));
+    }
   };
 }
 
 function setTickThickness(value) {
-  return (dispatch) => {
-    dispatch(setDataGrid(Commands.SET_TICK_THICKNESS, value));
+  return (dispatch, getState) => {
+    const oldValue = getState().GridDB.DataGrid.tick.width;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_TICK_THICKNESS, value));
+    }
   };
 }
 
