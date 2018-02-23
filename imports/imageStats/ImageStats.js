@@ -10,8 +10,11 @@ class ImageStats extends Component {
     this.state = {
     };
   }
-  componentWillReceiveProps = (nextProps) => {
-    console.log('IMAGE STATS PROPS: ', nextProps);
+  componentDidMount = () => {
+    const { imageStats, selectedIndex, imagePrefArray } = this.props;
+    if (imageStats) {
+      this.showStats(imageStats, selectedIndex, imagePrefArray);
+    }
   }
   showStats = (stats, index, imagePrefArray) => {
     if (this.imgStats) {
@@ -25,7 +28,7 @@ class ImageStats extends Component {
         if (key !== 'Name' && info.hasOwnProperty(key)) {
           for (let i = 0; i < imagePrefArray.length; i += 1) {
             if (imagePrefArray[i].label === key && imagePrefArray[i].visible) {
-              // console.log(info[key]);
+            // console.log(info[key]);
               this.imgStats.appendChild(document.createTextNode(`${key}: ${info[key]}`));
               this.imgStats.appendChild(document.createElement('br'));
             }
@@ -36,7 +39,9 @@ class ImageStats extends Component {
   }
   render() {
     const { imageStats, selectedIndex, imagePrefArray } = this.props;
-    if (imageStats) this.showStats(imageStats, selectedIndex, imagePrefArray);
+    if (imageStats) {
+      this.showStats(imageStats, selectedIndex, imagePrefArray);
+    }
     return (
       <div>
         <p ref={(node) => { if (node) { this.imgStats = node; } }} />

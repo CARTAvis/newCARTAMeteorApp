@@ -16,6 +16,7 @@ export const ActionType = {
   IMAGEVIEWER_CHANGE,
 };
 
+let initialWidth = 0;
 
 export function setupImageViewerDB() {
   api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
@@ -31,6 +32,18 @@ function getColormaps(controllerID) {
       const { data } = resp;
       mongoUpsert(ColormapDB, { colormaps: data.split(',') }, `Resp_${cmd}`);
     });
+}
+function updateViewSize(width) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    if (controllerID) {
+      const viewName = `${controllerID}/view`;
+      const height = 477;
+      api.instance().setupViewSize(viewName, width, height);
+    } else {
+      initialWidth = width;
+    }
+  };
 }
 function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
@@ -49,9 +62,10 @@ function parseReigsterViewResp(resp) {
     });
   // step2
   const viewName = `${controllerID}/view`;
-  const width = 482; // TODO same as the experimental setting in ImageViewer, change later
+  // TODO same as the experimental setting in ImageViewer, change later
+  // const width = 482;
   const height = 477;
-  api.instance().setupViewSize(viewName, width, height);
+  api.instance().setupViewSize(viewName, initialWidth, height);
   getColormaps(controllerID);
 }
 
@@ -225,6 +239,7 @@ const actions = {
   setCursor,
   setRegionType,
   regionCommand,
+  updateViewSize,
 };
 
 export default actions;

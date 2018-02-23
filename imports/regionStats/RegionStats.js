@@ -10,14 +10,21 @@ class RegionStats extends Component {
     this.state = {
     };
   }
-  componentWillReceiveProps = (nextProps) => {
-    console.log('IMAGE REGION PROPS: ', nextProps);
+  componentDidMount = () => {
+    const { regionStats, selectedIndex, regionPrefArray } = this.props;
+    if (regionStats) this.showRegionStats(regionStats, selectedIndex, regionPrefArray);
   }
   showRegionStats = (stats, index, regionPrefArray) => {
-    console.log('SHOW REGION STATS');
     if (this.p) {
+      console.log('SHOW REGION STATS');
       // const statsArray = stats[index];
-      const info = stats[index];
+      const infoArr = stats[index];
+      let info = {};
+      if (this.props.selectedRegion >= 0) {
+        info = infoArr[this.props.selectedRegion];
+      } else {
+        info = infoArr[infoArr.length - 1];
+      }
       this.p.innerHTML = '';
 
       // const info = statsArray[statsArray.length - 1];
@@ -32,8 +39,10 @@ class RegionStats extends Component {
     }
   }
   render() {
-    const { regionStats, selectedIndex, regionPrefArray } = this.props;
-    if (regionStats) this.showRegionStats(regionStats, selectedIndex, regionPrefArray);
+    const { regionStats, selectedIndex, regionPrefArray, selectedRegion } = this.props;
+    if (regionStats || selectedRegion) {
+      this.showRegionStats(regionStats, selectedIndex, regionPrefArray);
+    }
     return (
       <div>
         <p ref={(node) => { if (node) { this.p = node; } }} />
@@ -45,5 +54,6 @@ const mapStateToProps = state => ({
   selectedIndex: state.ImageStatsDB.selectedIndex,
   regionPrefArray: state.StatsSettingsDB.region,
   regionStats: state.RegionStatsDB.regionStats,
+  selectedRegion: state.RegionStatsDB.selectedRegion,
 });
 export default connect(mapStateToProps)(RegionStats);
