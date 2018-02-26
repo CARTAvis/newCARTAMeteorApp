@@ -8,10 +8,8 @@ import api from '../api/ApiService';
 
 // redux part
 const DATAGRID_CHANGE = 'DATAGRID_CHANGE';
-const SET_USEDEFAULTCS = 'SET_USEDEFAULTCS';
 export const ActionType = {
   DATAGRID_CHANGE,
-  SET_USEDEFAULTCS,
 };
 
 export function setupGridDB() {
@@ -20,9 +18,9 @@ export function setupGridDB() {
 
 function getDataGrid() {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
+    const { controllerID } = getState().ImageViewerDB;
     // console.log('Verify getting gridControlID successfully:', gridControlID);
-    const command = `${controllerID}:getDataGridState`;
+    const command = `${controllerID}:${Commands.GET_DATA_GRID_STATE}`;
     api.instance().sendCommand(command, '')
       .then((response) => {
         console.log('Test to get datagridstate', response);
@@ -33,69 +31,52 @@ function getDataGrid() {
   };
 }
 
-function setShowCoordinateSystem(value) {
+function setDataGrid(cmd, value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setShowCoordinateSystem`;
+    const { controllerID } = getState().ImageViewerDB;
+    const command = `${controllerID}:${cmd}`;
     api.instance().sendCommand(command, value)
       .then((response) => {
+        console.log(`Test to set DataGrid: ${command}:${value}`);
         const { data } = response;
         mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
       });
   };
 }
 
-function setDefaultCoordinateSystem(value) {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    if (!value) {
-      mongoUpsert(GridDB, { useDefaultCoordinateSystem: value }, SET_USEDEFAULTCS);
-    } else {
-      const command = `${controllerID}:setCoordinateSystem`;
-      mongoUpsert(GridDB, { useDefaultCoordinateSystem: value }, SET_USEDEFAULTCS);
-      const name = 'Native';
-      api.instance().sendCommand(command, name)
-        .then((response) => {
-          const { data } = response;
-          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-        });
-    }
+function setShowCoordinateSystem(value) {
+  return (dispatch) => {
+    dispatch(setDataGrid(Commands.SET_SHOW_COORDINATE_SYSTEM, value));
+  };
+}
+
+function setShowDefaultCoordinateSystem(value) {
+  return (dispatch) => {
+    dispatch(setDataGrid(Commands.SET_SHOW_DEFAULT_COORDINATE_SYSTEM, value));
   };
 }
 
 function setCoordinateSystem(name) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setCoordinateSystem`;
-    api.instance().sendCommand(command, name)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldName = getState().GridDB.DataGrid.skyCS;
+    if (oldName !== name) {
+      dispatch(setDataGrid(Commands.SET_COORDINATE_SYSTEM, name));
+    }
   };
 }
 
 function setShowGridLines(value) {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setShowGridLines`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+  return (dispatch) => {
+    dispatch(setDataGrid(Commands.SET_SHOW_GRID_LINES, value));
   };
 }
 
 function setGridThickness(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setGridThickness`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.grid.width;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_GRID_THICKNESS, value));
+    }
   };
 }
 
@@ -104,114 +85,75 @@ function setGridSpacing(value) {
     // Javascipt number is not precise, get fixed decimals to send command
     // so that the response can find the target callback.
     value = value.toFixed(2);
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setGridSpacing`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.spacing;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_GRID_SPACING, value));
+    }
   };
 }
 
 function setGridTransparency(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setGridTransparency`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.grid.alpha;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_GRID_TRANSPARENCY, value));
+    }
   };
 }
 
 function setAxesThickness(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setAxesThickness`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.axes.width;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_AXES_THICKNESS, value));
+    }
   };
 }
 
 function setAxesTransparency(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setAxesTransparency`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.axes.alpha;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_AXES_TRANSPARENCY, value));
+    }
   };
 }
 
 function setShowAxis(value) {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setShowAxis`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+  return (dispatch) => {
+    dispatch(setDataGrid(Commands.SET_SHOW_AXIS, value));
   };
 }
 
 function setShowInternalLabels(value) {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setShowInternalLabels`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+  return (dispatch) => {
+    dispatch(setDataGrid(Commands.SET_SHOW_INTERNAL_LABELS, value));
   };
 }
 
 function setAxisX(name) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
     const oldName = getState().GridDB.DataGrid.xAxis;
     if (oldName !== name) {
-      const command = `${controllerID}:setAxisX`;
-      api.instance().sendCommand(command, name)
-        .then((response) => {
-          // const { xAxis, yAxis } = response;
-          // console.log('Test to get response', response);
-          const { data } = response;
-          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-        });
+      dispatch(setDataGrid(Commands.SET_AXIS_X, name));
     }
   };
 }
 
 function setAxisY(name) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
     const oldName = getState().GridDB.DataGrid.yAxis;
     if (oldName !== name) {
-      const command = `${controllerID}:setAxisY`;
-      api.instance().sendCommand(command, name)
-        .then((response) => {
-          const { data } = response;
-          mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-        });
+      dispatch(setDataGrid(Commands.SET_AXIS_Y, name));
     }
   };
 }
 
 function setFontFamily(value) {
-  // TODO: the function is unfinished
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setFontFamily`;
-    console.log('+++++++++++++++++++++++++++++++ The command value of setFontFamily', value);
+    const { controllerID } = getState().ImageViewerDB;
+    const command = `${controllerID}:${Commands.SET_FONT_FAMILY}`;
+    // console.log('+++++++++++++++++++++++++++++++ The command value of setFontFamily', value);
     api.instance().sendCommand(command, value)
       .then((response) => {
         const { data } = response;
@@ -222,79 +164,59 @@ function setFontFamily(value) {
 
 function setFontSize(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setFontSize`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.font.size;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_FONT_SIZE, value));
+    }
   };
 }
 
 function setLabelDecimals(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setLabelDecimals`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.decimals;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_LABEL_DECIMALS, value));
+    }
   };
 }
 
 function setShowTicks(value) {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setShowTicks`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+  return (dispatch) => {
+    dispatch(setDataGrid(Commands.SET_SHOW_TICKS, value));
   };
 }
 
 function setTickLength(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setTickLength`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.tickLength;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_TICK_LENGTH, value));
+    }
   };
 }
 
 function setTickTransparency(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setTickTransparency`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.tick.alpha;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_TICK_TRANSPARENCY, value));
+    }
   };
 }
 
 function setTickThickness(value) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setTickThickness`;
-    api.instance().sendCommand(command, value)
-      .then((response) => {
-        const { data } = response;
-        mongoUpsert(GridDB, { DataGrid: data }, 'SET_DATAGRID');
-      });
+    const oldValue = getState().GridDB.DataGrid.tick.width;
+    if (oldValue !== value) {
+      dispatch(setDataGrid(Commands.SET_TICK_THICKNESS, value));
+    }
   };
 }
+
 function setGridLabelFormat(format, side) {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const command = `${controllerID}:setGridLabelFormat`;
+    const { controllerID } = getState().ImageViewerDB;
+    const command = `${controllerID}:${Commands.SET_GRID_LABEL_FORMAT}`;
     const arg = `format:${format.replace(/:/g, '-')},side:${side}`;
     api.instance().sendCommand(command, arg)
       .then((response) => {
@@ -303,10 +225,11 @@ function setGridLabelFormat(format, side) {
       });
   };
 }
+
 const actions = {
   getDataGrid,
   setShowCoordinateSystem,
-  setDefaultCoordinateSystem,
+  setShowDefaultCoordinateSystem,
   setCoordinateSystem,
   setShowGridLines,
   setGridThickness,

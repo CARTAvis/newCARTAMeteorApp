@@ -139,7 +139,6 @@ function selectFileToOpen(path) {
         dispatch(gridControl.getDataGrid());
         dispatch(imageStatsActions.getImageStats());
         dispatch(colormap.updateColormap());
-
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {

@@ -6,6 +6,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 
 import imageViewer from '../imageViewer/actions';
 import colormap from '../colormap/actions';
+import gridControl from '../gridControl/actions';
 // redux part
 const ANIMATOR_CHANGE = 'ANIMATOR_CHANGE';
 export const ActionType = {
@@ -272,6 +273,9 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
         // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
         // so when switch back to A(3d), need to query animatorType list again.
         dispatch(updateAnimator(stack));
+      })
+      .then(() => {
+        dispatch(gridControl.getDataGrid());
       });
   };
 }

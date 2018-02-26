@@ -45,6 +45,7 @@ function selectRegionHistoram() {
     });
   };
 }
+
 export function parseReigsterHistogramResp(resp) {
   console.log('RESGISTERING HISTOGRAM');
   const { cmd, data } = resp;
