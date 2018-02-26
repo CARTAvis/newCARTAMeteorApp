@@ -48,7 +48,7 @@ class LayoutWrapper extends Component {
     this.secondColumnSize.width = secondBlockWidth - splitterWidth - this.thirdColumnSize.width;
     this.secondColumnSize.height = this.firstContainerSize.height;
     this.props.onUpdate(this.firstColumnSize.width, this.secondColumnSize.width);
-    if (this.lastCall + 2000 < Date.now()) {
+    if (this.lastCall + 200 < Date.now()) {
       this.lastCall = Date.now();
       this.props.dispatch(imageViewerActions.updateViewSize(this.firstColumnSize.width));
     }

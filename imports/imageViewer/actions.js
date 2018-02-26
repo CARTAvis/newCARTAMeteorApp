@@ -33,6 +33,19 @@ function getColormaps(controllerID) {
       mongoUpsert(ColormapDB, { colormaps: data.split(',') }, `Resp_${cmd}`);
     });
 }
+function regionZoom() {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
+    const arg = '';
+    api.instance().sendCommand(cmd, arg)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
+        dispatch(regionActions.updateRegionOnZoom());
+      });
+  };
+}
 function updateViewSize(width) {
   return (dispatch, getState) => {
     const controllerID = getState().ImageViewerDB.controllerID;
@@ -40,6 +53,7 @@ function updateViewSize(width) {
       const viewName = `${controllerID}/view`;
       const height = 477;
       api.instance().setupViewSize(viewName, width, height);
+      dispatch(regionZoom());
     } else {
       initialWidth = width;
     }
@@ -102,19 +116,6 @@ export function parseImageToMongo(buffer) {
   } else {
     console.log('get dummy image response');
   }
-}
-function regionZoom() {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
-    const arg = '';
-    api.instance().sendCommand(cmd, arg)
-      .then((resp) => {
-        const { data } = resp;
-        mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
-        dispatch(regionActions.updateRegionOnZoom());
-      });
-  };
 }
 function setZoomLevel(zoomLevel, layerID) {
   return (dispatch, getState) => {
