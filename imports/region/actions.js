@@ -1,6 +1,7 @@
 import update from 'immutability-helper';
 // import { Meteor } from 'meteor/meteor';
 import { RegionDB } from '../api/RegionDB';
+import { RegionStatsDB } from '../api/RegionStatsDB';
 import { ImageViewerDB } from '../api/ImageViewerDB';
 // import SessionManager from '../api/SessionManager';
 import { mongoUpsert } from '../api/MongoHelper';
@@ -42,6 +43,11 @@ function setMouseIsDown(val) {
   };
 }
 
+function setMouseMove(val) {
+  return () => {
+    mongoUpsert(RegionDB, { mouseIsMoving: val }, SET_MOUSE);
+  };
+}
 // TODO: circles: consier to use object instead of array,
 // 'topLeft': 0
 // 'topRight': 1
@@ -86,7 +92,7 @@ function remove(target) {
     const array = getState().RegionDB.regionArray;
     const regionControlsID = getState().RegionDB.regionControlsID;
     const cmd = `${regionControlsID}:${Commands.CLOSE_REGION}`;
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i += 1) {
       if (array[i].key === target) {
         const arg = `region:${i}`;
         api.instance().sendCommand(cmd, arg)
@@ -96,14 +102,15 @@ function remove(target) {
         break;
       }
     }
-    mongoUpsert(RegionDB, { regionArray: array.filter(item => item.key !== target) }, DELETE);
+    const newArr = array.filter(item => item.key !== target);
+    mongoUpsert(RegionDB, { regionArray: newArr }, DELETE);
+    mongoUpsert(RegionStatsDB, { selectedRegion: newArr.length - 1 }, 'SET_SELECTED_REGION');
   };
 }
 
 function resizeRect(newX, newY, pos, index) {
   return (dispatch, getState) => {
     const array = getState().RegionDB.regionArray;
-
     const region = array[index];
     switch (pos) {
       case POS_0:
@@ -229,6 +236,7 @@ function selectRegion(x, y) {
 const actions = {
   drawShape,
   setMouseIsDown,
+  setMouseMove,
   setShape,
   reshape,
   remove,

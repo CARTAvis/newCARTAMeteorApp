@@ -98,26 +98,30 @@ class Region extends Component {
     this.drawRect();
   }
   onMouseMove = (event) => {
-    if (this.props.mouseIsDown === 1) {
+    const pos = this.getMousePos(this.div, event);
+    if (this.props.mouseIsDown && (Math.abs(pos.x - startX) >= 5) && (Math.abs(pos.y - startY) >= 5)) {
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
-      const pos = this.getMousePos(this.div, event);
+      this.props.dispatch(actions.setMouseMove(true));
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
     }
   }
   onMouseUp = (event) => {
-    if (this.props.mouseIsDown === 1) {
+    if (this.props.mouseIsDown === 1 && this.props.mouseIsMoving) {
       this.props.dispatch(actions.setMouseIsDown(0));
+      this.props.dispatch(actions.setMouseMove(false));
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
       const pos = this.getMousePos(this.div, event);
       this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
       this.props.dispatch(profilerActions.getProfile());
-      // this.props.dispatch(statsActions.getStatsInfo());
+      this.props.dispatch(regionStatsActions.getRegionStats());
       this.props.dispatch(histogramActions.getHistogramData());
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
+    } else if (this.props.mouseIsDown && !this.props.mouseIsMoving) {
+      this.props.dispatch(actions.setMouseIsDown(0));
     }
   }
   getMousePos = (canvas, event) => {
@@ -194,7 +198,6 @@ class Region extends Component {
     // if (!this.regions.hasOwnProperty(item.key)) {
     //   this.regions[item.key] = {};
     // }
-
     const circlesLen = item.circles.length;
     const circles = [];
     for (let i = 0; i < circlesLen; i += 1) {
@@ -493,7 +496,6 @@ class Region extends Component {
                   onMouseUp={(e) => {
                     if (this.props.init) {
                       this.onMouseUp(e.evt);
-                      this.props.dispatch(regionStatsActions.getRegionStats());
                     }
                   }}
                   onWheel={(e) => {
@@ -678,6 +680,7 @@ const mapStateToProps = state => ({
   width: state.RegionDB.width,
   height: state.RegionDB.height,
   mouseIsDown: state.RegionDB.mouseIsDown,
+  mouseIsMoving: state.RegionDB.mouseIsMoving,
   regionArray: state.RegionDB.regionArray,
   cursorInfo: state.ImageViewerDB.cursorInfo,
   requestingFile: state.ImageViewerDB.requestingFile,
