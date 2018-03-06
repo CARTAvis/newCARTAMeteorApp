@@ -5,7 +5,7 @@ import { ActionType } from './actions';
 //   // rootDir: '/tmp',
 //   // files: [{ name: 'apple.fits', type: 'fits' }],
 // };
-const defaultState = { data: {} };
+const defaultState = {};
 
 const HistogramDB = (state = defaultState, action) => {
   switch (action.type) {

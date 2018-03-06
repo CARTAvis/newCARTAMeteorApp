@@ -19,19 +19,28 @@ export function setupSettingsDB() {
 function setSetting(settingType) {
   return (dispatch, getState) => {
     const settingsArray = getState().SettingsDB.settingsArray;
-    let show = getState().SettingsDB.show;
-    if (settingsArray.length === 0) {
-      show = true;
+    let found = false;
+    for (let i = 0; i < settingsArray.length; i += 1) {
+      if (settingsArray[i].settingType === settingType) {
+        found = true;
+        break;
+      }
     }
-    mongoUpsert(SettingsDB, {
-      settingsArray: settingsArray.concat({
-        settingType,
-        // setting: settingObj,
-        key: Math.floor(Math.random() * 100),
-      }),
-      currentSetting: settingType,
-      show,
-    }, ADD_NEW_SETTING);
+    if (!found) {
+      let show = getState().SettingsDB.show;
+      if (settingsArray.length === 0) {
+        show = true;
+      }
+      mongoUpsert(SettingsDB, {
+        settingsArray: settingsArray.concat({
+          settingType,
+          // setting: settingObj,
+          key: Math.floor(Math.random() * 100),
+        }),
+        currentSetting: settingType,
+        show,
+      }, ADD_NEW_SETTING);
+    }
   };
 }
 function settingChanged(newSetting) {

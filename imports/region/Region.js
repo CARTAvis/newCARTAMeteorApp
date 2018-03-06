@@ -68,10 +68,10 @@ class Region extends Component {
     });
   }
   componentWillReceiveProps = (nextProps) => {
-    if (nextProps.init === true) {
-      console.log('TRUE');
-      this.init();
-    }
+    // if (nextProps.init === true) {
+    //   console.log('TRUE');
+    //   this.init();
+    // }
     if (nextProps.stops) {
       const newStops = [];
       if (nextProps.stops) {
@@ -98,26 +98,30 @@ class Region extends Component {
     this.drawRect();
   }
   onMouseMove = (event) => {
-    if (this.props.mouseIsDown === 1) {
+    const pos = this.getMousePos(this.div, event);
+    if (this.props.mouseIsDown && (Math.abs(pos.x - startX) >= 5) && (Math.abs(pos.y - startY) >= 5)) {
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
-      const pos = this.getMousePos(this.div, event);
+      this.props.dispatch(actions.setMouseMove(true));
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
     }
   }
   onMouseUp = (event) => {
-    if (this.props.mouseIsDown === 1) {
+    if (this.props.mouseIsDown === 1 && this.props.mouseIsMoving) {
       this.props.dispatch(actions.setMouseIsDown(0));
+      this.props.dispatch(actions.setMouseMove(false));
       // const pos = this.getMousePos(document.getElementById('canvas'), event);
       const pos = this.getMousePos(this.div, event);
       this.props.dispatch(imageActions.regionCommand('end', pos.x, pos.y));
       this.props.dispatch(profilerActions.getProfile());
-      // this.props.dispatch(statsActions.getStatsInfo());
+      this.props.dispatch(regionStatsActions.getRegionStats());
       this.props.dispatch(histogramActions.getHistogramData());
       endX = pos.x;
       endY = pos.y;
       this.drawRect();
+    } else if (this.props.mouseIsDown && !this.props.mouseIsMoving) {
+      this.props.dispatch(actions.setMouseIsDown(0));
     }
   }
   getMousePos = (canvas, event) => {
@@ -162,6 +166,7 @@ class Region extends Component {
   delete = () => {
     const target = this.state.toDelete;
     this.props.dispatch(actions.remove(target));
+    this.props.dispatch(regionStatsActions.getRegionStats());
     this.props.dispatch(profilerActions.getProfile());
     this.props.dispatch(histogramActions.getHistogramData());
   }
@@ -193,7 +198,6 @@ class Region extends Component {
     // if (!this.regions.hasOwnProperty(item.key)) {
     //   this.regions[item.key] = {};
     // }
-
     const circlesLen = item.circles.length;
     const circles = [];
     for (let i = 0; i < circlesLen; i += 1) {
@@ -269,6 +273,7 @@ class Region extends Component {
             this.props.dispatch(actions.selectRegion(pos.x, pos.y));
             this.props.dispatch(profilerActions.getProfile());
             this.props.dispatch(histogramActions.getHistogramData());
+            this.props.dispatch(regionStatsActions.setSelectedRegion(index));
           }}
           // ref={(node) => {
           //   if (node && !this.regions[item.key].hasOwnProperty('shape')) {
@@ -459,7 +464,7 @@ class Region extends Component {
           >
             <Stage
               id="stage"
-              width={482}
+              width={this.props.firstColumnWidth - 75}
               height={477}
             >
               <Layer
@@ -471,6 +476,7 @@ class Region extends Component {
                 <Group
                   onMouseDown={(e) => {
                     if (this.props.init) {
+                      this.init();
                       this.onMouseDown(e.evt);
                     }
                   }}
@@ -490,7 +496,6 @@ class Region extends Component {
                   onMouseUp={(e) => {
                     if (this.props.init) {
                       this.onMouseUp(e.evt);
-                      this.props.dispatch(regionStatsActions.getRegionStats());
                     }
                   }}
                   onWheel={(e) => {
@@ -506,7 +511,7 @@ class Region extends Component {
                     }
                   }}
                 >
-                  <ImageViewer />
+                  <ImageViewer firstColumnWidth={this.props.firstColumnWidth} />
                   {(this.props.mouseIsDown === 1) ? this.rect : false}
                   {this.props.regionArray ?
                     this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
@@ -559,7 +564,7 @@ class Region extends Component {
                 <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
               </button>
             </Card>
-            <Card style={{ width: '24px', position: 'absolute', bottom: 50, left: '482px' }} >
+            <Card style={{ width: '24px', position: 'absolute', bottom: 50, left: `${this.props.firstColumnWidth - 75}` }} >
               <button onClick={this.handleTouchTapColormaps} className="zoom">
                 <img className="iconImg" src="/images/colorbar.jpg" alt="" />
               </button>
@@ -567,7 +572,7 @@ class Region extends Component {
             <br />
           </div>
           {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
-          <Card style={{ width: 557 }}>
+          <Card style={{ width: `${this.props.firstColumnWidth}` }}>
             <CardText>
               <div ref={(node) => { if (node) { this.cursorInfo = node; } }} />
             </CardText>
@@ -675,6 +680,7 @@ const mapStateToProps = state => ({
   width: state.RegionDB.width,
   height: state.RegionDB.height,
   mouseIsDown: state.RegionDB.mouseIsDown,
+  mouseIsMoving: state.RegionDB.mouseIsMoving,
   regionArray: state.RegionDB.regionArray,
   cursorInfo: state.ImageViewerDB.cursorInfo,
   requestingFile: state.ImageViewerDB.requestingFile,

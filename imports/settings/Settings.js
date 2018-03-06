@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import ProfilerSettings from '../app/ProfilerSettings';
-import HistogramSettings from '../app/HistogramSettings';
+import HistogramSettings from '../histogramSettings/HistogramSettings';
 import ImageSettings from '../imageSettings/ImageSettings';
 import StatsSettings from '../statsSettings/StatsSettings';
 import actions from './actions';
