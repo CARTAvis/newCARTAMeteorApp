@@ -35,15 +35,18 @@ function getColormaps(controllerID) {
 }
 function regionZoom() {
   return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
-    const arg = '';
-    api.instance().sendCommand(cmd, arg)
-      .then((resp) => {
-        const { data } = resp;
-        mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
-        dispatch(regionActions.updateRegionOnZoom());
-      });
+    const regionArray = getState().RegionDB.regionArray;
+    if (regionArray && regionArray.length > 0) {
+      const controllerID = getState().ImageViewerDB.controllerID;
+      const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
+      const arg = '';
+      api.instance().sendCommand(cmd, arg)
+        .then((resp) => {
+          const { data } = resp;
+          mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
+          dispatch(regionActions.updateRegionOnZoom());
+        });
+    }
   };
 }
 function updateViewSize(width) {

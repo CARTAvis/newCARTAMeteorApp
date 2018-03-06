@@ -7,13 +7,17 @@ const SELECT_FILE_TO_OPEN = '/CartaObjects/ViewManager:dataLoaded';
 // non-global, need object id
 
 // non-global
-//need object id
+// need object id
 const GET_ANIMATORTYPE_ID = 'registerAnimator';
 const SET_ZOOM_LEVEL = 'setZoomLevel';
 const CLOSE_IMAGE = 'closeImage';
 const SET_FRAME = 'setFrame';
 const SET_COLORMAP = 'setColormap';
 const SET_STATS_VISIBLE = 'setStatVisible';
+const SET_BIN_COUNT = 'setBinCount';
+const SET_BIN_WIDTH = 'setBinWidth';
+const SET_LOG_COUNT = 'setLogCount';
+const SET_SIG_DIGITS = 'setSignificantDigits';
 // New commands for new CARTA:
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
 const QUERY_ANIMATOR_TYPES = 'queryAnimatorTypes';
@@ -32,6 +36,7 @@ const REGION_ZOOM = 'regionZoom';
 const GET_COLORMAPS = 'getColormaps';
 const GET_STATS_INFO = 'getStatsInfo';
 const GET_STATS_PREF = 'getStatsPref';
+const GET_HISTOGRAM_PREF = 'getHistogramPref';
 // TODO some commands need parameters, wrap them as a function
 
 const Commands = {
@@ -60,6 +65,11 @@ const Commands = {
   GET_STATS_INFO,
   GET_STATS_PREF,
   SET_STATS_VISIBLE,
+  SET_BIN_COUNT,
+  GET_HISTOGRAM_PREF,
+  SET_BIN_WIDTH,
+  SET_LOG_COUNT,
+  SET_SIG_DIGITS,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

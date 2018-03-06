@@ -12,12 +12,16 @@ class Histogram extends Component {
   componentDidMount = () => {
     // console.log('componentDidMount', this.props);
     const trace1 = {
-      // x: [1, 2, 3, 4],
-      // y: [10, 15, 13, 17],
       type: 'bar',
     };
     const layout = {
       height: 395,
+      margin: {
+        l: 40,
+        r: 40,
+        t: 50,
+        b: 50,
+      },
     };
     const data = [trace1];
     Plotly.newPlot(this.el, data, layout);
@@ -30,63 +34,78 @@ class Histogram extends Component {
       }
     });
   }
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.histogramData) {
+  relayoutOnHover = () => {
+    Plotly.Fx.hover(this.el, [this.props.data]);
+  }
+  relayoutOnZoomPan = () => {
+    let data = null;
+    data = {};
+    if (this.props.zoomPanData.xRange) data['xaxis.range'] = this.props.zoomPanData.xRange;
+    if (this.props.zoomPanData.yRange) data['yaxis.range'] = this.props.zoomPanData.yRange;
+    if (this.props.zoomPanData.xAutorange) data['xaxis.autorange'] = this.props.zoomPanData.xAutorange;
+    if (this.props.zoomPanData.yAutorange) data['yaxis.autorange'] = this.props.zoomPanData.yAutorange;
+    Plotly.relayout(this.el, data);
+  }
+  adjustChartWidth = () => {
+    const layout = {
+      width: this.props.width - 20,
+    };
+    Plotly.relayout(this.el, layout);
+  }
+  plotHistogram = () => {
+    if (this.props.histogramData) {
+      console.log('PLOTTING HISTOGRAM');
+
       Plotly.deleteTraces(this.el, -1);
       const data = [{
-        x: nextProps.histogramData.x,
-        y: nextProps.histogramData.y,
+        x: this.props.histogramData.x,
+        y: this.props.histogramData.y,
+        // x: [1, 1, 2, 3, 4, 5],
+        // y: [0.5, 1, 2, 0, 3, 0],
         type: 'bar',
+        // connectgaps: true,
       }];
+      if (this.props.displayType === 'lines') {
+        data[0].marker = {
+          color: 'rgba(255, 255, 255, 0)',
+          line: {
+            color: 'rbg(8,48,107)',
+            width: 1.5,
+          },
+        };
+      }
       const layout = {
-        // height: 395,
         bargap: 0,
         yaxis: {
-          type: 'log',
-          autorange: true,
+          type: this.props.histogramSettings.logCount === false ? 'linear' : 'log',
+          // rangemode: 'tozero',
+        },
+        xaxis: {
+          range: [0, 10000],
         },
       };
       Plotly.addTraces(this.el, data);
       Plotly.relayout(this.el, layout);
-      // this.el.on('plotly_hover', (e) => {
-      //   console.log('HOVER');
-      //   this.props.dispatch(actions.onHover(e));
-      // });
-    }
-    if (nextProps.width) {
-      const layout = {
-        width: nextProps.width - 20,
-        bargap: 0,
-        yaxis: {
-          type: 'log',
-          autorange: true,
-        },
-      };
-      Plotly.relayout(this.el, layout);
-    }
-    if (nextProps.data) {
-      Plotly.Fx.hover(this.el, [nextProps.data]);
-    }
-    if (nextProps.zoomPanData) {
-      // console.log('ZOOMPANDATA: ', nextProps.zoomPanData);
-      let data = null;
-      data = {};
-      if (nextProps.zoomPanData.xRange) data['xaxis.range'] = nextProps.zoomPanData.xRange;
-      if (nextProps.zoomPanData.yRange) data['yaxis.range'] = nextProps.zoomPanData.yRange;
-      if (nextProps.zoomPanData.xAutorange) data['xaxis.autorange'] = nextProps.zoomPanData.xAutorange;
-      if (nextProps.zoomPanData.yAutorange) data['yaxis.autorange'] = nextProps.zoomPanData.yAutorange;
-      // console.log('ZOOM DATA: ', data);
-      const layout = {
-        bargap: 0,
-        yaxis: {
-          type: 'log',
-          autorange: true,
-        },
-      };
-      Plotly.relayout(this.el, data, layout);
     }
   }
   render() {
+    const { histogramData, displayType, histogramSettings, width, data, zoomPanData } = this.props;
+    // histogram settings is loaded into the db when empty plot is produced,
+    // need to check if there's available data in the function called
+    if (histogramData || displayType || histogramSettings) {
+      this.plotHistogram();
+    }
+    // width comes in before the plot reference is generated, so need
+    // to check for this.el
+    if (width && this.el) {
+      this.adjustChartWidth();
+    }
+    if (data) {
+      this.relayoutOnHover();
+    }
+    if (zoomPanData) {
+      this.relayoutOnZoomPan();
+    }
     return (
       <div>
         <div
@@ -102,7 +121,8 @@ class Histogram extends Component {
 }
 
 const mapStateToProps = state => ({
-  // data: state.HistogramDB.data,
+  displayType: state.HistogramDB.displayType,
+  histogramSettings: state.HistogramSettingsDB.histogramSettings,
   histogramData: state.HistogramDB.histogramData,
   data: state.HistogramDB.data,
   zoomPanData: state.HistogramDB.zoomPanData,
