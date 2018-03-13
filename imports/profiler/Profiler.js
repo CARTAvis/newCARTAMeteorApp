@@ -23,8 +23,6 @@ class Profiler extends Component {
   componentDidMount = () => {
     // console.log('componentDidMount', this.props);
     const trace1 = {
-      // x: [1, 2, 3, 4],
-      // y: [10, 15, 13, 17],
       type: 'scatter',
     };
     const layout = {
@@ -42,8 +40,8 @@ class Profiler extends Component {
     });
   }
   componentWillReceiveProps = (nextProps) => {
-    console.log('THIS.PROPS: ', this.props);
-    console.log('NEXT PROPS: ', nextProps);
+    // console.log('THIS.PROPS: ', this.props);
+    // console.log('NEXT PROPS: ', nextProps);
     if (JSON.stringify(nextProps.profileData) !== JSON.stringify(this.props.profileData)) {
       Plotly.deleteTraces(this.el, -1);
       Plotly.addTraces(this.el, nextProps.profileData);
@@ -118,6 +116,7 @@ class Profiler extends Component {
     });
   }
   render() {
+    console.log('RENDER PROPS: ', this.props);
     return (
       <div>
         <button onClick={this.handleTouchTap}>

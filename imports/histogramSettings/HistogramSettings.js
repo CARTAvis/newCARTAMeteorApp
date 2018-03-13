@@ -1,93 +1,55 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import TextField from 'material-ui/TextField';
-import Checkbox from 'material-ui/Checkbox';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
 import actions from './actions';
+import HistogramDisplay from './HistogramDisplay';
+import HistogramSelection from './HistogramSelection';
 
 class HistogramSettings extends Component {
   constructor(props) {
     console.log('HISTOGRAM SETTINGS');
     super(props);
-    this.state = {
-      binWidth: this.props.histogramSettings.binWidth,
-      binCount: this.props.histogramSettings.binCount,
-    };
-  }
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.histogramSettings.binWidth !== this.props.histogramSettings.binWidth) {
-      this.setState({
-        binWidth: nextProps.histogramSettings.binWidth,
-      });
-    }
-    if (nextProps.histogramSettings.binCount !== this.props.histogramSettings.binCount) {
-      this.setState({
-        binCount: nextProps.histogramSettings.binCount,
-      });
-    }
+    this.state = {};
   }
   render() {
-    // console.log('BIN COUNT: ', this.props.histogramSettings.binCount);
+    let currentHistogramSetting = null;
+    if (this.props.histogramMainSetting) {
+      switch (this.props.histogramMainSetting) {
+        case 'display':
+          currentHistogramSetting = <HistogramDisplay />;
+          break;
+        case 'selection':
+          currentHistogramSetting = <HistogramSelection />;
+          break;
+        default:
+          break;
+      }
+    }
     return (
       <div style={{ flex: 1 }}>
-        <TextField
-          value={this.state.binCount}
-          floatingLabelText="count"
-          onKeyDown={(e) => {
-            if (e.keyCode === 13) {
-              this.props.dispatch(actions.setBinCount(this.state.binCount));
-            }
-          }}
-          onChange={(event, newValue) => { this.setState({ binCount: newValue }); }}
-        />
-        <br />
-        <TextField
-          value={this.props.histogramSettings.binWidth}
-          disabled
-          floatingLabelText="width (to 6 significant digits)"
-          // onKeyDown={(e) => {
-          //   if (e.keyCode === 13) {
-          //     this.props.dispatch(actions.setBinWidth(this.state.binWidth));
-          //   }
-          // }}
-          // onChange={(event, newValue) => { this.setState({ binWidth: newValue }); }}
-        />
-        <br />
-        <Checkbox
-          label="outline"
-          checked={this.props.displayType === 'lines'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setDisplayType('lines'));
-            }
-          }}
-        />
-        <Checkbox
-          label="fill"
-          checked={this.props.displayType !== 'lines'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setDisplayType('bar'));
-            }
-          }}
-        />
-        <Checkbox
-          label="log"
-          checked={this.props.histogramSettings.logCount}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setLogCount(true));
-            } else {
-              this.props.dispatch(actions.setLogCount(false));
-            }
-          }}
-        />
+        <div className="rowLayout">
+          <div className="settingsUISideMenu">
+            <Menu
+              onChange={(event, value) => {
+                this.props.dispatch(actions.setHistogramMainSetting(value));
+              }}
+            >
+              <MenuItem primaryText="display" value="display" />
+              <MenuItem primaryText="range" value="range" />
+              <MenuItem primaryText="selection" value="selection" />
+            </Menu>
+          </div>
+          <div id="data" className="settingsUIContent">
+            {currentHistogramSetting}
+          </div>
+        </div>
       </div>
     );
   }
 }
 const mapStateToProps = state => ({
-  histogramSettings: state.HistogramSettingsDB.histogramSettings,
-  displayType: state.HistogramDB.displayType,
+  histogramMainSetting: state.HistogramSettingsDB.histogramMainSetting,
 });
 
 export default connect(mapStateToProps)(HistogramSettings);

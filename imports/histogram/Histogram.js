@@ -80,9 +80,9 @@ class Histogram extends Component {
           type: this.props.histogramSettings.logCount === false ? 'linear' : 'log',
           // rangemode: 'tozero',
         },
-        xaxis: {
-          range: [0, 10000],
-        },
+        // xaxis: {
+        //   range: [0, 10000],
+        // },
       };
       Plotly.addTraces(this.el, data);
       Plotly.relayout(this.el, layout);

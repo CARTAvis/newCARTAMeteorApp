@@ -8,6 +8,7 @@ import HistogramActions from '../histogram/actions';
 const HISTOGRAM_SETTINGS_CHANGE = 'HISTOGRAM_SETTINGS_CHANGE';
 const GET_HISTOGRAM_PREF = 'GET_HISTOGRAM_PREF';
 const SET_HISTOGRAM_DISPLAY = 'SET_HISTOGRAM_DISPLAY';
+const SET_MAIN_SETTING = 'SET_MAIN_SETTING';
 export const ActionType = {
   HISTOGRAM_SETTINGS_CHANGE,
 };
@@ -66,14 +67,31 @@ function setLogCount(value) {
       });
   };
 }
-function setSignificantDigits(significantDigits) {
+function setHistogramMainSetting(settingCategory) {
+  return () => {
+    mongoUpsert(HistogramSettingsDB, { histogramMainSetting: settingCategory }, SET_MAIN_SETTING);
+  };
+}
+function setPlaneMode(mode) {
   return (dispatch, getState) => {
     const histogramID = getState().HistogramDB.histogramID;
-    const cmd = `${histogramID}:${Commands.SET_SIG_DIGITS}`;
-    const arg = `significantDigits:${significantDigits}`;
+    const cmd = `${histogramID}:${Commands.SET_PLANE_MODE}`;
+    const arg = `planeMode:${mode}`;
     api.instance().sendCommand(cmd, arg)
       .then(() => {
         dispatch(getHistogramPref());
+        dispatch(HistogramActions.getHistogramData());
+      });
+  };
+}
+function setPlaneChannel(channel) {
+  return (dispatch, getState) => {
+    const histogramID = getState().HistogramDB.histogramID;
+    const cmd = `${histogramID}:${Commands.SET_PLANE_CHANNEL}`;
+    const arg = `planeChannel:${channel}`;
+    api.instance().sendCommand(cmd, arg)
+      .then(() => {
+        dispatch(HistogramActions.getHistogramData());
       });
   };
 }
@@ -83,6 +101,8 @@ const actions = {
   setBinWidth,
   setDisplayType,
   setLogCount,
-  setSignificantDigits,
+  setHistogramMainSetting,
+  setPlaneMode,
+  setPlaneChannel,
 };
 export default actions;

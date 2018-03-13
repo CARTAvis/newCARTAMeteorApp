@@ -139,6 +139,15 @@ p {
   height: 350px;
   overflow-y: scroll;
 }
+.hide {
+  height: 0;
+  transition: height .5s;
+  overflow: hidden;
+}
+.show {
+  transition: height .5s;
+  height: 100px;
+}
 html, body {
   margin: 0;
   padding: 0;

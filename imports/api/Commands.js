@@ -38,7 +38,8 @@ const SET_GRID_LABEL_FORMAT = 'setGridLabelFormat';
 const SET_BIN_COUNT = 'setBinCount';
 const SET_BIN_WIDTH = 'setBinWidth';
 const SET_LOG_COUNT = 'setLogCount';
-const SET_SIG_DIGITS = 'setSignificantDigits';
+const SET_PLANE_MODE = 'setPlaneMode';
+const SET_PLANE_CHANNEL = 'setPlaneChannel';
 // New commands for new CARTA:
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
 const QUERY_ANIMATOR_TYPES = 'queryAnimatorTypes';
@@ -112,7 +113,8 @@ const Commands = {
   GET_HISTOGRAM_PREF,
   SET_BIN_WIDTH,
   SET_LOG_COUNT,
-  SET_SIG_DIGITS,
+  SET_PLANE_MODE,
+  SET_PLANE_CHANNEL,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

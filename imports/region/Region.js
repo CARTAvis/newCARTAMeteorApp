@@ -55,7 +55,7 @@ class Region extends Component {
   componentDidMount = () => {
     document.body.onkeydown = (e) => {
       // need to fix the 'if' logic here later
-      if (e.keyCode === 8 && (this.props.regionArray.length > 0)) {
+      if (e.keyCode === 8 && this.props.regionArray && this.props.regionArray.length > 0) {
         console.log('DELETE');
         this.delete();
       }
