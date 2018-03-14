@@ -31,22 +31,39 @@ function setupProfiler() {
 
     // console.log('send register Profiler');
 
-    api.instance().sendCommand(cmd, params, (resp) => {
-      // console.log('get register Profiler result:', resp);
+    // api.instance().sendCommand(cmd, params, (resp) => {
+    //   // console.log('get register Profiler result:', resp);
 
-      parseRegisterProfilerResp(resp);
-    });
+    //   parseRegisterProfilerResp(resp);
+    // });
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const profilerID = resp.data;
+        const command = `${profilerID}:getProfilerSettings`;
+        const parameters = '';
+        api.instance().sendCommand(command, parameters)
+          .then((response) => {
+            console.log('Try to get the setting of profiler!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', response);
+            const profilerSetting = response.data;
+            mongoUpsert(ProfilerDB, { profilerSetting, profileData: [] }, 'getProfilerSettings');
+          })
+          .then(() => {
+            parseRegisterProfilerResp(resp);
+          });
+      });
   };
 }
+
 function clearProfile() {
   return (dispatch) => {
     const data = { x: [], y: [] };
     mongoUpsert(ProfilerDB, { profileData: data }, SET_PROFILEDATA);
   };
 }
+
 function getProfile() {
   return (dispatch, getState) => {
-    const profilerID = getState().ProfilerDB.profilerID;
+    const { profilerID } = getState().ProfilerDB;
     // console.log('profilerID for getting profile: ', profilerID);
 
     const cmd = `${profilerID}:getProfileData`;
@@ -57,6 +74,56 @@ function getProfile() {
       console.log('PROFILE DATA: ', resp.data);
       mongoUpsert(ProfilerDB, { profileData: resp.data }, SET_PROFILEDATA);
     });
+  };
+}
+
+function newProfile() {
+  return (dispatch, getState) => {
+    console.log('*******************************************************************');
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:newProfile`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        console.log('Test to generate profile manually', resp);
+        const { curves } = resp.data;
+        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
+      });
+  };
+}
+
+function removeProfile(value) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:removeProfile`;
+    api.instance().sendCommand(cmd, value)
+      .then((resp) => {
+        console.log('Test to remove profile manually', resp);
+        const { curves } = resp.data;
+        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
+      });
+  };
+}
+
+function getCurveData() {
+  return (dispatch, getState) => {
+    console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:getCurveData`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        console.log('Try to get curve data', resp);
+      });
+  };
+}
+
+function setAutoGen() {
+  return (dispatch, getState) => {
+    // only for test, not implement
+    // const { autoGen } = getState().ProfilerDB;
+    // const value = !autoGen;
+    // mongoUpsert(ProfilerDB, { autoGen: value }, 'TEST');
   };
 }
 
@@ -100,6 +167,10 @@ const actions = {
   onZoomPan,
   getProfile,
   clearProfile,
+  getCurveData,
+  newProfile,
+  setAutoGen,
+  removeProfile,
 };
 
 export default actions;

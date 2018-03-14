@@ -134,11 +134,12 @@ function selectFileToOpen(path) {
       .then((resp) => {
         console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
-        dispatch(profiler.getProfile());
+        // dispatch(profiler.getProfile());
         dispatch(histogramActions.getHistogramData());
         dispatch(gridControl.getDataGrid());
         dispatch(imageStatsActions.getImageStats());
         dispatch(colormap.updateColormap());
+        // dispatch(profiler.getCurveData());
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {

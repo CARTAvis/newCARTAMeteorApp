@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
+import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
@@ -8,7 +9,10 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import actions from './actions';
+import { log } from 'util';
 // import api from '../api/ApiService';
+
+// const d3 = Plotly.d3;
 
 class Profiler extends Component {
   constructor(props) {
@@ -16,6 +20,8 @@ class Profiler extends Component {
     this.state = {
       saveAsInput: '',
       src: '',
+      // TODO: don't use react state, move to mongo
+      selectedCurve: '',
     };
     this.props.dispatch(actions.setupProfiler());
     // this.getRef = this.getRef.bind(this);
@@ -38,6 +44,9 @@ class Profiler extends Component {
     this.el.on('plotly_relayout', (e) => {
       if (!e.width) {
         this.props.dispatch(actions.onZoomPan(e));
+        // d3.select('g.legend').selectAll('.traces').on('click', (e) => {
+        //   console.log('LEGEND ITEM CLICKED:', e[0].trace.index);
+        // });
       }
     });
   }
@@ -45,8 +54,12 @@ class Profiler extends Component {
     console.log('THIS.PROPS: ', this.props);
     console.log('NEXT PROPS: ', nextProps);
     if (JSON.stringify(nextProps.profileData) !== JSON.stringify(this.props.profileData)) {
-      Plotly.deleteTraces(this.el, -1);
-      Plotly.addTraces(this.el, nextProps.profileData);
+      // Plotly.deleteTraces(this.el, [0]);
+      // Plotly.addTraces(this.el, nextProps.profileData);
+      // d3.select('g.legend').selectAll('.traces').on('click', (e) => {
+      //   console.log('LEGEND ITEM CLICKED:', e[0].trace.index);
+      // });
+      Plotly.newPlot(this.el, nextProps.profileData);
     }
     if (nextProps.width) {
       const layout = {
@@ -118,11 +131,34 @@ class Profiler extends Component {
     });
   }
   render() {
+    console.log('RENDER PROPS: ', this.props);
+    const curveNameList = [];
+    const { profileData } = this.props;
+    for (let i = 0; i < profileData.length; i += 1) {
+      // curveNameList.push(
+      //   <MenuItem value={profileData[i].name} primaryText={profileData[i].name} key={i} />);
+      curveNameList.push(profileData[i].name);
+    }
+    const curveNameMenuItem = curveNameList.map(item => (
+      <MenuItem value={item} primaryText={item}/>
+    ));
     return (
       <div>
         <button onClick={this.handleTouchTap}>
           <img className="iconImg" src="/images/save.png" alt="" />
         </button>
+        <SelectField
+          floatingLabelText="Selected Curve"
+          value={this.state.selectedCurve}
+          onChange={(event, index, value) => {
+            this.setState({ selectedCurve: value });
+          }}
+          autoWidth
+          style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
+        >
+          {/* {curveNameList} */}
+          {curveNameMenuItem}
+        </SelectField>
         {/* <RaisedButton label="save" onClick={this.handleTouchTap} /> */}
         <div style={{ marginTop: '2px' }} ref={(el) => { this.el = el; }} id="profiler" />
         <Popover
@@ -157,6 +193,38 @@ class Profiler extends Component {
             onClick={this.convertToImage}
           />
         </Popover>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ flex: 1 }}>
+            <Checkbox
+              label="Auto Generate"
+              // style={{ width: 150 }}
+              checked={this.props.profilerSetting.autoGenerate}
+              onCheck={() => { this.props.dispatch(actions.setAutoGen()); }}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <button
+              disabled={this.props.profilerSetting.autoGenerate}
+              // style={{ position: 'absolute', right: '23px', bottom: 0 }}
+              onClick={() => { this.props.dispatch(actions.newProfile()); }}
+            >
+              Add Profile
+            </button>
+          </div>
+          <div style={{ flex: 1 }}>
+            <button
+              disabled={this.props.profilerSetting.autoGenerate}
+              // style={{ position: 'absolute', right: '23px', bottom: 0 }}
+              onClick={() => {
+                console.log(this.state.selectedCurve);
+                const index = curveNameList.indexOf(this.state.selectedCurve);
+                this.props.dispatch(actions.removeProfile(index));
+              }}
+            >
+              Delete Profile
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -165,5 +233,6 @@ const mapStateToProps = state => ({
   profileData: state.ProfilerDB.profileData,
   data: state.ProfilerDB.data,
   zoomPanData: state.ProfilerDB.zoomPanData,
+  profilerSetting: state.ProfilerDB.profilerSetting,
 });
 export default connect(mapStateToProps)(Profiler);
