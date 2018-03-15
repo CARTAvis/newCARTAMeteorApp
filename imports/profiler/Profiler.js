@@ -204,9 +204,10 @@ class Profiler extends Component {
             <SelectField
               floatingLabelText="Auto Mode"
               value={this.props.profilerSetting.genMode}
-              // onChange={(event, index, value) => {
-              //   this.setState({ selectedCurve: value });
-              // }}
+              disabled={!this.props.profilerSetting.autoGenerate}
+              onChange={(event, index, value) => {
+                this.props.dispatch(actions.setGenerationMode(value));
+              }}
               autoWidth
               style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
             >

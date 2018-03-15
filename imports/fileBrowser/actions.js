@@ -135,6 +135,7 @@ function selectFileToOpen(path) {
         console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
         // dispatch(profiler.getProfile());
+        dispatch(profiler.autoGenerate());
         dispatch(histogramActions.getHistogramData());
         dispatch(gridControl.getDataGrid());
         dispatch(imageStatsActions.getImageStats());

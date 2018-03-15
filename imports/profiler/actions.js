@@ -121,7 +121,8 @@ function getCurveData() {
 function autoGenerate() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    if (profilerID) {
+    const { profilerSetting } = getState().ProfilerDB;
+    if (profilerID && profilerSetting.autoGenerate) {
       const cmd = `${profilerID}:newProfile`;
       const params = '';
       api.instance().sendCommand(cmd, params)
@@ -149,6 +150,21 @@ function setAutoGen(value) {
     // const { autoGen } = getState().ProfilerDB;
     // const value = !autoGen;
     // mongoUpsert(ProfilerDB, { autoGen: value }, 'TEST');
+  };
+}
+
+function setGenerationMode(mode) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:setGenerationMode`;
+    api.instance().sendCommand(cmd, mode)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(ProfilerDB, { profilerSetting: data }, 'SET_PROFILERSETTING');
+      })
+      .then(() => {
+        dispatch(autoGenerate());
+      });
   };
 }
 
@@ -197,6 +213,7 @@ const actions = {
   setAutoGen,
   removeProfile,
   autoGenerate,
+  setGenerationMode,
 };
 
 export default actions;
