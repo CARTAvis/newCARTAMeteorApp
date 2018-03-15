@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import People from 'material-ui/svg-icons/social/people';
-import Copy from 'material-ui/svg-icons/content/content-copy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import IconButton from 'material-ui/IconButton';
-import Popover from 'material-ui/Popover';
+/* material-ui beta */
+import PeopleIcon from 'material-ui-icons/People';
+import Copy from 'material-ui-icons/ContentCopy';
+import IconButton from 'material-ui-next/IconButton';
+import Popover from 'material-ui-next/Popover';
+import TextField from 'material-ui-next/TextField';
+import Button from 'material-ui-next/Button';
+// import Popover from 'material-ui/Popover';
 import actions from './actions';
 // import SessionManager from '../api/SessionManager';
 
@@ -64,35 +66,45 @@ class SessionUI extends Component {
     const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
     return (
       <div>
-        <IconButton onClick={this.handleTouchTap}>
+        {/* <IconButton onClick={this.handleTouchTap}>
           <People />
+        </IconButton> */}
+        <IconButton
+          onClick={this.handleTouchTap}
+        >
+          <PeopleIcon />
         </IconButton>
         {this.state.watching ? 'watching' : false}
         <Popover
           open={this.state.open}
+          onClose={this.handleRequestClose}
           anchorEl={this.state.anchorEl}
           anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={this.handleRequestClose}
-          style={{ width: '300px', height: '180px' }}
+          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+          style={{ width: '400px', height: '200px' }}
         >
           <TextField
             value={this.state.sessionText}
-            hintText="Input Shared Screen's SessionID"
+            label="Input shared screen's session ID"
+            placeholder="shared screen ID"
             onChange={this.handleChange}
-            style={{ padding: '10px', paddingTop: 0 }}
-          /><br />
-          <RaisedButton
-            onTouchTap={this.switchWatchMode}
+            style={{ margin: 10, width: '300px' }}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 this.switchWatchMode();
               }
             }}
-            label={buttonLabel}
-            style={style}
+            // style={{ padding: '10px', paddingTop: 0 }}
+            margin="normal"
           />
-          <br />
+          <Button
+            variant="raised"
+            size="medium"
+            onClick={this.switchWatchMode}
+            style={style}
+          >
+            {buttonLabel}
+          </Button>
           <p style={{ textAlign: 'center' }}>
             My Session ID: <br />
             {sessionID}

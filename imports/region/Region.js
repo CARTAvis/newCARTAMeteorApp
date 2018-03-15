@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
+import { ContextMenu, ContextMenuTrigger } from 'react-contextmenu';
+/* material-ui beta */
+import Popover from 'material-ui-next/Popover';
+import TextField from 'material-ui-next/TextField';
+import Card, { CardContent } from 'material-ui-next/Card';
+import Typography from 'material-ui-next/Typography';
+import Divider from 'material-ui-next/Divider';
+import Select from 'material-ui-next/Select';
+import { MenuItem } from 'material-ui-next/Menu';
+import { InputLabel } from 'material-ui-next/Input';
+import { FormControl } from 'material-ui-next/Form';
+import Button from 'material-ui-next/Button';
+import { LinearProgress } from 'material-ui-next/Progress';
+
+import MenuItem2 from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField';
+import DropDownMenu from 'material-ui/DropDownMenu';
+
+import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { connect } from 'react-redux';
-import { ImageViewerDB } from '../api/ImageViewerDB';
-import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
-import RaisedButton from 'material-ui/RaisedButton';
-import Popover from 'material-ui/Popover';
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
-import { Card, CardText } from 'material-ui/Card';
-import Divider from 'material-ui/Divider';
-import SelectField from 'material-ui/SelectField';
-import MenuItem2 from 'material-ui/MenuItem';
-import LinearProgress from 'material-ui/LinearProgress';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import { Layer, Stage, Rect, Circle, Group } from 'react-konva';
 import actions from './actions';
 import imageActions from '../imageViewer/actions';
 import profilerActions from '../profiler/actions';
@@ -45,17 +51,18 @@ class Region extends Component {
     this.state = {
       open: false,
       saveAsInput: '',
-      cursorInfo: '',
-      regionListener: false,
       currentColorStops: [],
       colormaps: [],
       currentColorName: '',
+      value: '',
+      anchorElColomaps: null,
+      anchorEl: null,
     };
   }
   componentDidMount = () => {
     document.body.onkeydown = (e) => {
       // need to fix the 'if' logic here later
-      if (e.keyCode === 8 && this.props.regionArray && this.props.regionArray.length > 0) {
+      if (e.keyCode === 8) {
         console.log('DELETE');
         this.delete();
       }
@@ -155,20 +162,19 @@ class Region extends Component {
       // (${startX + offsetX}, ${startY + offsetY + h}) (${startX + offsetX + w}, ${startY + offsetY + h})`);
       this.props.dispatch(
         // actions.setShape(this.regionArray),
-        actions.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
-      );
+        actions.setShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)));
     } else {
-      this.props.dispatch(
-        actions.drawShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)),
-      );
+      this.props.dispatch(actions.drawShape(startX + offsetX, startY + offsetY, Math.abs(w), Math.abs(h)));
     }
   }
   delete = () => {
-    const target = this.state.toDelete;
-    this.props.dispatch(actions.remove(target));
-    this.props.dispatch(regionStatsActions.getRegionStats());
-    this.props.dispatch(profilerActions.getProfile());
-    this.props.dispatch(histogramActions.getHistogramData());
+    if (this.props.regionArray && this.props.regionArray.length > 0) {
+      const target = this.state.toDelete;
+      this.props.dispatch(actions.remove(target));
+      this.props.dispatch(regionStatsActions.getRegionStats());
+      this.props.dispatch(profilerActions.getProfile());
+      this.props.dispatch(histogramActions.getHistogramData());
+    }
   }
 
   resizeRect = (newX, newY, pos, index) => {
@@ -308,12 +314,12 @@ class Region extends Component {
     );
     return result;
   }
-  handleTouchTap = (event) => {
+  handleTouchTap = () => {
     // This prevents ghost click.
-    event.preventDefault();
+    // event.preventDefault();
     this.setState({
       open: true,
-      anchorEl: event.currentTarget,
+      anchorEl: this.saveImageViewerButton,
     });
   };
   handleRequestClose = () => {
@@ -321,11 +327,11 @@ class Region extends Component {
       open: false,
     });
   };
-  handleTouchTapColormaps = (event) => {
-    event.preventDefault();
+  handleTouchTapColormaps = () => {
+    // event.preventDefault();
     this.setState({
       colormapsOpen: true,
-      anchorElColomaps: event.currentTarget,
+      anchorElColomaps: this.colormapsButton,
     });
   }
   handleRequestCloseColormaps = () => {
@@ -347,11 +353,11 @@ class Region extends Component {
       const imageViewerCanvas = this.layer.toCanvas();
       const colormapCanvas = this.colormap.toCanvas();
       const canvas = document.createElement('canvas');
-      canvas.width = 557;
+      canvas.width = this.props.firstColumnWidth;
       canvas.height = 477;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(imageViewerCanvas, 0, 0);
-      ctx.drawImage(colormapCanvas, 482, 0);
+      ctx.drawImage(colormapCanvas, this.props.firstColumnWidth - 75, 0);
       // const canvas = this.layer.getCanvas();
       const url = canvas.toDataURL('image/png', 1);
       if (this.state.value === 'png') {
@@ -380,8 +386,8 @@ class Region extends Component {
       }
     }
   }
-  handleChange = (event, index, value) => {
-    this.setState({ value });
+  handleChange = (event) => {
+    this.setState({ value: event.target.value });
   }
   panZoom = (event) => {
     const pos = this.getMousePos(this.div, event);
@@ -436,7 +442,9 @@ class Region extends Component {
     });
   }
   render() {
-    const { x, y, width, height, stops } = this.props;
+    const {
+      x, y, width, height, stops,
+    } = this.props;
     const newStops = [];
     if (stops) {
       const total = stops.length;
@@ -460,7 +468,9 @@ class Region extends Component {
         <ContextMenuTrigger id="menu2">
           <div
             ref={(node) => { this.div = node; }}
-            style={{ position: 'relative', height: 477, display: 'flex', flexDirection: 'row' }}
+            style={{
+ position: 'relative', height: 477, display: 'flex', flexDirection: 'row',
+}}
           >
             <Stage
               id="stage"
@@ -547,7 +557,7 @@ class Region extends Component {
                 <img className="iconImg" src="/images/tools.png" alt="" />
               </button>
               <Divider className="divider" />
-              <button onClick={this.handleTouchTap} className="zoom">
+              <button ref={(node) => { this.saveImageViewerButton = node; }} onClick={this.handleTouchTap} className="zoom">
                 <img className="iconImg" src="/images/save.png" alt="" />
               </button>
             </Card>
@@ -564,28 +574,93 @@ class Region extends Component {
                 <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
               </button>
             </Card>
-            <Card style={{ width: '24px', position: 'absolute', bottom: 50, left: `${this.props.firstColumnWidth - 75}` }} >
-              <button onClick={this.handleTouchTapColormaps} className="zoom">
+            <Card style={{
+                width: '24px', position: 'absolute', bottom: 50, left: this.props.firstColumnWidth - 75,
+              }}
+            >
+              <button ref={(node) => { this.colormapsButton = node; }} onClick={this.handleTouchTapColormaps} className="zoom">
                 <img className="iconImg" src="/images/colorbar.jpg" alt="" />
               </button>
             </Card>
             <br />
           </div>
-          {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} mode="indeterminate" /> : false}
+          {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} /> : false}
           <Card style={{ width: `${this.props.firstColumnWidth}` }}>
-            <CardText>
-              <div ref={(node) => { if (node) { this.cursorInfo = node; } }} />
-            </CardText>
+            <CardContent>
+              <Typography>
+                <div ref={(node) => { if (node) { this.cursorInfo = node; } }} />
+              </Typography>
+            </CardContent>
           </Card>
           <Popover
             open={this.state.colormapsOpen}
             anchorEl={this.state.anchorElColomaps}
             anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-            onRequestClose={this.handleRequestCloseColormaps}
-            style={{ width: 150, height: 100 }}
+            transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+            onClose={this.handleRequestCloseColormaps}
           >
-            <DropDownMenu
+            <Select
+              value={this.state.currentColorName}
+              onChange={(event) => {
+                selectedColormap = this.state.colormapIndex;
+                this.setState({ currentColorName: this.state.colormaps[selectedColormap].name });
+                this.setCurrentColorStops(this.state.colormaps[selectedColormap].stops);
+                if (this.props.stack) {
+                  if (this.props.stack.layers.length > 0) {
+                    this.props.dispatch(colormapActions.setColormap(event.target.value));
+                  }
+                }
+              }}
+              style={{ width: '150px', margin: '10px' }}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 48 * 4.5,
+                    width: 100,
+                  },
+                },
+              }}
+            >
+              <div style={{
+ position: 'sticky', top: 0, zIndex: 2, height: 20,
+}}
+              >
+                <Stage
+                  width={100}
+                  height={15}
+                >
+                  <Layer>
+                    <Rect
+                      width={100}
+                      height={15}
+                      stroke="black"
+                      fillLinearGradientStartPoint={{ x: 0, y: 477 }}
+                      fillLinearGradientEndPoint={{ x: 100, y: 477 }}
+                      fillLinearGradientColorStops={this.state.currentColorStops}
+                    />
+                  </Layer>
+                </Stage>
+              </div>
+              {this.props.colormaps ? this.props.colormaps.map((item, index) =>
+                 (<MenuItem
+                   value={item}
+                    // primaryText={item}
+                   key={index}
+                   onMouseEnter={() => {
+                      this.setState({ colormapIndex: index });
+                      this.setCurrentColorStops(this.state.colormaps[index].stops);
+                    }}
+                   onMouseLeave={() => {
+                      if (selectedColormap >= 0) {
+                        this.setCurrentColorStops(this.state.colormaps[selectedColormap].stops);
+                      } else {
+                        this.setCurrentColorStops([]);
+                      }
+                    }}
+                 >{item}
+                 </MenuItem>)) : null}
+            </Select>
+            {/* <DropDownMenu
               value={this.state.currentColorName}
               maxHeight={250}
               onChange={(event, key, value) => {
@@ -615,56 +690,51 @@ class Region extends Component {
                     }
                   }}
                 />)) : null}
-            </DropDownMenu>
-            <Stage
-              width={100}
-              height={15}
-            >
-              <Layer>
-                <Rect
-                  width={100}
-                  height={15}
-                  stroke="black"
-                  // fill={this.state.color}
-                  fillLinearGradientStartPoint={{ x: 0, y: 477 }}
-                  fillLinearGradientEndPoint={{ x: 100, y: 477 }}
-                  fillLinearGradientColorStops={this.state.currentColorStops}
-                />
-              </Layer>
-            </Stage>
+            </DropDownMenu> */}
           </Popover>
           <Popover
             open={this.state.open}
             anchorEl={this.state.anchorEl}
             anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-            onRequestClose={this.handleRequestClose}
+            transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+            onClose={this.handleRequestClose}
           >
             <TextField
-              floatingLabelText="Save as..."
+              label="Save as..."
+              placeholder="File name"
               onChange={this.saveAs}
               style={{ margin: '10px', verticalAlign: 'middle' }}
+              margin="normal"
             />
-            <SelectField
-              floatingLabelText="File Type"
-              value={this.state.value}
-              onChange={this.handleChange}
-              autoWidth
-              style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
+            <FormControl
+              style={{ width: '150px', margin: '5px', verticalAlign: 'middle' }}
             >
-              <MenuItem2 value="pdf" primaryText="pdf" />
-              <MenuItem2 value="eps" primaryText="eps" />
-              <MenuItem2 value="ps" primaryText="ps" />
-              <MenuItem2 value="png" primaryText="png" />
-            </SelectField>
+              <InputLabel htmlFor="file-type">File type</InputLabel>
+              <Select
+                inputProps={{
+                  name: 'file type',
+                  id: 'file-type',
+                }}
+                onChange={this.handleChange}
+                value={this.state.value}
+              >
+                <MenuItem value="pdf">pdf</MenuItem>
+                <MenuItem value="eps">eps</MenuItem>
+                <MenuItem value="ps">ps</MenuItem>
+                <MenuItem value="png">png</MenuItem>
+              </Select>
+            </FormControl>
             <br />
-            <FlatButton
+            <Button
+              variant="flat"
               type="submit"
-              label="Save"
-              primary
-              style={{ marginRight: 0 }}
+              size="medium"
               onClick={this.convertToImage}
-            />
+              style={{ marginRight: 0 }}
+              color="primary"
+            >
+              Save
+            </Button>
           </Popover>
         </ContextMenuTrigger>
         <ContextMenu id="menu2">

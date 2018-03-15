@@ -1,6 +1,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import { MuiThemeProvider as NewMuiThemeProvider } from 'material-ui-next/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import NotificationSystem from 'react-notification-system';
@@ -78,17 +79,19 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <MuiThemeProvider>
-          <div>
-            {
-              (this.state.loggedIn || Meteor.user() !== null) ?
-                <MainPage handleLogout={this.handleLogout} />
-                : <Login handleLogin={this.handleLogin} />
-            }
-            {/* <Carousel /> */}
-            <NotificationSystem ref={(node) => { this.notify = node; }} />
-          </div>
-        </MuiThemeProvider>
+        <NewMuiThemeProvider>
+          <MuiThemeProvider>
+            <div>
+              {
+                (this.state.loggedIn || Meteor.user() !== null) ?
+                  <MainPage handleLogout={this.handleLogout} />
+                  : <Login handleLogin={this.handleLogin} />
+              }
+              {/* <Carousel /> */}
+              <NotificationSystem ref={(node) => { this.notify = node; }} />
+            </div>
+          </MuiThemeProvider>
+        </NewMuiThemeProvider>
       </Provider>
     );
   }
