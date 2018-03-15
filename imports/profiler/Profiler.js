@@ -199,8 +199,21 @@ class Profiler extends Component {
               label="Auto Generate"
               // style={{ width: 150 }}
               checked={this.props.profilerSetting.autoGenerate}
-              onCheck={() => { this.props.dispatch(actions.setAutoGen()); }}
+              onCheck={() => { this.props.dispatch(actions.setAutoGen(!this.props.profilerSetting.autoGenerate)); }}
             />
+            <SelectField
+              floatingLabelText="Auto Mode"
+              value={this.props.profilerSetting.genMode}
+              // onChange={(event, index, value) => {
+              //   this.setState({ selectedCurve: value });
+              // }}
+              autoWidth
+              style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
+            >
+              {/* TODO: don't use the hard-code menu item */}
+              <MenuItem value="Current" primaryText="Current"/>
+              <MenuItem value="All" primaryText="All"/>
+            </SelectField>
           </div>
           <div style={{ flex: 1 }}>
             <button

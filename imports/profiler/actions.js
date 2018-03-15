@@ -118,8 +118,33 @@ function getCurveData() {
   };
 }
 
-function setAutoGen() {
+function autoGenerate() {
   return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    if (profilerID) {
+      const cmd = `${profilerID}:newProfile`;
+      const params = '';
+      api.instance().sendCommand(cmd, params)
+        .then((resp) => {
+          const { curves } = resp.data;
+          mongoUpsert(ProfilerDB, { profileData: curves }, 'AUTO_GENERATE');
+        });
+    }
+  };
+}
+
+function setAutoGen(value) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:setAutoGenerate`;
+    api.instance().sendCommand(cmd, value)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(ProfilerDB, { profilerSetting: data }, 'SET_PROFILERSETTING');
+      })
+      .then(() => {
+        dispatch(autoGenerate());
+      });
     // only for test, not implement
     // const { autoGen } = getState().ProfilerDB;
     // const value = !autoGen;
@@ -171,6 +196,7 @@ const actions = {
   newProfile,
   setAutoGen,
   removeProfile,
+  autoGenerate,
 };
 
 export default actions;
