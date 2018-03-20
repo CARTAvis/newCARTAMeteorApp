@@ -4,7 +4,7 @@ const defaultState = {
   data: {},
   zoomPanData: {},
   profileData: [],
-  profilerSetting: { autoGenerate: false },
+  profilerSettings: { autoGenerate: false },
 };
 const ProfilerDB = (state = defaultState, action) => {
   switch (action.type) {

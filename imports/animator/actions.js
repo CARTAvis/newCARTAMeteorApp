@@ -7,6 +7,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 import imageViewer from '../imageViewer/actions';
 import colormap from '../colormap/actions';
 import gridControl from '../gridControl/actions';
+import profiler from '../profiler/actions';
 // redux part
 const ANIMATOR_CHANGE = 'ANIMATOR_CHANGE';
 export const ActionType = {
@@ -245,6 +246,11 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
           animatorType.selection.frame = newFrameIndex;
           // mongoUpsert(AnimatorDB, { animatorID: resp.data }, `Resp_${cmd}`);
           mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
+        }
+      })
+      .then(() => {
+        if (animatorType.type === 'Stokes') {
+          dispatch(profiler.autoGenerate());
         }
       })
       .catch((e) => {

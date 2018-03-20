@@ -130,10 +130,50 @@ class Profiler extends Component {
       });
     });
   }
+
+  updateChannelFrame = (animatorTypeList, profileData) => {
+    let channelIndicator = 0;
+    if (animatorTypeList && profileData.length > 0) {
+      const { x } = profileData[0];
+      for(const animatorType of animatorTypeList) {
+        if(x && animatorType.type === 'Channel') {
+          // TODO: This one should follow the current image
+          // channelIndicator = x[animatorType.selection.frame];
+          channelIndicator = animatorType.selection.frame;
+        }
+      }
+    }
+    let layout = {};
+    if (channelIndicator !== undefined) {
+      layout = {
+        shapes: [{
+          type: 'line',
+          x0: channelIndicator,
+          y0: 0,
+          x1: channelIndicator,
+          yref: 'paper',
+          y1: 1,
+          line: {
+            color: 'red',
+            width: 1.5,
+            // dash: 'dot',
+          },
+        }],
+      };
+    }
+    if (this.el !== undefined) {
+      Plotly.relayout(this.el, layout);
+    }
+  }
+
   render() {
+
+    const { animatorTypeList, profileData } = this.props;
+    this.updateChannelFrame(animatorTypeList, profileData);
+
     console.log('RENDER PROPS: ', this.props);
     const curveNameList = [];
-    const { profileData } = this.props;
+    // const { profileData } = this.props;
     for (let i = 0; i < profileData.length; i += 1) {
       // curveNameList.push(
       //   <MenuItem value={profileData[i].name} primaryText={profileData[i].name} key={i} />);
@@ -198,13 +238,13 @@ class Profiler extends Component {
             <Checkbox
               label="Auto Generate"
               // style={{ width: 150 }}
-              checked={this.props.profilerSetting.autoGenerate}
-              onCheck={() => { this.props.dispatch(actions.setAutoGen(!this.props.profilerSetting.autoGenerate)); }}
+              checked={this.props.profilerSettings.autoGenerate}
+              onCheck={() => { this.props.dispatch(actions.setAutoGen(!this.props.profilerSettings.autoGenerate)); }}
             />
             <SelectField
               floatingLabelText="Auto Mode"
-              value={this.props.profilerSetting.genMode}
-              disabled={!this.props.profilerSetting.autoGenerate}
+              value={this.props.profilerSettings.genMode}
+              disabled={!this.props.profilerSettings.autoGenerate}
               onChange={(event, index, value) => {
                 this.props.dispatch(actions.setGenerationMode(value));
               }}
@@ -218,7 +258,7 @@ class Profiler extends Component {
           </div>
           <div style={{ flex: 1 }}>
             <button
-              disabled={this.props.profilerSetting.autoGenerate}
+              disabled={this.props.profilerSettings.autoGenerate}
               // style={{ position: 'absolute', right: '23px', bottom: 0 }}
               onClick={() => { this.props.dispatch(actions.newProfile()); }}
             >
@@ -227,7 +267,7 @@ class Profiler extends Component {
           </div>
           <div style={{ flex: 1 }}>
             <button
-              disabled={this.props.profilerSetting.autoGenerate}
+              disabled={this.props.profilerSettings.autoGenerate}
               // style={{ position: 'absolute', right: '23px', bottom: 0 }}
               onClick={() => {
                 console.log(this.state.selectedCurve);
@@ -247,6 +287,7 @@ const mapStateToProps = state => ({
   profileData: state.ProfilerDB.profileData,
   data: state.ProfilerDB.data,
   zoomPanData: state.ProfilerDB.zoomPanData,
-  profilerSetting: state.ProfilerDB.profilerSetting,
+  profilerSettings: state.ProfilerDB.profilerSettings,
+  animatorTypeList: state.AnimatorDB.animatorTypeList,
 });
 export default connect(mapStateToProps)(Profiler);

@@ -44,8 +44,8 @@ function setupProfiler() {
         api.instance().sendCommand(command, parameters)
           .then((response) => {
             console.log('Try to get the setting of profiler!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', response);
-            const profilerSetting = response.data;
-            mongoUpsert(ProfilerDB, { profilerSetting, profileData: [] }, 'getProfilerSettings');
+            const profilerSettings = response.data;
+            mongoUpsert(ProfilerDB, { profilerSettings, profileData: [] }, 'getProfilerSettings');
           })
           .then(() => {
             parseRegisterProfilerResp(resp);
@@ -121,8 +121,8 @@ function getCurveData() {
 function autoGenerate() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const { profilerSetting } = getState().ProfilerDB;
-    if (profilerID && profilerSetting.autoGenerate) {
+    const { profilerSettings } = getState().ProfilerDB;
+    if (profilerID && profilerSettings.autoGenerate) {
       const cmd = `${profilerID}:newProfile`;
       const params = '';
       api.instance().sendCommand(cmd, params)
@@ -141,7 +141,7 @@ function setAutoGen(value) {
     api.instance().sendCommand(cmd, value)
       .then((resp) => {
         const { data } = resp;
-        mongoUpsert(ProfilerDB, { profilerSetting: data }, 'SET_PROFILERSETTING');
+        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_PROFILERSETTING');
       })
       .then(() => {
         dispatch(autoGenerate());
@@ -160,7 +160,7 @@ function setGenerationMode(mode) {
     api.instance().sendCommand(cmd, mode)
       .then((resp) => {
         const { data } = resp;
-        mongoUpsert(ProfilerDB, { profilerSetting: data }, 'SET_PROFILERSETTING');
+        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_PROFILERSETTING');
       })
       .then(() => {
         dispatch(autoGenerate());
