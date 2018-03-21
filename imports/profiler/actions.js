@@ -54,6 +54,12 @@ function setupProfiler() {
   };
 }
 
+function setProfilerMainSetting(value) {
+  return (dispatch, getState) => {
+    mongoUpsert(ProfilerDB, { profilerMainSetting: value }, 'SET_PROFILER_MAIN_SETTING');
+  };
+}
+
 function clearProfile() {
   return (dispatch) => {
     const data = { x: [], y: [] };
@@ -214,6 +220,7 @@ const actions = {
   removeProfile,
   autoGenerate,
   setGenerationMode,
+  setProfilerMainSetting,
 };
 
 export default actions;
