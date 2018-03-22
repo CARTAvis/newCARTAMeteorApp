@@ -278,6 +278,17 @@ class Profiler extends Component {
               Delete Profile
             </button>
           </div>
+          <div style={{ flex: 1 }}>
+            <button
+              // disabled={this.props.profilerSettings.autoGenerate}
+              // style={{ position: 'absolute', right: '23px', bottom: 0 }}
+              onClick={() => {
+                this.props.dispatch(actions.clearProfiles());
+              }}
+            >
+              Clear Profile
+            </button>
+          </div>
         </div>
       </div>
     );

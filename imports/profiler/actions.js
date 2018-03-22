@@ -111,6 +111,19 @@ function removeProfile(value) {
   };
 }
 
+function clearProfiles() {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:clearProfiles`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const { curves } = resp.data;
+        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
+      });
+  };
+}
+
 function getCurveData() {
   return (dispatch, getState) => {
     console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
@@ -221,6 +234,7 @@ const actions = {
   autoGenerate,
   setGenerationMode,
   setProfilerMainSetting,
+  clearProfiles,
 };
 
 export default actions;
