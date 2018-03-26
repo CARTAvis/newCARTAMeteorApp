@@ -14,19 +14,14 @@ export function setupInteractiveCleanDB() {
   api.instance().setupMongoRedux(InteractiveCleanDB, INTERACTIVECLEAN_CHANGE);
 }
 
-function updateInteractiveClean() {
-  return (dispatch, getState) => {
-    const state = getState();
-    const interactiveCleanID = state.InteractiveCleanDB.interactiveCleanID;
-
+function updateInteractiveClean(interactiveCleanID) {
     const cmd = `${interactiveCleanID}:getInteractiveClean`;
     const arg = '';
 
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
-        console.log('ic:resp:', resp.data);
+        mongoUpsert(InteractiveCleanDB, { parameters:resp.data }, 'PARAMETERS');
       });
-  };
 }
 
 function setupInteractiveClean() {
@@ -73,13 +68,13 @@ function sendMaskCommand(command) {
 
 function parseRegisterInteractiveClean(resp) {
   const { cmd, data } = resp;
-  const interactiveCleanID = data;
 
+  const interactiveCleanID = data;
   mongoUpsert(InteractiveCleanDB, { interactiveCleanID }, `Resp_${cmd}`);
+  updateInteractiveClean(interactiveCleanID);
 }
 
 const actions = {
-  updateInteractiveClean,
   setupInteractiveClean,
   sendCleanCommand,
   sendMaskCommand,

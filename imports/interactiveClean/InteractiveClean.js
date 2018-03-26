@@ -44,81 +44,135 @@ class InteractiveClean extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          value: 2,
-          niterText: "",
+          selectedProcess: 2,
           advancedClean:false,
+          parameters: {niter:'',
+                       threshold:'',
+                       cycleNiter:'',
+                       interactiveNiter:'',
+                       cycleThreshold:'',
+                       interactiveThreshold:'',
+                       cycleFactor:'',
+                       loopGain:''},
         };
         this.props.dispatch(actions.setupInteractiveClean());
+        //this.props.dispatch(actions.updateInteractiveClean());
+    }
+
+    componentWillReceiveProps = (nextProps) => {
+      if(nextProps.parameters){
+        this.setState({ parameters:nextProps.parameters });
+      }
     }
 
 
 
+    handleProcessSelect = (event, index, selectedProcess) => this.setState({selectedProcess});
 
-    handleChange = (event, index, value) => this.setState({value});
-    handleChangeText = (event) => {
-        this.setState({
-          niterText: event.target.value,
-        });
-      };
-      handleToggle = (event, advancedClean) => this.setState({advancedClean});
-    // handleToggle = (event) => {
-    //   console.log("toggling!");
-    //     this.setState({
-    //       advancedClean: !event.target.toggled,
-    //     });
-    //   };
+    handleChangeParameters = (event) => {
+      console.log("changed: ",event.target.name);
+      let parameters = {...this.state.parameters};
+      switch(event.target.name){
+        case "niterField":
+          parameters.niter = parseInt(event.target.value);
+          this.setState({parameters});
+          break;
+        case "thresholdField":
+          parameters.threshold = event.target.value;
+          this.setState({parameters});
+          break;
+        case "cycleNiterField":
+          parameters.cycleNiter = parseInt(event.target.value);
+          this.setState({parameters});
+          break;
+        case "interactiveNiterField":
+          parameters.interactiveNiter = parseInt(event.target.value);
+          this.setState({parameters});
+          break;
+        case "cycleThresholdField":
+          parameters.cycleThreshold = parseFloat(event.target.value);
+          this.setState({parameters});
+          break;
+        case "interactiveThresholdField":
+          parameters.interactiveThreshold = parseFloat(event.target.value);
+          this.setState({parameters});
+          break;
+        case "cycleFactorField":
+          parameters.cycleFactor = parseInt(event.target.value);
+          this.setState({parameters});
+          break;
+        case "loopGainField":
+          parameters.loopGain = parseInt(event.target.value);
+          this.setState({parameters});
+          break;
+        default:
+          console.log("Unrecognized Field Changed");
+          break;
+        }
+    };
 
+    toggleAdvanced = (event, advancedClean) => this.setState({advancedClean});
 
     render(){
-
-      const { buttonText } = this.props;
-
+      const { parameters } = this.props;
+      console.log("parameters: render ", this.state.parameters);
       const advancedForm = (
         <div>
         <Toggle
           label="Advanced"
-          onToggle = {this.handleToggle}
+          onToggle = {this.toggleAdvanced}
           style={{ width:'45%', marginTop:'20px'}}
           defaultToggled = {false}
           toggled = {this.state.advancedClean}
         />
         <TextField
           floatingLabelText="Cycle NIter"
-          //hintText="Cycle Iterations"
-          defaultValue = "100"
+          name="cycleNiterField"
+          value = {this.state.parameters.cycleNiter}
+          onChange={this.handleChangeParameters}
           disabled = {!this.state.advancedClean}
-          //value = {this.state.niterText}
           style = {style.twoColumn}
         />
         <span style={style.spacer}/>
         <TextField
           floatingLabelText="Interactive NIter"
+          name="interactiveNiterField"
+          value = {this.state.parameters.interactiveNiter}
+          onChange={this.handleChangeParameters}
           disabled = {!this.state.advancedClean}
           style = {style.twoColumn}
         />
         <TextField
           floatingLabelText="Cycle Threshold"
-          //hintText="Cycle Iterations"
+          name="cycleThresholdField"
+          value = {this.state.parameters.cycleThreshold}
+          onChange={this.handleChangeParameters}
           disabled = {!this.state.advancedClean}
-          //value = {this.state.niterText}
           style = {style.twoColumn}
         />
         <span style={style.spacer}/>
         <TextField
           floatingLabelText="Interactive Threshold"
+          name="interactiveThresholdField"
+          value = {this.state.parameters.interactiveThreshold}
+          onChange={this.handleChangeParameters}
           disabled = {!this.state.advancedClean}
           style = {style.twoColumn}
         />
         <TextField
           floatingLabelText="Cycle Factor"
-          //hintText="Cycle Iterations"
+          name="cycleFactorField"
+          value = {this.state.parameters.cycleFactor}
+          onChange={this.handleChangeParameters}
           disabled = {!this.state.advancedClean}
-          //value = {this.state.niterText}
           style = {style.twoColumn}
         />
         <span style={style.spacer}/>
         <TextField
           floatingLabelText="Loop Gain"
+          name="loopGainField"
+          value={this.state.parameters.loopGain}
+          onChange={this.handleChangeParameters}
           disabled = {!this.state.advancedClean}
           style = {style.twoColumn}
         />
@@ -183,37 +237,39 @@ class InteractiveClean extends Component {
 
       const cleanForm = (
         <form>
-        <div style={{ display:'block', padding:'0 5%'}}>
-
-        <div style={{ display:'block'}}>
-        <SelectField
-        floatingLabelText="Clean Process ID"
-        value={this.state.value}
-        style={{width:'100%'}}
-        onChange={this.handleChange}
-        //fullWidth='true'
-        >
-       <MenuItem value={1} primaryText="Process 1" />
-       <MenuItem value={2} primaryText="Process 2" />
-       <MenuItem value={3} primaryText="Process 3" />
-       </SelectField>
-      </div>
-
-      <div>
-      <TextField
-        floatingLabelText="NIter"
-        hintText="Iterations"
-        value = {this.state.niterText}
-        style = {style.twoColumn}
-        onChange={this.handleChangeText}
-        autoFocus
-      />
-      <span style={style.spacer}/>
-      <TextField
-        floatingLabelText="Threshold"
-        style = {style.twoColumn}
-      />
-      </div>
+          <div style={{ display:'block', padding:'0 5%'}}>
+            <div style={{ display:'block'}}>
+              <SelectField
+                floatingLabelText="Clean Process ID"
+                value={this.state.selectedProcess}
+                style={{width:'100%'}}
+                onChange={this.handleProcessSelect}
+                >
+                <MenuItem value={1} primaryText="Process 1" />
+                <MenuItem value={2} primaryText="Process 2" />
+                <MenuItem value={3} primaryText="Process 3" />
+              </SelectField>
+            </div>
+          <div>
+          <TextField
+            floatingLabelText="NIter"
+            hintText="Iterations"
+            name="niterField"
+            type="number"
+            value = {this.state.parameters.niter}
+            style = {style.twoColumn}
+            onChange={this.handleChangeParameters}
+            autoFocus
+            />
+          <span style={style.spacer}/>
+          <TextField
+            floatingLabelText="Threshold"
+            name="thresholdField"
+            value = {this.state.parameters.threshold}
+            onChange={this.handleChangeParameters}
+            style = {style.twoColumn}
+            />
+          </div>
 
       {advancedForm}
       {maskButtons}
@@ -230,20 +286,18 @@ class InteractiveClean extends Component {
 
     pressMaskButton = (buttonTitle) =>{
       this.props.dispatch(actions.sendMaskCommand(buttonTitle));
-      //console.log('button pressed');
     }
 
     pressCleanButton = (buttonTitle) =>{
-      //this.props.dispatch(actions.updateInteractiveClean());
       this.props.dispatch(actions.sendCleanCommand(buttonTitle));
-      //console.log('button pressed:', buttonTitle);
     }
 }
 
 
 
 const mapStateToProps = state => ({
-  buttonText: state.InteractiveCleanDB.buttonText,
+  parameters: state.InteractiveCleanDB.parameters,
+  niter: state.InteractiveCleanDB.niter,
 });
 
 export default connect(mapStateToProps)(InteractiveClean);
