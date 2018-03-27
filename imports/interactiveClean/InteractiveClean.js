@@ -191,14 +191,14 @@ class InteractiveClean extends Component {
         </FloatingActionButton>
         <FloatingActionButton
          mini={true}
-         onClick={() => this.pressMaskButton('addMask')}
+         onClick={() => this.pressMaskButton('addToMask')}
          style={style.button}
          >
          <Add />
          </FloatingActionButton>
         <FloatingActionButton
          mini={true}
-         onClick={() => this.pressMaskButton('subtractMask')}
+         onClick={() => this.pressMaskButton('subtractFromMask')}
          style={style.button}
          >
          <Remove />
@@ -210,27 +210,28 @@ class InteractiveClean extends Component {
         <div style={{float:'right', marginTop: '0px', textAlign:'right'}}>
         <p style={style.label}>Clean Controls</p>
         <FloatingActionButton
-        backgroundColor="#D50000"
-        mini={true}
-        onClick={() => this.pressCleanButton('stopClean')}
-        style={style.button}
-        >
-        <Stop />
+            backgroundColor="#D50000"
+            mini={true}
+            name='stopClean'
+            onClick={() => this.pressCleanButton('stopClean')}
+            style={style.button}
+            >
+          <Stop />
         </FloatingActionButton>
         <FloatingActionButton
-         backgroundColor="#5C6BC0"
-         mini={true}
-         onClick={() => this.pressCleanButton('runToEnd')}
-         style={style.button}
-         >
-         <LastPage />
-         </FloatingActionButton>
+          backgroundColor="#5C6BC0"
+          mini={true}
+          onClick={() => this.pressCleanButton('runToEnd')}
+          style={style.button}
+          >
+          <LastPage />
+        </FloatingActionButton>
         <FloatingActionButton
-         backgroundColor="#00C853"
-         mini={true}
-         onClick={() => this.pressCleanButton('runReturn')}
-         >
-         <Refresh />
+          backgroundColor="#00C853"
+          mini={true}
+          onClick={() => this.pressCleanButton('runReturn')}
+          >
+          <Refresh />
          </FloatingActionButton>
         </div>
       );

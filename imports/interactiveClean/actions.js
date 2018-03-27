@@ -36,13 +36,13 @@ function setupInteractiveClean() {
   };
 }
 
-function sendCleanCommand(command) {
+function sendCleanCommand(cleanAction) {
   return (dispatch, getState) => {
     const state = getState();
     const interactiveCleanID = state.InteractiveCleanDB.interactiveCleanID;
 
-    const cmd = `${interactiveCleanID}:cleanCommand`;
-    const arg = command;
+    const cmd = `${interactiveCleanID}:performCleanAction`;
+    const arg = cleanAction;
 
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
@@ -51,13 +51,13 @@ function sendCleanCommand(command) {
   };
 }
 
-function sendMaskCommand(command) {
+function sendMaskCommand(maskAction) {
   return (dispatch, getState) => {
     const state = getState();
     const interactiveCleanID = state.InteractiveCleanDB.interactiveCleanID;
 
-    const cmd = `${interactiveCleanID}:maskCommand`;
-    const arg = command;
+    const cmd = `${interactiveCleanID}:performMaskAction`;
+    const arg = maskAction;
 
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
