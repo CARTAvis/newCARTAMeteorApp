@@ -292,7 +292,7 @@ class InteractiveClean extends Component {
 
     pressCleanButton = (buttonTitle) =>{
       this.props.dispatch(actions.sendCleanCommand(buttonTitle));
-      console.log("sent pars: ", this.state.cleanParameters);
+      this.props.dispatch(actions.updateInteractiveClean(this.state.cleanParameters));    
     }
 }
 
