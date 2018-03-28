@@ -20,7 +20,7 @@ function updateInteractiveClean(interactiveCleanID) {
 
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
-        mongoUpsert(InteractiveCleanDB, { parameters:resp.data }, 'PARAMETERS');
+        mongoUpsert(InteractiveCleanDB, { cleanParameters:resp.data }, 'PARAMETERS');
       });
 }
 
