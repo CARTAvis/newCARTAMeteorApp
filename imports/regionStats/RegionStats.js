@@ -10,15 +10,16 @@ class RegionStats extends Component {
     this.state = {
     };
   }
-  componentDidMount = () => {
-    const { regionStats, selectedIndex, regionPrefArray } = this.props;
-    if (regionStats) this.showRegionStats(regionStats, selectedIndex, regionPrefArray);
-  }
+  // componentDidMount = () => {
+  //   const { regionStats, selectedIndex, regionPrefArray } = this.props;
+  //   if (regionStats) this.showRegionStats(regionStats, selectedIndex, regionPrefArray);
+  // }
   showRegionStats = (stats, index, regionPrefArray) => {
     if (this.p) {
       console.log('SHOW REGION STATS');
       // const statsArray = stats[index];
       const infoArr = stats[index];
+      console.log('INFO ARR', infoArr);
       let info = {};
       if (this.props.selectedRegion >= 0) {
         info = infoArr[this.props.selectedRegion];
@@ -39,7 +40,9 @@ class RegionStats extends Component {
     }
   }
   render() {
-    const { regionStats, selectedIndex, regionPrefArray, selectedRegion } = this.props;
+    const {
+      regionStats, selectedIndex, regionPrefArray, selectedRegion,
+    } = this.props;
     if (regionStats || selectedRegion) {
       this.showRegionStats(regionStats, selectedIndex, regionPrefArray);
     }

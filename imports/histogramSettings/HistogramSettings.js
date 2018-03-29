@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
+/* material-ui beta */
+import { MenuItem, MenuList } from 'material-ui-next/Menu';
+
+// import Menu from 'material-ui/Menu';
+// import MenuItem from 'material-ui/MenuItem';
 import actions from './actions';
 import HistogramDisplay from './HistogramDisplay';
 import HistogramSelection from './HistogramSelection';
@@ -11,6 +14,9 @@ class HistogramSettings extends Component {
     console.log('HISTOGRAM SETTINGS');
     super(props);
     this.state = {};
+  }
+  setHistogramMainSetting = type => () => {
+    this.props.dispatch(actions.setHistogramMainSetting(type));
   }
   render() {
     let currentHistogramSetting = null;
@@ -30,15 +36,10 @@ class HistogramSettings extends Component {
       <div style={{ flex: 1 }}>
         <div className="rowLayout">
           <div className="settingsUISideMenu">
-            <Menu
-              onChange={(event, value) => {
-                this.props.dispatch(actions.setHistogramMainSetting(value));
-              }}
-            >
-              <MenuItem primaryText="display" value="display" />
-              <MenuItem primaryText="range" value="range" />
-              <MenuItem primaryText="selection" value="selection" />
-            </Menu>
+            <MenuList>
+              <MenuItem onClick={this.setHistogramMainSetting('display')}>display</MenuItem>
+              <MenuItem onClick={this.setHistogramMainSetting('selection')}>selection</MenuItem>
+            </MenuList>
           </div>
           <div id="data" className="settingsUIContent">
             {currentHistogramSetting}

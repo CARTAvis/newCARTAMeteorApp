@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Checkbox from 'material-ui/Checkbox';
-import TextField from 'material-ui/TextField';
+/* material-ui beta */
+import { FormGroup, FormControlLabel } from 'material-ui-next/Form';
+import Checkbox from 'material-ui-next/Checkbox';
+import TextField from 'material-ui-next/TextField';
 import actions from './actions';
 
 class HistogramSelection extends Component {
@@ -19,70 +21,88 @@ class HistogramSelection extends Component {
     const { histogramSettings } = this.props;
     return (
       <div>
-        <Checkbox
-          label="all channels"
-          checked={histogramSettings.planeMode === 'All'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setPlaneMode('All'));
-              if (this.channelInput.className === 'show') {
-                this.channelInput.className = 'hide';
-              }
+        <FormGroup row={false}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={histogramSettings.planeMode === 'All'}
+                onChange={(event, isInputChecked) => {
+                  if (isInputChecked) {
+                    this.props.dispatch(actions.setPlaneMode('All'));
+                    if (this.channelInput.className === 'show') {
+                      this.channelInput.className = 'hide';
+                    }
+                  }
+                }}
+              />
             }
-          }}
-        />
-        <Checkbox
-          label="current channel"
-          checked={histogramSettings.planeMode === 'Current'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setPlaneMode('Current'));
-              if (this.channelInput.className === 'show') {
-                this.channelInput.className = 'hide';
-              }
+            label="all channels"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={histogramSettings.planeMode === 'Current'}
+                onChange={(event, isInputChecked) => {
+                  if (isInputChecked) {
+                    this.props.dispatch(actions.setPlaneMode('Current'));
+                    if (this.channelInput.className === 'show') {
+                      this.channelInput.className = 'hide';
+                    }
+                  }
+                }}
+              />
             }
-          }}
-        />
-        <Checkbox
-          label="range"
-          checked={histogramSettings.planeMode === 'Range'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setPlaneMode('Range'));
-              if (this.channelInput.className === 'show') {
-                this.channelInput.className = 'hide';
-              }
+            label="current channel"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={histogramSettings.planeMode === 'Range'}
+                onChange={(event, isInputChecked) => {
+                  if (isInputChecked) {
+                    this.props.dispatch(actions.setPlaneMode('Range'));
+                    if (this.channelInput.className === 'show') {
+                      this.channelInput.className = 'hide';
+                    }
+                  }
+                }}
+              />
             }
-          }}
-        />
-        <Checkbox
-          label="select channel"
-          checked={histogramSettings.planeMode === 'Channel'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              console.log('VALUE: ', isInputChecked);
-              this.props.dispatch(actions.setPlaneMode('Channel'));
-              if (this.channelInput) {
-                this.channelInput.className = 'show';
-              }
+            label="range"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={histogramSettings.planeMode === 'Channel'}
+                onChange={(event, isInputChecked) => {
+                  if (isInputChecked) {
+                    console.log('VALUE: ', isInputChecked);
+                    this.props.dispatch(actions.setPlaneMode('Channel'));
+                    if (this.channelInput) {
+                      this.channelInput.className = 'show';
+                    }
+                  }
+                }}
+              />
             }
-          }}
-        />
+            label="select channel"
+          />
+        </FormGroup>
         <div
           ref={(node) => { if (node) { this.channelInput = node; } }}
           className="hide"
         >
           <TextField
-            floatingLabelText="select a channel"
-            fullWidth={false}
+            label="select a channel"
+            // fullWidth={false}
             style={{ width: '30%' }}
             onKeyDown={(e) => {
               if (e.keyCode === 13) {
                 this.props.dispatch(actions.setPlaneChannel(this.state.channelInput));
               }
             }}
-            onChange={(event, channelInput) => {
-              this.setState({ channelInput });
+            onChange={(event) => {
+              this.setState({ channelInput: event.target.value });
             }}
           />
         </div>

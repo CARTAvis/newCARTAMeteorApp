@@ -18,7 +18,7 @@ export function setupHistogramSettingsDB() {
 }
 function getHistogramPref() {
   return (dispatch, getState) => {
-    const histogramID = getState().HistogramDB.histogramID;
+    const { histogramID } = getState().HistogramDB;
     const cmd = `${histogramID}:${Commands.GET_HISTOGRAM_PREF}`;
     api.instance().sendCommand(cmd, '', (resp) => {
       console.log('PREF DATA: ', resp.data);
@@ -29,7 +29,7 @@ function getHistogramPref() {
 }
 function setBinCount(count) {
   return (dispatch, getState) => {
-    const histogramID = getState().HistogramDB.histogramID;
+    const { histogramID } = getState().HistogramDB;
     const cmd = `${histogramID}:${Commands.SET_BIN_COUNT}`;
     const arg = `binCount:${count}`;
     api.instance().sendCommand(cmd, arg)
@@ -41,7 +41,7 @@ function setBinCount(count) {
 }
 function setBinWidth(width) {
   return (dispatch, getState) => {
-    const histogramID = getState().HistogramDB.histogramID;
+    const { histogramID } = getState().HistogramDB;
     const cmd = `${histogramID}:${Commands.SET_BIN_WIDTH}`;
     const arg = `binWidth:${width}`;
     api.instance().sendCommand(cmd, arg)
@@ -58,7 +58,7 @@ function setDisplayType(type) {
 }
 function setLogCount(value) {
   return (dispatch, getState) => {
-    const histogramID = getState().HistogramDB.histogramID;
+    const { histogramID } = getState().HistogramDB;
     const cmd = `${histogramID}:${Commands.SET_LOG_COUNT}`;
     const arg = `logCount:${value}`;
     api.instance().sendCommand(cmd, arg)
@@ -74,7 +74,7 @@ function setHistogramMainSetting(settingCategory) {
 }
 function setPlaneMode(mode) {
   return (dispatch, getState) => {
-    const histogramID = getState().HistogramDB.histogramID;
+    const { histogramID } = getState().HistogramDB;
     const cmd = `${histogramID}:${Commands.SET_PLANE_MODE}`;
     const arg = `planeMode:${mode}`;
     api.instance().sendCommand(cmd, arg)
@@ -86,7 +86,7 @@ function setPlaneMode(mode) {
 }
 function setPlaneChannel(channel) {
   return (dispatch, getState) => {
-    const histogramID = getState().HistogramDB.histogramID;
+    const { histogramID } = getState().HistogramDB;
     const cmd = `${histogramID}:${Commands.SET_PLANE_CHANNEL}`;
     const arg = `planeChannel:${channel}`;
     api.instance().sendCommand(cmd, arg)

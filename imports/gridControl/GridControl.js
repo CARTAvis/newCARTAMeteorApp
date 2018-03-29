@@ -33,8 +33,7 @@ class GridControl extends Component {
       const coordinateSystems = [];
       const supportedCS = dataGrid.supportedCS;
       for (let i = 0; i < supportedCS.length; i += 1) {
-        coordinateSystems.push(
-          <MenuItem value={supportedCS[i]} primaryText={supportedCS[i]} key={i} />);
+        coordinateSystems.push(<MenuItem value={supportedCS[i]} primaryText={supportedCS[i]} key={i} />);
       }
 
       content =
@@ -65,7 +64,7 @@ class GridControl extends Component {
         >
           {coordinateSystems}
         </SelectField>
-      </div>);
+       </div>);
     } else if (subSetting === 'grid') {
       content =
         (<div>
@@ -80,6 +79,7 @@ class GridControl extends Component {
           <TextField
             floatingLabelText="spacing"
             onChange={(event, newValue) => {
+              console.log('new val: ', newValue);
               this.props.dispatch(actions.setGridSpacing(newValue));
             }}
             value={dataGrid.spacing}
@@ -131,8 +131,7 @@ class GridControl extends Component {
       const axes = [];
       const supportedAxes = dataGrid.supportedAxes;
       for (let i = 0; i < supportedAxes.length; i += 1) {
-        axes.push(
-          <MenuItem value={supportedAxes[i]} primaryText={supportedAxes[i]} key={i} />);
+        axes.push(<MenuItem value={supportedAxes[i]} primaryText={supportedAxes[i]} key={i} />);
       }
 
       content = (
@@ -239,7 +238,7 @@ class GridControl extends Component {
             style={numericInputStyle}
           />
           {/* TODO: The function is unfinished.
-          The hard code in label format menu should be modified to match 
+          The hard code in label format menu should be modified to match
           the permuted image and spectral axis, etc. */}
           <p>Left: </p>
           <DropDownMenu

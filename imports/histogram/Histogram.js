@@ -28,6 +28,9 @@ class Histogram extends Component {
     this.el.on('plotly_hover', (e) => {
       this.props.dispatch(actions.onHover(e));
     });
+    this.el.on('plotly_click', (e) => {
+      console.log('PLOTLY CLICK: ', e);
+    });
     this.el.on('plotly_relayout', (e) => {
       if (!e.width) {
         this.props.dispatch(actions.onZoomPan(e));
@@ -89,7 +92,9 @@ class Histogram extends Component {
     }
   }
   render() {
-    const { histogramData, displayType, histogramSettings, width, data, zoomPanData } = this.props;
+    const {
+      histogramData, displayType, histogramSettings, width, data, zoomPanData,
+    } = this.props;
     // histogram settings is loaded into the db when empty plot is produced,
     // need to check if there's available data in the function called
     if (histogramData || displayType || histogramSettings) {

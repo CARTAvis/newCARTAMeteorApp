@@ -60,13 +60,13 @@ class Region extends Component {
     };
   }
   componentDidMount = () => {
-    document.body.onkeydown = (e) => {
-      // need to fix the 'if' logic here later
-      if (e.keyCode === 8) {
-        console.log('DELETE');
-        this.delete();
-      }
-    };
+    // document.body.onkeydown = (e) => {
+    //   // need to fix the 'if' logic here later
+    //   if (e.keyCode === 8) {
+    //     console.log('DELETE');
+    //     this.delete();
+    //   }
+    // };
     HTTP.get(Meteor.absoluteUrl('/colormaps.json'), (err, result) => {
       if (err) console.log(err);
       else {
@@ -585,7 +585,7 @@ class Region extends Component {
             <br />
           </div>
           {this.props.requestingFile ? <LinearProgress style={{ width: 482 }} /> : false}
-          <Card style={{ width: `${this.props.firstColumnWidth}` }}>
+          <Card style={{ width: this.props.firstColumnWidth }}>
             <CardContent>
               <Typography>
                 <div ref={(node) => { if (node) { this.cursorInfo = node; } }} />

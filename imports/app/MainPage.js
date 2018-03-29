@@ -1,11 +1,12 @@
+import React, { Component } from 'react';
+/* material-ui beta */
+import Button from 'material-ui-next/Button';
+// import RaisedButton from 'material-ui/RaisedButton';
+import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 // import 'react-contextmenu/public/styles.css';
 import '../styles/react-contextmenu.css';
-import React, { Component } from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import { Tabs, Tab } from 'material-ui/Tabs';
-import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
 // import { Meteor } from 'meteor/meteor';
@@ -87,12 +88,6 @@ class MainPage extends Component {
   }
   render() {
     console.log('IN RENDER');
-    const toolbarStyle = {
-      backgroundColor: '#EEEEEE',
-      bottom: 0,
-      width: '100%',
-    };
-    // const expanded = this.state.expand;
     const midPanel = (
       <div>
         <div>
@@ -121,7 +116,7 @@ class MainPage extends Component {
           handleLogout={this.props.handleLogout}
         />
         <div className="layout-fill">
-          <Topbar style={toolbarStyle} />
+          <Topbar />
           <LayoutWrapper
             firstPercentage={50}
             secondPercentage={50}
@@ -148,22 +143,38 @@ class MainPage extends Component {
                 <Region />
               </div> */}
               <Region firstColumnWidth={this.state.firstColumnWidth} />
-              <Animator />
+              <Animator firstColumnWidth={this.state.firstColumnWidth} />
             </div>
             <div>
               <div style={{ marginLeft: '30%', marginTop: '10px' }}>
-                <RaisedButton
+                <Button
+                  variant="raised"
+                  size="medium"
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Profiler')}
                 >
                   <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
-                </RaisedButton>
-                <RaisedButton
+                </Button>
+                <Button
+                  variant="raised"
+                  size="medium"
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Histogram')}
                 >
                   <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
-                </RaisedButton>
+                </Button>
+                {/* <RaisedButton
+                  style={{ marginLeft: '10px' }}
+                  onClick={() => this.handleClick2('Profiler')}
+                >
+                  <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
+                </RaisedButton> */}
+                {/* <RaisedButton
+                  style={{ marginLeft: '10px' }}
+                  onClick={() => this.handleClick2('Histogram')}
+                >
+                  <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
+                </RaisedButton> */}
               </div>
               {midPanel}
             </div>

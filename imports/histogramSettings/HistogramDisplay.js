@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import TextField from 'material-ui/TextField';
-import Checkbox from 'material-ui/Checkbox';
+/* material-ui beta */
+import TextField from 'material-ui-next/TextField';
+import Checkbox from 'material-ui-next/Checkbox';
+import { FormGroup, FormControlLabel } from 'material-ui-next/Form';
 import Slider from 'material-ui/Slider';
 import actions from './actions';
 
@@ -27,10 +29,20 @@ class HistogramDisplay extends Component {
     }
   }
   render() {
-    // console.log('BIN COUNT: ', this.props.histogramSettings.binCount);
     return (
       <div>
         <TextField
+          value={this.state.binCount}
+          label="count"
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              this.props.dispatch(actions.setBinCount(this.state.binCount));
+            }
+          }}
+          onChange={(event) => { this.setState({ binCount: event.target.value }); }}
+          margin="normal"
+        />
+        {/* <TextField
           value={this.state.binCount}
           floatingLabelText="count"
           onKeyDown={(e) => {
@@ -39,7 +51,7 @@ class HistogramDisplay extends Component {
             }
           }}
           onChange={(event, newValue) => { this.setState({ binCount: newValue }); }}
-        />
+        /> */}
         <Slider
           min={0}
           max={4}
@@ -51,6 +63,17 @@ class HistogramDisplay extends Component {
         />
         <TextField
           value={this.state.binWidth}
+          label="width"
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              this.props.dispatch(actions.setBinWidth(this.state.binWidth));
+            }
+          }}
+          onChange={(event) => { this.setState({ binWidth: event.target.value }); }}
+          margin="normal"
+        />
+        {/* <TextField
+          value={this.state.binWidth}
           floatingLabelText="width (to 6 significant digits)"
           onKeyDown={(e) => {
             if (e.keyCode === 13) {
@@ -61,37 +84,52 @@ class HistogramDisplay extends Component {
             // const sciValue = newValue.toExponential(6);
             this.setState({ binWidth: newValue });
           }}
-        />
-        <br />
-        <Checkbox
-          label="outline"
-          checked={this.props.displayType === 'lines'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setDisplayType('lines'));
+        /> */}
+        <FormGroup row={false}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.props.displayType === 'lines'}
+                onChange={(event, isInputChecked) => {
+                  if (isInputChecked) {
+                    this.props.dispatch(actions.setDisplayType('lines'));
+                  }
+                }}
+                value="lines"
+              />
             }
-          }}
-        />
-        <Checkbox
-          label="fill"
-          checked={this.props.displayType !== 'lines'}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setDisplayType('bar'));
+            label="outline"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.props.displayType !== 'lines'}
+                onChange={(event, isInputChecked) => {
+                  if (isInputChecked) {
+                    this.props.dispatch(actions.setDisplayType('bar'));
+                  }
+                }}
+                value="bars"
+              />
             }
-          }}
-        />
-        <Checkbox
-          label="log"
-          checked={this.props.histogramSettings.logCount}
-          onCheck={(event, isInputChecked) => {
-            if (isInputChecked) {
-              this.props.dispatch(actions.setLogCount(true));
-            } else {
-              this.props.dispatch(actions.setLogCount(false));
+            label="fill"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.props.histogramSettings.logCount}
+                onChange={(event, isInputChecked) => {
+                  if (isInputChecked) {
+                    this.props.dispatch(actions.setLogCount(true));
+                  } else {
+                    this.props.dispatch(actions.setLogCount(false));
+                  }
+                }}
+              />
             }
-          }}
-        />
+            label="log"
+          />
+        </FormGroup>
       </div>
     );
   }
