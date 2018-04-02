@@ -54,6 +54,19 @@ function setupProfiler() {
   };
 }
 
+function getProfilerSettings() {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:getProfilerSettings`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'getProfilerSettings');
+      });
+  };
+}
+
 function setProfilerMainSetting(value) {
   return (dispatch, getState) => {
     mongoUpsert(ProfilerDB, { profilerMainSetting: value }, 'SET_PROFILER_MAIN_SETTING');
@@ -94,6 +107,9 @@ function newProfile() {
         console.log('Test to generate profile manually', resp);
         const { curves } = resp.data;
         mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
+      })
+      .then(() => {
+        dispatch(getProfilerSettings());
       });
   };
 }
@@ -148,6 +164,9 @@ function autoGenerate() {
         .then((resp) => {
           const { curves } = resp.data;
           mongoUpsert(ProfilerDB, { profileData: curves }, 'AUTO_GENERATE');
+        })
+        .then(() => {
+          dispatch(getProfilerSettings());
         });
     }
   };
@@ -235,6 +254,7 @@ const actions = {
   setGenerationMode,
   setProfilerMainSetting,
   clearProfiles,
+  getProfilerSettings,
 };
 
 export default actions;

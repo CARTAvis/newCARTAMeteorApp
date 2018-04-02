@@ -282,6 +282,7 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
       })
       .then(() => {
         dispatch(gridControl.getDataGrid());
+        dispatch(profiler.autoGenerate());
       });
   };
 }

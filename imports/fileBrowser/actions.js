@@ -89,6 +89,7 @@ function closeFile() {
             dispatch(colormap.updateColormap());
             dispatch(imageStatsActions.getImageStats());
             dispatch(animator.updateAnimator(resp));
+            dispatch(profiler.autoGenerate());
           });
       } else {
         console.log('no stack layer to close');

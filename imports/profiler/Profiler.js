@@ -9,7 +9,6 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import actions from './actions';
-import { log } from 'util';
 // import api from '../api/ApiService';
 
 // const d3 = Plotly.d3;
@@ -167,7 +166,6 @@ class Profiler extends Component {
   }
 
   render() {
-
     const { animatorTypeList, profileData } = this.props;
     this.updateChannelFrame(animatorTypeList, profileData);
 
@@ -180,7 +178,7 @@ class Profiler extends Component {
       curveNameList.push(profileData[i].name);
     }
     const curveNameMenuItem = curveNameList.map(item => (
-      <MenuItem value={item} primaryText={item}/>
+      <MenuItem value={item} primaryText={item} />
     ));
     return (
       <div>
@@ -239,7 +237,9 @@ class Profiler extends Component {
               label="Auto Generate"
               // style={{ width: 150 }}
               checked={this.props.profilerSettings.autoGenerate}
-              onCheck={() => { this.props.dispatch(actions.setAutoGen(!this.props.profilerSettings.autoGenerate)); }}
+              onCheck={() => {
+                this.props.dispatch(actions.setAutoGen(!this.props.profilerSettings.autoGenerate));
+              }}
             />
             <SelectField
               floatingLabelText="Auto Mode"
@@ -252,8 +252,8 @@ class Profiler extends Component {
               style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
             >
               {/* TODO: don't use the hard-code menu item */}
-              <MenuItem value="Current" primaryText="Current"/>
-              <MenuItem value="All" primaryText="All"/>
+              <MenuItem value="Current" primaryText="Current" />
+              <MenuItem value="All" primaryText="All" />
             </SelectField>
           </div>
           <div style={{ flex: 1 }}>
