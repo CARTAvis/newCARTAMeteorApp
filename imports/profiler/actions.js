@@ -22,6 +22,10 @@ export function parseRegisterProfilerResp(resp) {
   mongoUpsert(ProfilerDB, { profilerID }, `Resp_${cmd}`);
 }
 
+export function setupProfilerDB() {
+  api.instance().setupMongoRedux(ProfilerDB, PROFILER_CHANGE);
+}
+
 function setupProfiler() {
   return () => {
     // api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
@@ -54,25 +58,6 @@ function setupProfiler() {
   };
 }
 
-function getProfilerSettings() {
-  return (dispatch, getState) => {
-    const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:getProfilerSettings`;
-    const params = '';
-    api.instance().sendCommand(cmd, params)
-      .then((resp) => {
-        const { data } = resp;
-        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'getProfilerSettings');
-      });
-  };
-}
-
-function setProfilerMainSetting(value) {
-  return (dispatch, getState) => {
-    mongoUpsert(ProfilerDB, { profilerMainSetting: value }, 'SET_PROFILER_MAIN_SETTING');
-  };
-}
-
 function clearProfile() {
   return (dispatch) => {
     const data = { x: [], y: [] };
@@ -93,50 +78,6 @@ function getProfile() {
       console.log('PROFILE DATA: ', resp.data);
       mongoUpsert(ProfilerDB, { profileData: resp.data }, SET_PROFILEDATA);
     });
-  };
-}
-
-function newProfile() {
-  return (dispatch, getState) => {
-    console.log('*******************************************************************');
-    const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:newProfile`;
-    const params = '';
-    api.instance().sendCommand(cmd, params)
-      .then((resp) => {
-        console.log('Test to generate profile manually', resp);
-        const { curves } = resp.data;
-        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
-      })
-      .then(() => {
-        dispatch(getProfilerSettings());
-      });
-  };
-}
-
-function removeProfile(value) {
-  return (dispatch, getState) => {
-    const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:removeProfile`;
-    api.instance().sendCommand(cmd, value)
-      .then((resp) => {
-        console.log('Test to remove profile manually', resp);
-        const { curves } = resp.data;
-        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
-      });
-  };
-}
-
-function clearProfiles() {
-  return (dispatch, getState) => {
-    const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:clearProfiles`;
-    const params = '';
-    api.instance().sendCommand(cmd, params)
-      .then((resp) => {
-        const { curves } = resp.data;
-        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
-      });
   };
 }
 
@@ -169,6 +110,66 @@ function autoGenerate() {
           dispatch(getProfilerSettings());
         });
     }
+  };
+}
+
+function clearProfiles() {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:clearProfiles`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const { curves } = resp.data;
+        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
+      });
+  };
+}
+
+function getProfilerSettings() {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:getProfilerSettings`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'getProfilerSettings');
+      });
+  };
+}
+
+function newProfile() {
+  return (dispatch, getState) => {
+    console.log('*******************************************************************');
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:newProfile`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        console.log('Test to generate profile manually', resp);
+        const { curves } = resp.data;
+        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
+      })
+      .then(() => {
+        dispatch(getProfilerSettings());
+      });
+  };
+}
+
+function removeProfile() {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:removeProfile`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const { curves } = resp.data;
+        mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
+      })
+      .then(() => {
+        dispatch(getProfilerSettings());
+      });
   };
 }
 
@@ -206,8 +207,22 @@ function setGenerationMode(mode) {
   };
 }
 
-export function setupProfilerDB() {
-  api.instance().setupMongoRedux(ProfilerDB, PROFILER_CHANGE);
+function setProfilerMainSetting(value) {
+  return (dispatch, getState) => {
+    mongoUpsert(ProfilerDB, { profilerMainSetting: value }, 'SET_PROFILER_MAIN_SETTING');
+  };
+}
+
+function setSelectedCurve(id) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:setSelectedCurve`;
+    api.instance().sendCommand(cmd, id)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
+      });
+  };
 }
 
 function onHover(data) {
@@ -219,6 +234,7 @@ function onHover(data) {
     mongoUpsert(ProfilerDB, { data: [val] }, SET_HOVER);
   };
 }
+
 function onZoomPan(data) {
   return () => {
     let val = null;
@@ -240,6 +256,7 @@ function onZoomPan(data) {
     if (Object.keys(val).length > 0) mongoUpsert(ProfilerDB, { zoomPanData: val }, ZOOM_PAN);
   };
 }
+
 const actions = {
   setupProfiler,
   onHover,
@@ -247,14 +264,16 @@ const actions = {
   getProfile,
   clearProfile,
   getCurveData,
-  newProfile,
-  setAutoGen,
-  removeProfile,
+
   autoGenerate,
-  setGenerationMode,
-  setProfilerMainSetting,
   clearProfiles,
   getProfilerSettings,
+  newProfile,
+  removeProfile,
+  setAutoGen,
+  setGenerationMode,
+  setProfilerMainSetting,
+  setSelectedCurve,
 };
 
 export default actions;

@@ -19,8 +19,6 @@ class Profiler extends Component {
     this.state = {
       saveAsInput: '',
       src: '',
-      // TODO: don't use react state, move to mongo
-      selectedCurve: '',
     };
     this.props.dispatch(actions.setupProfiler());
     // this.getRef = this.getRef.bind(this);
@@ -187,9 +185,9 @@ class Profiler extends Component {
         </button>
         <SelectField
           floatingLabelText="Selected Curve"
-          value={this.state.selectedCurve}
+          value={this.props.profilerSettings.selectCurve}
           onChange={(event, index, value) => {
-            this.setState({ selectedCurve: value });
+            this.props.dispatch(actions.setSelectedCurve(value));
           }}
           autoWidth
           style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
@@ -270,9 +268,7 @@ class Profiler extends Component {
               disabled={this.props.profilerSettings.autoGenerate}
               // style={{ position: 'absolute', right: '23px', bottom: 0 }}
               onClick={() => {
-                console.log(this.state.selectedCurve);
-                const index = curveNameList.indexOf(this.state.selectedCurve);
-                this.props.dispatch(actions.removeProfile(index));
+                this.props.dispatch(actions.removeProfile());
               }}
             >
               Delete Profile
