@@ -76,7 +76,8 @@ function getProfile() {
     api.instance().sendCommand(cmd, params, (resp) => {
       // console.log('get response of profile:', resp);
       console.log('PROFILE DATA: ', resp.data);
-      mongoUpsert(ProfilerDB, { profileData: resp.data }, SET_PROFILEDATA);
+      const { curves } = resp.data;
+      mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
     });
   };
 }
@@ -192,6 +193,36 @@ function setAutoGen(value) {
   };
 }
 
+function setAxisUnitsLeft(value) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:setAxisUnitsLeft`;
+    api.instance().sendCommand(cmd, value)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_PROFILERSETTING');
+      })
+      .then(() => {
+        dispatch(getProfile());
+      });
+  };
+}
+
+function setAxisUnitsBottom(value) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:setAxisUnitsBottom`;
+    api.instance().sendCommand(cmd, value)
+      .then((resp) => {
+        const { data } = resp;
+        mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_PROFILERSETTING');
+      })
+      .then(() => {
+        dispatch(getProfile());
+      });
+  };
+}
+
 function setGenerationMode(mode) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
@@ -204,6 +235,42 @@ function setGenerationMode(mode) {
       .then(() => {
         dispatch(autoGenerate());
       });
+  };
+}
+
+function setLegendExternal(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.legendExternal = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
+  };
+}
+
+function setLegendLine(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.legendLine = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
+  };
+}
+
+function setLegendLocation(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.legendLocation = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
+  };
+}
+
+function setLegendShow(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.legendShow = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
   };
 }
 
@@ -222,6 +289,39 @@ function setSelectedCurve(id) {
         const { data } = resp;
         mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
       });
+  };
+}
+
+// TODO: The following list of functions do not have any function so far
+// They only change the initial value (from C++) saved in the mongoDB
+// They should call some function to change the layout of plotly.
+// List: setShowCursor, setShowFrame, setShowGridLines
+//       setLegendExternal, setLegendLine, setLegendLocation, setLegendShow
+function setShowCursor(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.showCursor = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
+  };
+}
+
+function setShowFrame(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.showFrame = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
+  };
+}
+
+function setShowGridLines(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    // profilerSettings.gridLines = value;
+    const data = { ...profilerSettings };
+    data.gridLines = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
   };
 }
 
@@ -271,9 +371,18 @@ const actions = {
   newProfile,
   removeProfile,
   setAutoGen,
+  setAxisUnitsLeft,
+  setAxisUnitsBottom,
   setGenerationMode,
+  setLegendShow,
+  setLegendExternal,
+  setLegendLine,
+  setLegendLocation,
   setProfilerMainSetting,
   setSelectedCurve,
+  setShowCursor,
+  setShowFrame,
+  setShowGridLines,
 };
 
 export default actions;
