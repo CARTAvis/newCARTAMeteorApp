@@ -131,14 +131,20 @@ class Profiler extends Component {
   updateChannelFrame = (animatorTypeList, profileData) => {
     let channelIndicator = 0;
     if (animatorTypeList && profileData.length > 0) {
-      const { x } = profileData[0];
-      for(const animatorType of animatorTypeList) {
-        if(x && animatorType.type === 'Channel') {
-          // TODO: This one should follow the current image
-          // channelIndicator = x[animatorType.selection.frame];
-          channelIndicator = animatorType.selection.frame;
-        }
-      }
+      const imageAnimator = animatorTypeList.find((element) => {
+        return element.type === 'Image';
+      });
+      const channelAnimator = animatorTypeList.find((element) => {
+        return element.type === 'Channel';
+      });
+      const { selection } = imageAnimator;
+      const { fileList } = selection;
+      const imageName = fileList[selection.frame];
+      const currentProfile = profileData.find((element) => {
+        return element.id.includes(imageName);
+      });
+      const { x } = currentProfile;
+      channelIndicator = x[channelAnimator.selection.frame];
     }
     let layout = {};
     if (channelIndicator !== undefined) {

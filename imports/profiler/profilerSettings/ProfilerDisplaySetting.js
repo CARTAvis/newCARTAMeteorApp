@@ -37,7 +37,7 @@ class ProfilerDisplaySetting extends Component {
         >
           <MenuItem value="Radio Velocity(km/s)" primaryText="Radio Velocity(km/s)" />
           <MenuItem value="Optical Velocity(m/s)" primaryText="Optical Velocity(m/s)" />
-          <MenuItem value="Freguency(GHz)" primaryText="Freguency(GHz)" />
+          <MenuItem value="Frequency(GHz)" primaryText="Freguency(GHz)" />
           <MenuItem value="Wavelength(nm)" primaryText="Wavelength(nm)" />
           <MenuItem value="Air Wavelength(um)" primaryText="Air Wavelength(um)" />
           <MenuItem value="Channel" primaryText="Channel" />
