@@ -18,7 +18,6 @@ class Profiler extends Component {
     super(props);
     this.state = {
       saveAsInput: '',
-      src: '',
     };
     this.props.dispatch(actions.setupProfiler());
     // this.getRef = this.getRef.bind(this);
@@ -47,37 +46,36 @@ class Profiler extends Component {
       }
     });
   }
-  componentWillReceiveProps = (nextProps) => {
-    console.log('THIS.PROPS: ', this.props);
-    console.log('NEXT PROPS: ', nextProps);
-    if (JSON.stringify(nextProps.profileData) !== JSON.stringify(this.props.profileData)) {
-      // Plotly.deleteTraces(this.el, [0]);
-      // Plotly.addTraces(this.el, nextProps.profileData);
-      // d3.select('g.legend').selectAll('.traces').on('click', (e) => {
-      //   console.log('LEGEND ITEM CLICKED:', e[0].trace.index);
-      // });
-      Plotly.newPlot(this.el, nextProps.profileData);
+  plotProfile = (profileData, layout) => {
+    if (profileData && layout) {
+      Plotly.newPlot(this.el, profileData, layout);
+      this.el.on('plotly_hover', (e) => {
+        this.props.dispatch(actions.onHover(e));
+      });
+      this.el.on('plotly_relayout', (e) => {
+        if (!e.width) {
+          this.props.dispatch(actions.onZoomPan(e));
+        }
+      });
     }
-    if (nextProps.width) {
-      const layout = {
-        width: nextProps.width - 20,
-      };
-      Plotly.relayout(this.el, layout);
-    }
-    if (nextProps.data) {
-      Plotly.Fx.hover(this.el, nextProps.data);
-    }
-    if (nextProps.zoomPanData) {
-      // console.log('ZOOMPANDATA: ', nextProps.zoomPanData);
-      let data = null;
-      data = {};
-      if (nextProps.zoomPanData.xRange) data['xaxis.range'] = nextProps.zoomPanData.xRange;
-      if (nextProps.zoomPanData.yRange) data['yaxis.range'] = nextProps.zoomPanData.yRange;
-      if (nextProps.zoomPanData.xAutorange) data['xaxis.autorange'] = nextProps.zoomPanData.xAutorange;
-      if (nextProps.zoomPanData.yAutorange) data['yaxis.autorange'] = nextProps.zoomPanData.yAutorange;
-      // console.log('ZOOM DATA: ', data);
-      Plotly.relayout(this.el, data);
-    }
+  }
+  adjustChartWidth = () => {
+    const layout = {
+      width: this.props.width - 20,
+    };
+    Plotly.relayout(this.el, layout);
+  }
+  relayoutOnHover = () => {
+    Plotly.Fx.hover(this.el, [this.props.data]);
+  }
+  relayoutOnZoomPan = () => {
+    let data = null;
+    data = {};
+    if (this.props.zoomPanData.xRange) data['xaxis.range'] = this.props.zoomPanData.xRange;
+    if (this.props.zoomPanData.yRange) data['yaxis.range'] = this.props.zoomPanData.yRange;
+    if (this.props.zoomPanData.xAutorange) data['xaxis.autorange'] = this.props.zoomPanData.xAutorange;
+    if (this.props.zoomPanData.yAutorange) data['yaxis.autorange'] = this.props.zoomPanData.yAutorange;
+    Plotly.relayout(this.el, data);
   }
   // getRef = (el) => {
   //   this.el = el;
@@ -130,7 +128,7 @@ class Profiler extends Component {
 
   updateChannelFrame = (animatorTypeList, profileData) => {
     let channelIndicator = 0;
-    if (animatorTypeList && profileData.length > 0) {
+    if (animatorTypeList && profileData && profileData.length > 0) {
       const imageAnimator = animatorTypeList.find((element) => {
         return element.type === 'Image';
       });
@@ -144,7 +142,9 @@ class Profiler extends Component {
         return element.id.includes(imageName);
       });
       const { x } = currentProfile;
-      channelIndicator = x[channelAnimator.selection.frame];
+      if (x) {
+        channelIndicator = x[channelAnimator.selection.frame];
+      }
     }
     let layout = {};
     if (channelIndicator !== undefined) {
@@ -170,16 +170,26 @@ class Profiler extends Component {
   }
 
   render() {
-    const { animatorTypeList, profileData } = this.props;
+    const { animatorTypeList, profileData, width, data, zoomPanData } = this.props;
+    const layout = { height: 395 };
+    this.plotProfile(profileData, layout);
     this.updateChannelFrame(animatorTypeList, profileData);
+    if (width && this.el) {
+      this.adjustChartWidth();
+    }
+    if (profileData && profileData.length > 0 && data) {
+      this.relayoutOnHover();
+    }
+    if (zoomPanData) {
+      this.relayoutOnZoomPan();
+    }
 
     console.log('RENDER PROPS: ', this.props);
     const curveNameList = [];
-    // const { profileData } = this.props;
-    for (let i = 0; i < profileData.length; i += 1) {
-      // curveNameList.push(
-      //   <MenuItem value={profileData[i].name} primaryText={profileData[i].name} key={i} />);
-      curveNameList.push(profileData[i].name);
+    if (profileData) {
+      profileData.forEach((element) => {
+        curveNameList.push(element.name);
+      });
     }
     const curveNameMenuItem = curveNameList.map(item => (
       <MenuItem value={item} primaryText={item} />

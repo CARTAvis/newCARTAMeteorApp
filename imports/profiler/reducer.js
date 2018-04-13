@@ -1,9 +1,6 @@
 import { ActionType } from './actions';
 
 const defaultState = {
-  data: {},
-  zoomPanData: {},
-  profileData: [],
   profilerSettings: { autoGenerate: false },
 };
 const ProfilerDB = (state = defaultState, action) => {
