@@ -325,6 +325,27 @@ function setShowGridLines(value) {
   };
 }
 
+function setZoomRange(zoomMin, zoomMax) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.zoomMin = zoomMin;
+    data.zoomMax = zoomMax;
+    // console.log('******REPLACE PROFILERSETTING********', data);
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_ZOOM');
+  };
+}
+
+function setZoomRangePercent(zoomMinPercent, zoomMaxPercent) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    const data = { ...profilerSettings };
+    data.zoomMinPercent = zoomMinPercent;
+    data.zoomMaxPercent = zoomMaxPercent;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_ZOOM');
+  };
+}
+
 function onHover(data) {
   return () => {
     const val = {
@@ -339,11 +360,11 @@ function onZoomPan(data) {
   return () => {
     let val = null;
     val = {};
-    if (data['xaxis.range[0]']) {
+    if (data['xaxis.range[0]'] !== undefined) {
       // val['xaxis.range'] = [data['xaxis.range[0]'], data['xaxis.range[1]']];
       val.xRange = [data['xaxis.range[0]'], data['xaxis.range[1]']];
     }
-    if (data['yaxis.range[0]']) {
+    if (data['yaxis.range[0]'] !== undefined) {
       // val['yaxis.range'] = [data['yaxis.range[0]'], data['yaxis.range[1]']];
       val.yRange = [data['yaxis.range[0]'], data['yaxis.range[1]']];
     }
@@ -383,6 +404,8 @@ const actions = {
   setShowCursor,
   setShowFrame,
   setShowGridLines,
+  setZoomRange,
+  setZoomRangePercent,
 };
 
 export default actions;
