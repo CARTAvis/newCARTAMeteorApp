@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 // import { bindActionCreators } from 'redux';
 import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui-next/Button';
 // import FlatButton from 'material-ui/FlatButton';
 
 import { List, ListItem, makeSelectable } from 'material-ui/List';
@@ -29,9 +30,10 @@ class FileBrowser extends Component {
     // };
     // this.props.dispatch(actions.setupFileBrowser());
 
-    if (this.props.openBrowser) {
-      this.props.dispatch(actions.queryServerFileList(''));
-    }
+    // if (this.props.openBrowser) {
+    //   this.props.dispatch(actions.queryServerFileList(''));
+    // }
+    this.props.dispatch(actions.queryServerFileList(''));
   }
 
   // closeBrowser = () => {
@@ -46,6 +48,17 @@ class FileBrowser extends Component {
   //     this.props.dispatch(actions.queryServerFileList());
   //   }
   // }
+  // componentWillReceiveProps = (nextProps) => {
+  //   if (nextProps.browserOpened) {
+  //     this.settingsBox.className = 'showFileBrowserUI';
+  //   } else {
+  //     this.settingsBox.className = 'hideFileBrowserUI';
+  //   }
+  // }
+  hide = () => {
+    this.settingsBox.className = 'hideFileBrowserUI';
+    this.props.dispatch(actions.clearAll());
+  }
   selectImage = (e, index) => {
     // this.setState({ selectedIndex: index });
     this.props.dispatch(actions.selectFile(index));
@@ -99,9 +112,15 @@ class FileBrowser extends Component {
 
     this.props.dispatch(actions.queryServerFileList(fullPath));
   }
-
   render() {
-    const { files, selectedFile, rootDir } = this.props;
+    // const { files, selectedFile, browserOpened, rootDir } = this.props;
+    const { files, selectedFile, rootDir, browserOpened } = this.props;
+    if (browserOpened && this.settingsBox) {
+      this.settingsBox.className = 'showFileBrowserUI';
+      // this.props.dispatch(actions.queryServerFileList(''));
+    } else if (!browserOpened && this.settingsBox) {
+      this.settingsBox.className = 'hideFileBrowserUI';
+    }
     const fileItems = files.map((file, index) => {
       let iconSrc;
       if (file.dir) {
@@ -132,31 +151,59 @@ class FileBrowser extends Component {
         <ListItem style={{ fontSize: '14px', height: 40 }} value={index} key={file.name} primaryText={file.name} leftAvatar={<Avatar size={32} src={`images/${iconSrc}`} />} />
       );
     });
-
     return (
-      // <Paper style={browserStyle} zDepth={1} >
-      <div>
-        {/* <p>File Browser, open file browser, then choose a file to read</p> */}
-        <div style={{ fontSize: 10 }}>
-          {rootDir}
-        </div>
+      <div
+        ref={(node) => { if (node) { this.settingsBox = node; } }}
+        className="hideFileBrowserUI"
+      >
         <div>
-          <ListItem
-            onClick={this.clickParentFolder}
-            primaryText=".."
-            leftAvatar={<Avatar icon={<FileFolder />} />}
-          />
-        </div>
-        { fileItems && fileItems.length > 0 &&
+          filebrowser region
+          {/* <Paper style={browserStyle} zDepth={1} > */}
           <div>
-            <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
-              {fileItems}
-            </SelectableList>
-            <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
+            {/* <p>File Browser, open file browser, then choose a file to read</p> */}
+            <div style={{ fontSize: 10 }}>
+              {rootDir}
+            </div>
+            <div>
+              <ListItem
+                onClick={this.clickParentFolder}
+                primaryText=".."
+                leftAvatar={<Avatar icon={<FileFolder />} />}
+              />
+            </div>
+            { fileItems && fileItems.length > 0 &&
+            <div>
+              <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
+                {fileItems}
+              </SelectableList>
+              <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
+            </div>
+              }
+            <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
           </div>
-        }
-        <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
+        </div>
+        <div style={{ position: 'absolute', bottom: '10px', left: '10px' }}>
+          <Button
+            variant="raised"
+            size="small"
+            position="relative"
+            onClick={this.hide}
+          >
+            close
+          </Button>
+        </div>
+        <div style={{ position: 'absolute', bottom: '10px', right: '10px' }}>
+          <Button
+            disableRipple
+            variant="raised"
+            size="small"
+            // onClick={this.hide}
+          >
+            update
+          </Button>
+        </div>
       </div>
+
     );
   }
 }
@@ -164,11 +211,11 @@ class FileBrowser extends Component {
 const mapStateToProps = state => ({
   files: state.FileBrowserDB.files,
   rootDir: state.FileBrowserDB.rootDir,
-  // browserOpened: state.FileBrowserDB.fileBrowserOpened,
+  browserOpened: state.FileBrowserDB.fileBrowserOpened,
   selectedFile: state.FileBrowserDB.selectedFile,
 });
 
-// TODO use the below way to use simplified methods
+// TODO: use the below way to use simplified methods
 // const mapDispatchToProps = dispatch => ({
 //   actions: bindActionCreators(actions, dispatch),
 // });

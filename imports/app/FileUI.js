@@ -9,6 +9,10 @@ import Popover from 'material-ui-next/Popover';
 import TextField from 'material-ui-next/TextField';
 import Button from 'material-ui-next/Button';
 import Run from 'material-ui/svg-icons/maps/directions-run';
+
+import Folder from 'material-ui/svg-icons/file/folder';
+import Delete from 'material-ui/svg-icons/action/delete';
+import filebrowserActions from '../fileBrowser/actions';
 // import Popover from 'material-ui/Popover';
 import actions from './actions';
 // import SessionManager from '../api/SessionManager';
@@ -18,68 +22,83 @@ const style = {
   marginLeft: '50%',
 };
 
-class SessionUI extends Component {
+class FileUI extends Component {
   constructor(props) {
     super(props);
-    this.state = { watching: false, sessionText: '', open: false };
+    // this.state = { watching: false, sessionText: '', open: false };
+    this.state = {};
   }
 
-  handleChange = (event) => {
-    // console.log('event:', event.target.value);
-    this.setState({
-      sessionText: event.target.value,
-    });
-  }
-  handleTouchTap = (event) => {
-    // This prevents ghost click.
-    event.preventDefault();
-
-    this.setState({
-      open: true,
-      anchorEl: event.currentTarget,
-    });
-  };
-
-  handleLogout = () => {
-    this.props.handleLogout();
+  setFileBrowser = () => {
+    // console.log('THE TYPE TO BE PASSED: ', type);
+    // this.props.setSetting('Image');
+    this.props.dispatch(filebrowserActions.setFileBrowser());
   }
 
-  handleRequestClose = () => {
-    this.setState({
-      open: false,
-    });
-  };
-  switchWatchMode = () => {
-    // if(this.state.watching || this.state.sessionText) {
-    //   this.setState({watching: !this.state.watching});
-    // }
-    if (!this.state.watching) {
-      if (this.state.sessionText) {
-        this.setState({ watching: true });
-        // save to SeesionManger:
-        this.props.dispatch(actions.turnOnWatching(this.state.sessionText));
-      }
-    } else {
-      this.setState({ watching: false });
-      this.props.dispatch(actions.turnOffWatching());
-    }
+  // handleChange = (event) => {
+  //   // console.log('event:', event.target.value);
+  //   this.setState({
+  //     sessionText: event.target.value,
+  //   });
+  // }
+  // handleTouchTap = (event) => {
+  //   // This prevents ghost click.
+  //   event.preventDefault();
+  //
+  //   this.setState({
+  //     open: true,
+  //     anchorEl: event.currentTarget,
+  //   });
+  // };
+  //
+  // handleLogout = () => {
+  //   this.props.handleLogout();
+  // }
+  //
+  // handleRequestClose = () => {
+  //   this.setState({
+  //     open: false,
+  //   });
+  // };
+  // switchWatchMode = () => {
+  //   // if(this.state.watching || this.state.sessionText) {
+  //   //   this.setState({watching: !this.state.watching});
+  //   // }
+  //   if (!this.state.watching) {
+  //     if (this.state.sessionText) {
+  //       this.setState({ watching: true });
+  //       // save to SeesionManger:
+  //       this.props.dispatch(actions.turnOnWatching(this.state.sessionText));
+  //     }
+  //   } else {
+  //     this.setState({ watching: false });
+  //     this.props.dispatch(actions.turnOffWatching());
+  //   }
 
     // TODO: save to redux
-  }
+
   render() {
-    const { sessionID } = this.props;
-    const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
+    // const { sessionID } = this.props;
+    // const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
     return (
       <div>
         {/* <IconButton onClick={this.handleTouchTap}>
           <People />
         </IconButton> */}
         <IconButton
-          onClick={this.handleTouchTap}
+          onClick={this.setFileBrowser}
         >
-          <PeopleIcon />
+          <Folder />
         </IconButton>
-        {this.state.watching ? 'watching' : false}
+        <IconButton
+          // onClick={{}}
+          style = {{
+            // overflowX: 'no-display', width: '30px'
+          }}
+        >
+          <Delete />
+        </IconButton>
+        {/* {this.state.watching ? 'watching' : false}
         <Popover
           open={this.state.open}
           onClose={this.handleRequestClose}
@@ -128,7 +147,7 @@ class SessionUI extends Component {
           onClick={this.handleLogout}
         >
           <Run />
-        </IconButton>
+        </IconButton> */}
       </div>
     );
   }
@@ -151,9 +170,9 @@ class SessionUI extends Component {
 
 const mapStateToProps = state => ({
   // imageURL: state.image.imageURL,
-  sessionID: state.sessionID,
+  // sessionID: state.sessionID,
 });
 
-export default connect(mapStateToProps)(SessionUI);
+export default connect(mapStateToProps)(FileUI);
 
 // export default SessionUI;

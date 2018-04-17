@@ -3,18 +3,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 /* material-ui beta */
 import IconButton from 'material-ui/IconButton';
-import RaisedButton from 'material-ui/RaisedButton';
+// import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
-import More from 'material-ui/svg-icons/navigation/more-horiz';
+// import More from 'material-ui/svg-icons/navigation/more-horiz';
 import TextField from 'material-ui/TextField';
 import Popover from 'material-ui/Popover';
+import Button from 'material-ui-next/Button';
+
 
 import AppBar from 'material-ui-next/AppBar';
 import Toolbar from 'material-ui-next/Toolbar';
 import { ToolbarSeparator } from 'material-ui/Toolbar';
 // import Dialog from 'material-ui/Dialog';
+// import Folder from 'material-ui/svg-icons/file/folder';
+// import Delete from 'material-ui/svg-icons/action/delete';
 import actions from './actions';
 import SessionUI from '../app/SessionUI';
+import FileUI from '../app/FileUI';
 
 class Topbar extends Component {
   constructor(props) {
@@ -23,6 +28,8 @@ class Topbar extends Component {
       open: false,
       localDisabled: true,
       remoteDisabled: false,
+      openFiles: false,
+      openBrowser: false,
       username: '',
     };
   }
@@ -69,6 +76,13 @@ class Topbar extends Component {
       remoteDisabled: true,
     });
   }
+  handleOpenFiles = () => {
+    // this.props.expandToTrue();
+    this.setState({
+      openFiles: !this.state.openFiles,
+      openBrowser: !this.state.openBrowser,
+    });
+  }
   drawRect = () => {
     if (!this.rect.style.background || this.rect.style.background === 'none') {
       this.rect.style.background = '#D3D3D3';
@@ -85,7 +99,7 @@ class Topbar extends Component {
           <Toolbar>
             <div className="layout-row-end-center ">
               <p style={{ borderRadius: '12px', border: '2px solid red', padding: '2px' }}>{this.state.username ? `Hi, ${this.state.username}` : ''}</p>
-              <SessionUI />
+              <SessionUI handleLogout={this.props.handleLogout} />
             </div>
             <div>
               <div>
@@ -106,6 +120,12 @@ class Topbar extends Component {
                     <img className="iconImg" src="/images/polygon.png" alt="" />
                   </button>
                 </div>
+              </div>
+            </div>
+            <div>
+              {/* <MenuItemMUI style={{ overflowX: 'hidden', position: 'absolute', right: '0px', bottom: '5px', width: '50px' }} onClick={this.handleLogout} leftIcon={<Run />} />*/}
+              <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <FileUI />
               </div>
             </div>
             {/* <RaisedButton label="Local" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleLocal} disabled={this.state.localDisabled} />

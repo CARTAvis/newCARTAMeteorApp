@@ -23,7 +23,8 @@ import Animator from '../animator/Animator';
 
 import FeatureContainer from '../featureContainer/FeatureContainer';
 import Settings from '../settings/Settings';
-import SideMenu from './SideMenu';
+import FileBrowser from '../fileBrowser/FileBrowser';
+// import SideMenu from './SideMenu';
 import Topbar from '../topbar/Topbar';
 // import FeatureContainerActions from '../featureContainer/actions';
 // import Region from './Region';
@@ -109,14 +110,16 @@ class MainPage extends Component {
     );
     return (
       <div className="layout-row">
-        <SideMenu
+        {/* <SideMenu
           // expandToTrue={this.expandToTrue}
           // handleExpand={this.handleExpand}
           // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
-        />
+        /> */}
         <div className="layout-fill">
-          <Topbar />
+          <Topbar
+            handleLogout={this.props.handleLogout}
+          />
           <LayoutWrapper
             firstPercentage={50}
             secondPercentage={50}
@@ -181,6 +184,7 @@ class MainPage extends Component {
           </LayoutWrapper>
         </div>
         <Settings />
+        <FileBrowser />
       </div>
     );
   }

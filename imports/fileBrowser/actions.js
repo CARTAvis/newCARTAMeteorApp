@@ -16,9 +16,13 @@ import imageStatsActions from '../imageStats/actions';
 import colormap from '../colormap/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
+const REMOVE_FILEBROWSER = 'REMOVE_FILEBROWSER';
+const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 
 export const ActionType = {
   FILEBROWSER_CHANGE,
+  REMOVE_FILEBROWSER,
+  OPEN_FILEBROWSER
 };
 
 // only for saving action history in mongo
@@ -29,11 +33,39 @@ export function setupFileBrowserDB() {
   api.instance().setupMongoRedux(FileBrowserDB, FILEBROWSER_CHANGE);
 }
 
+function setFileBrowser() {
+  return (dispatch, getState) => {
+    // const settingsArray = getState().SettingsDB.settingsArray;
+    // let found = false;
+    // for (let i = 0; i < settingsArray.length; i += 1) {
+    //   if (settingsArray[i].settingType === settingType) {
+    //     found = true;
+    //     break;
+    //   }
+    // }
+    // if (!found) {
+    let fileBrowserOpened = getState().FileBrowserDB.fileBrowserOpened;
+    // if (settingsArray.length === 0) {
+    if (!fileBrowserOpened) fileBrowserOpened = true;
+    // }
+    mongoUpsert(FileBrowserDB, {
+      fileBrowserOpened,
+    }, OPEN_FILEBROWSER);
+  };
+  // };
+}
+
 function parseFileList(resp) {
   const { cmd, data } = resp;
   const fileList = { files: data.dir, rootDir: data.name };
 
   mongoUpsert(FileBrowserDB, fileList, `Resp_${cmd}`);
+}
+
+function clearAll() {
+  return () => {
+    mongoUpsert(FileBrowserDB, { fileBrowserOpened: false }, REMOVE_FILEBROWSER);
+  };
 }
 
 function queryServerFileList(path) {
@@ -172,6 +204,8 @@ function selectFileToOpen(path) {
 }
 
 const actions = {
+  setFileBrowser,
+  clearAll,
   // closeFileBrowser,
   queryServerFileList,
   selectFileToOpen,
