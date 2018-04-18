@@ -49,7 +49,7 @@ function setupProfiler() {
           .then((response) => {
             console.log('Try to get the setting of profiler!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', response);
             const profilerSettings = response.data;
-            mongoUpsert(ProfilerDB, { profilerSettings, profileData: [] }, 'getProfilerSettings');
+            mongoUpsert(ProfilerDB, { profilerSettings }, 'getProfilerSettings');
           })
           .then(() => {
             parseRegisterProfilerResp(resp);

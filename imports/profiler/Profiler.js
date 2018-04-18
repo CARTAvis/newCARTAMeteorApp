@@ -172,16 +172,18 @@ class Profiler extends Component {
   render() {
     const { animatorTypeList, profileData, width, data, zoomPanData } = this.props;
     const layout = { height: 395 };
-    this.plotProfile(profileData, layout);
-    this.updateChannelFrame(animatorTypeList, profileData);
-    if (width && this.el) {
-      this.adjustChartWidth();
-    }
-    if (profileData && profileData.length > 0 && data) {
-      this.relayoutOnHover();
-    }
-    if (zoomPanData) {
-      this.relayoutOnZoomPan();
+    if (this.el) {
+      this.plotProfile(profileData, layout);
+      this.updateChannelFrame(animatorTypeList, profileData);
+      if (width) {
+        this.adjustChartWidth();
+      }
+      if (profileData && profileData.length > 0 && data) {
+        this.relayoutOnHover();
+      }
+      if (zoomPanData) {
+        this.relayoutOnZoomPan();
+      }
     }
 
     console.log('RENDER PROPS: ', this.props);
