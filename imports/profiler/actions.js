@@ -27,7 +27,7 @@ export function setupProfilerDB() {
 }
 
 function setupProfiler() {
-  return () => {
+  return (dispatch) => {
     // api.instance().setupMongoRedux(dispatch, ProfilerDB, PROFILER_CHANGE);
 
     const cmd = Commands.REGISTER_VIEWER;
@@ -53,6 +53,10 @@ function setupProfiler() {
           })
           .then(() => {
             parseRegisterProfilerResp(resp);
+          })
+          .then(() => {
+            dispatch(getFitData());
+            dispatch(getFitStatistics());
           });
       });
   };
@@ -79,6 +83,33 @@ function getProfile() {
       const { curves } = resp.data;
       mongoUpsert(ProfilerDB, { profileData: curves }, SET_PROFILEDATA);
     });
+  };
+}
+
+function getFitData() {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:getFitData`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const { fit } = resp.data;
+        mongoUpsert(ProfilerDB, { fit }, 'GET_FIT_DATA');
+        // console.log('FIT_DATA:', resp.data);
+      });
+  };
+}
+
+function getFitStatistics() {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:getFitStatistics`;
+    const params = '';
+    api.instance().sendCommand(cmd, params)
+      .then((resp) => {
+        const { fitStats } = resp.data;
+        mongoUpsert(ProfilerDB, { fitStats }, 'GET_FIT_DATA');
+      });
   };
 }
 
@@ -217,6 +248,18 @@ function setAxisUnitsBottom(value) {
         const { data } = resp;
         mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_PROFILERSETTING');
       })
+      .then(() => {
+        dispatch(getProfile());
+      });
+  };
+}
+
+function setFitCurves(value) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:setFitCurves`;
+    const params = value.toString();
+    api.instance().sendCommand(cmd, params)
       .then(() => {
         dispatch(getProfile());
       });
@@ -388,12 +431,15 @@ const actions = {
 
   autoGenerate,
   clearProfiles,
+  getFitData,
+  getFitStatistics,
   getProfilerSettings,
   newProfile,
   removeProfile,
   setAutoGen,
   setAxisUnitsLeft,
   setAxisUnitsBottom,
+  setFitCurves,
   setGenerationMode,
   setLegendShow,
   setLegendExternal,
