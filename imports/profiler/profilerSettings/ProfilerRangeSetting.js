@@ -12,9 +12,12 @@ class ProfilerRangeSetting extends Component {
   render() {
     const { profileData } = this.props;
     const { selectCurve } = this.props.profilerSettings;
-    const currentProfile = profileData.find((element) => {
-      return element.id.includes(selectCurve);
-    });
+    let currentProfile;
+    if (profileData) {
+      currentProfile = profileData.find((element) => {
+        return element.id.includes(selectCurve);
+      });
+    }
     let maximum = 1;
     let minimum = 0;
     if (currentProfile) {

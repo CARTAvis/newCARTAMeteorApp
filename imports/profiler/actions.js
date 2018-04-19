@@ -266,6 +266,22 @@ function setFitCurves(value) {
   };
 }
 
+function setGaussCount(value) {
+  return (dispatch, getState) => {
+    const { profilerID } = getState().ProfilerDB;
+    const cmd = `${profilerID}:setGaussCount`;
+    api.instance().sendCommand(cmd, value)
+      .then((resp) => {
+        const { fit } = resp.data;
+        mongoUpsert(ProfilerDB, { fit }, 'SET_GAUSS_COUNT');
+      })
+      .then(() => {
+        dispatch(getProfile());
+        dispatch(getFitStatistics());
+      });
+  };
+}
+
 function setGenerationMode(mode) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
@@ -368,6 +384,16 @@ function setShowGridLines(value) {
   };
 }
 
+function setShowStatistics(value) {
+  return (dispatch, getState) => {
+    const { profilerSettings } = getState().ProfilerDB;
+    // profilerSettings.gridLines = value;
+    const data = { ...profilerSettings };
+    data.showStats = value;
+    mongoUpsert(ProfilerDB, { profilerSettings: data }, 'SET_SELECTED_CURVE');
+  };
+}
+
 function setZoomRange(zoomMin, zoomMax) {
   return (dispatch, getState) => {
     const { profilerSettings } = getState().ProfilerDB;
@@ -440,6 +466,7 @@ const actions = {
   setAxisUnitsLeft,
   setAxisUnitsBottom,
   setFitCurves,
+  setGaussCount,
   setGenerationMode,
   setLegendShow,
   setLegendExternal,
@@ -450,6 +477,7 @@ const actions = {
   setShowCursor,
   setShowFrame,
   setShowGridLines,
+  setShowStatistics,
   setZoomRange,
   setZoomRangePercent,
 };

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { List, ListItem } from 'material-ui/List';
-
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import Subheader from 'material-ui/Subheader';
@@ -81,9 +80,9 @@ class ProfilerFitSetting extends Component {
               min={0}
               max={100}
               value={fit.gaussCount}
-              // onChange={(event, value) => {
-              //   this.props.dispatch(actions.setFontSize(value));
-              // }}
+              onChange={(event, value) => {
+                this.props.dispatch(actions.setGaussCount(value));
+              }}
               style={numericInputStyle}
             />
           </div>
@@ -122,9 +121,9 @@ class ProfilerFitSetting extends Component {
         <Toggle
           label="Statistics"
           toggled={profilerSettings.showStats}
-          // onToggle={(event, newValue) => {
-          //   this.props.dispatch(actions.setLegendExternal(newValue));
-          // }}
+          onToggle={(event, newValue) => {
+            this.props.dispatch(actions.setShowStatistics(newValue));
+          }}
         />
         <Toggle
           label="Mean and RMS"
@@ -143,7 +142,10 @@ class ProfilerFitSetting extends Component {
         <Subheader>Statistics</Subheader>
         <Divider />
         <div>
-          {fitStats}
+          {/* {fitStats} */}
+          {/* TODO: a temporary solution to show fit statistics,
+          Try to reformat the m_stateFitStatistics in c++ */}
+          { profilerSettings.showStats && <td dangerouslySetInnerHTML={{__html: fitStats }} /> }
         </div>
         {/* <List>
           <Subheader>Select Curve to Fit</Subheader>
