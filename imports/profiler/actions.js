@@ -93,9 +93,9 @@ function getFitData() {
     const params = '';
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
-        const { fit } = resp.data;
-        mongoUpsert(ProfilerDB, { fit }, 'GET_FIT_DATA');
-        // console.log('FIT_DATA:', resp.data);
+        const { fit, x, y } = resp.data;
+        const fitData = [{ x, y }];
+        mongoUpsert(ProfilerDB, { fit, fitData }, 'GET_FIT_DATA');
       });
   };
 }
@@ -262,6 +262,9 @@ function setFitCurves(value) {
     api.instance().sendCommand(cmd, params)
       .then(() => {
         dispatch(getProfile());
+      })
+      .then(() => {
+        dispatch(getFitData());
       });
   };
 }
@@ -277,6 +280,7 @@ function setGaussCount(value) {
       })
       .then(() => {
         dispatch(getProfile());
+        dispatch(getFitData());
         dispatch(getFitStatistics());
       });
   };

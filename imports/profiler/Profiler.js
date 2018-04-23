@@ -46,9 +46,13 @@ class Profiler extends Component {
       }
     });
   }
-  plotProfile = (profileData, layout) => {
+  plotProfile = (profileData, fitData, layout) => {
     if (profileData && layout) {
       Plotly.newPlot(this.el, profileData, layout);
+      if (fitData) {
+        console.log('**********TRY TO ADD TRACE*********', fitData);
+        Plotly.addTraces(this.el, fitData);
+      }
       this.el.on('plotly_hover', (e) => {
         this.props.dispatch(actions.onHover(e));
       });
@@ -139,11 +143,13 @@ class Profiler extends Component {
       const { fileList } = selection;
       const imageName = fileList[selection.frame];
       const currentProfile = profileData.find((element) => {
-        return element.id.includes(imageName);
+        return element.id && element.id.includes(imageName);
       });
-      const { x } = currentProfile;
-      if (x) {
-        channelIndicator = x[channelAnimator.selection.frame];
+      if (currentProfile) {
+        const { x } = currentProfile;
+        if (x) {
+          channelIndicator = x[channelAnimator.selection.frame];
+        }
       }
     }
     let layout = {};
@@ -170,10 +176,12 @@ class Profiler extends Component {
   }
 
   render() {
-    const { animatorTypeList, profileData, width, data, zoomPanData } = this.props;
+    console.log('RENDER PROPS: ', this.props);
+    
+    const { animatorTypeList, profileData, fitData, width, data, zoomPanData } = this.props;
     const layout = { height: 395 };
     if (this.el) {
-      this.plotProfile(profileData, layout);
+      this.plotProfile(profileData, fitData, layout);
       this.updateChannelFrame(animatorTypeList, profileData);
       if (width) {
         this.adjustChartWidth();
@@ -186,7 +194,6 @@ class Profiler extends Component {
       }
     }
 
-    console.log('RENDER PROPS: ', this.props);
     const curveNameList = [];
     if (profileData) {
       profileData.forEach((element) => {
@@ -314,5 +321,6 @@ const mapStateToProps = state => ({
   zoomPanData: state.ProfilerDB.zoomPanData,
   profilerSettings: state.ProfilerDB.profilerSettings,
   animatorTypeList: state.AnimatorDB.animatorTypeList,
+  fitData: state.ProfilerDB.fitData,
 });
 export default connect(mapStateToProps)(Profiler);
