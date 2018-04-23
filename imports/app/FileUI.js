@@ -1,26 +1,26 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+// import { CopyToClipboard } from 'react-copy-to-clipboard';
 /* material-ui beta */
-import PeopleIcon from 'material-ui-icons/People';
-import Copy from 'material-ui-icons/ContentCopy';
+// import PeopleIcon from 'material-ui-icons/People';
+// import Copy from 'material-ui-icons/ContentCopy';
 import IconButton from 'material-ui-next/IconButton';
-import Popover from 'material-ui-next/Popover';
-import TextField from 'material-ui-next/TextField';
-import Button from 'material-ui-next/Button';
-import Run from 'material-ui/svg-icons/maps/directions-run';
+// import Popover from 'material-ui-next/Popover';
+// import TextField from 'material-ui-next/TextField';
+// import Button from 'material-ui-next/Button';
+// import Run from 'material-ui/svg-icons/maps/directions-run';
 
 import Folder from 'material-ui/svg-icons/file/folder';
 import Delete from 'material-ui/svg-icons/action/delete';
 import filebrowserActions from '../fileBrowser/actions';
 // import Popover from 'material-ui/Popover';
-import actions from './actions';
+// import actions from './actions';
 // import SessionManager from '../api/SessionManager';
 
-const style = {
-  margin: 12,
-  marginLeft: '50%',
-};
+// const style = {
+//   margin: 12,
+//   marginLeft: '50%',
+// };
 
 class FileUI extends Component {
   constructor(props) {
@@ -33,6 +33,9 @@ class FileUI extends Component {
     // console.log('THE TYPE TO BE PASSED: ', type);
     // this.props.setSetting('Image');
     this.props.dispatch(filebrowserActions.setFileBrowser());
+  }
+  closeImage = () => {
+    this.props.dispatch(filebrowserActions.closeFile());
   }
 
   // handleChange = (event) => {
@@ -75,7 +78,7 @@ class FileUI extends Component {
   //     this.props.dispatch(actions.turnOffWatching());
   //   }
 
-    // TODO: save to redux
+  // TODO: save to redux
 
   render() {
     // const { sessionID } = this.props;
@@ -91,8 +94,8 @@ class FileUI extends Component {
           <Folder />
         </IconButton>
         <IconButton
-          // onClick={{}}
-          style = {{
+          onClick={this.closeImage}
+          style={{
             // overflowX: 'no-display', width: '30px'
           }}
         >

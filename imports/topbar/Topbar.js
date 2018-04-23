@@ -83,6 +83,7 @@ class Topbar extends Component {
       openBrowser: !this.state.openBrowser,
     });
   }
+
   drawRect = () => {
     if (!this.rect.style.background || this.rect.style.background === 'none') {
       this.rect.style.background = '#D3D3D3';

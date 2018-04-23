@@ -7,13 +7,19 @@ import Button from 'material-ui-next/Button';
 import { List, ListItem, makeSelectable } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import FileFolder from 'material-ui/svg-icons/file/folder';
+import TextField from 'material-ui/TextField/TextField'
+import ImageStats from '../imageStats/ImageStats';
 
 // import folder from 'material-ui/svg-icons/file/folder';
 // import attachment from 'material-ui/svg-icons/file/attachment';
 
 import { connect } from 'react-redux';
+import imageStatsActions from '../imageStats/actions';
 import actions from './actions';
 
+const buttonLabelStyle = {
+  fontSize: 14,
+};
 const buttonStyle = {
   margin: 10,
 };
@@ -62,6 +68,12 @@ class FileBrowser extends Component {
   selectImage = (e, index) => {
     // this.setState({ selectedIndex: index });
     this.props.dispatch(actions.selectFile(index));
+    // if (this.props.selectedFile >= 0) {
+    //   const file = this.props.files[this.props.selectedFile];
+    //   // console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
+    //   this.props.dispatch(actions.selectFileToShowStates(`${this.props.rootDir}/${file.name}`));
+    //   this.props.dispatch(actions.closeFile());
+    // }
   }
 
   closeImage = () => {
@@ -157,29 +169,43 @@ class FileBrowser extends Component {
         className="hideFileBrowserUI"
       >
         <div>
-          filebrowser region
           {/* <Paper style={browserStyle} zDepth={1} > */}
-          <div>
             {/* <p>File Browser, open file browser, then choose a file to read</p> */}
-            <div style={{ fontSize: 10 }}>
-              {rootDir}
+          <div style={{ fontSize: 18 }}>
+            {/* directory: {rootDir} */}
+            <TextField id="dir" value={rootDir} inputProps={rootDir} style={{ width: '100%' }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'raw' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', width: '65%' }}>
+              <div>
+                <ListItem
+                  onClick={this.clickParentFolder}
+                  primaryText=".."
+                  leftAvatar={<Avatar icon={<FileFolder />} />}
+                />
+              </div>
+              { fileItems && fileItems.length > 0 &&
+              <div>
+                <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
+                  {fileItems}
+                </SelectableList>
+                {/* <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary /> */}
+              </div>
+                }
             </div>
-            <div>
-              <ListItem
-                onClick={this.clickParentFolder}
-                primaryText=".."
-                leftAvatar={<Avatar icon={<FileFolder />} />}
-              />
+              {/* <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary /> */}
+            <div style={{ display: 'flex', flexDirection: 'column', overflow: 'scroll', alignItems: 'stretch', width: '35%', height: '100%' }}>
+              <div > loading options </div>
+              <div style={{ height: '50%' }}>
+                <ImageStats />
+              </div>
+              <div style={{ height: '50%', width: '300px' }}>
+                <RaisedButton style={buttonStyle} labelStyle={buttonLabelStyle} onTouchTap={this.readImage} label="raster image" secondary />
+                <RaisedButton style={buttonStyle} labelStyle={buttonLabelStyle} onTouchTap={this.readImage} label="vecter map" secondary />
+                <RaisedButton style={buttonStyle} labelStyle={buttonLabelStyle} onTouchTap={this.readImage} label="contour map" secondary />
+                <RaisedButton style={buttonStyle} labelStyle={buttonLabelStyle} onTouchTap={this.readImage} label="marker map" secondary />
+              </div>
             </div>
-            { fileItems && fileItems.length > 0 &&
-            <div>
-              <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
-                {fileItems}
-              </SelectableList>
-              <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary />
-            </div>
-              }
-            <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary />
           </div>
         </div>
         <div style={{ position: 'absolute', bottom: '10px', left: '10px' }}>
