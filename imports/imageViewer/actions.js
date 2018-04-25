@@ -16,6 +16,8 @@ export const ActionType = {
   IMAGEVIEWER_CHANGE,
 };
 
+let initialWidth = 0;
+
 export function setupImageViewerDB() {
   api.instance().setupMongoRedux(ImageViewerDB, IMAGEVIEWER_CHANGE);
 }
@@ -30,6 +32,35 @@ function getColormaps(controllerID) {
       const { data } = resp;
       mongoUpsert(ColormapDB, { colormaps: data.split(',') }, `Resp_${cmd}`);
     });
+}
+function regionZoom() {
+  return (dispatch, getState) => {
+    const regionArray = getState().RegionDB.regionArray;
+    if (regionArray && regionArray.length > 0) {
+      const controllerID = getState().ImageViewerDB.controllerID;
+      const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
+      const arg = '';
+      api.instance().sendCommand(cmd, arg)
+        .then((resp) => {
+          const { data } = resp;
+          mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
+          dispatch(regionActions.updateRegionOnZoom());
+        });
+    }
+  };
+}
+function updateViewSize(width) {
+  return (dispatch, getState) => {
+    const controllerID = getState().ImageViewerDB.controllerID;
+    if (controllerID) {
+      const viewName = `${controllerID}/view`;
+      const height = 477;
+      api.instance().setupViewSize(viewName, width, height);
+      dispatch(regionZoom());
+    } else {
+      initialWidth = width;
+    }
+  };
 }
 function parseReigsterViewResp(resp) {
   const { cmd, data } = resp;
@@ -48,26 +79,30 @@ function parseReigsterViewResp(resp) {
     });
   // step2
   const viewName = `${controllerID}/view`;
-  const width = 482; // TODO same as the experimental setting in ImageViewer, change later
+  // TODO same as the experimental setting in ImageViewer, change later
+  // const width = 482;
   const height = 477;
-  api.instance().setupViewSize(viewName, width, height);
+  api.instance().setupViewSize(viewName, initialWidth, height);
   getColormaps(controllerID);
 }
 
 function setupImageViewer() {
   return () => {
-    // console.log('setupImageViewer');
+    // console.log('grimmer setupImageViewer');
 
     // ref: https://github.com/cartavis/carta/blob/develop/carta/html5/common/skel/source/class/skel/widgets/Window/DisplayWindow.js
-    const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
+    // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
     // var pathDict = skel.widgets.Path.getInstance();
     // var regCmd = pathDict.getCommandRegisterView();
+    // 'pluginId:ImageViewer,index:0';
+
+    const cmd = Commands.REGISTER_VIEWER; // '/CartaObjects/ViewManager:registerView';
+    const arg = 'pluginId:ImageViewer,index:0';
     // this.BASE_PATH = this.SEP + this.CARTA + this.SEP;
     // return `${this.BASE_PATH + this.VIEW_MANAGER + this.SEP_COMMAND}registerView`;
-
-    const arg = 'pluginId:ImageViewer,index:0';
-    // var paramMap = "pluginId:" + this.m_pluginId + ",index:"+index;
-
+    // api.instance().sendCommand(cmd, arg, (resp) => {
+    //   parseReigsterViewResp(resp);
+    // });
     api.instance().sendCommand(cmd, arg)
       .then((resp) => {
         parseReigsterViewResp(resp);
@@ -84,19 +119,6 @@ export function parseImageToMongo(buffer) {
   } else {
     console.log('get dummy image response');
   }
-}
-function regionZoom() {
-  return (dispatch, getState) => {
-    const controllerID = getState().ImageViewerDB.controllerID;
-    const cmd = `${controllerID}:${Commands.REGION_ZOOM}`;
-    const arg = '';
-    api.instance().sendCommand(cmd, arg)
-      .then((resp) => {
-        const { data } = resp;
-        mongoUpsert(RegionDB, { regionZoomData: data }, 'REGION_ZOOM_DATA');
-        dispatch(regionActions.updateRegionOnZoom());
-      });
-  };
 }
 function setZoomLevel(zoomLevel, layerID) {
   return (dispatch, getState) => {
@@ -221,6 +243,7 @@ const actions = {
   setCursor,
   setRegionType,
   regionCommand,
+  updateViewSize,
 };
 
 export default actions;

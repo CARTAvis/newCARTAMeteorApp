@@ -20,15 +20,16 @@ function onAddItemDB(data) {
   return (dispatch, getState) => {
     const stateTree = getState().FeatureContainerDB;
     if (!stateTree.items) {
-      mongoUpsert(FeatureContainerDB, { items: [{
-        i: `${Math.floor(Math.random() * 10000)}`,
-        x: 0,
-        y: Infinity, // puts it at the bottom
-        w: 1,
-        h: 2,
-        type: data,
-        isResizable: false,
-      }],
+      mongoUpsert(FeatureContainerDB, {
+        items: [{
+          i: `${Math.floor(Math.random() * 10000)}`,
+          x: 0,
+          y: Infinity, // puts it at the bottom
+          w: 1,
+          h: 2,
+          type: data,
+          isResizable: false,
+        }],
       }, ADD_ITEM);
     } else {
       stateTree.items.push({
@@ -46,8 +47,14 @@ function onAddItemDB(data) {
 }
 function onRemoveItemDB(key) {
   return (dispatch, getState) => {
+    console.log('REMOVING ITEM');
     const stateTree = getState().FeatureContainerDB;
     mongoUpsert(FeatureContainerDB, { items: _.reject(stateTree.items, { i: key }) }, REMOVE_ITEM);
+  };
+}
+function isDragging(dragging) {
+  return () => {
+    mongoUpsert(FeatureContainerDB, { isDragging: dragging }, 'SET_DRAGGING');
   };
 }
 function onDragStopDB(event) {
@@ -57,12 +64,20 @@ function onDragStopDB(event) {
       stateTree.items[i].y = event[i].y;
     }
     mongoUpsert(FeatureContainerDB, { items: stateTree.items }, SET_DRAG);
+    dispatch(isDragging(false));
+  };
+}
+function disableDragging(disable) {
+  return () => {
+    mongoUpsert(FeatureContainerDB, { disableDragging: disable }, 'DISABLE_DRAG');
   };
 }
 const actions = {
   onAddItemDB,
   onRemoveItemDB,
   onDragStopDB,
+  disableDragging,
+  isDragging,
 };
 
 export default actions;

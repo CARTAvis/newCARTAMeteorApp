@@ -84,6 +84,7 @@ function setGridSpacing(value) {
   return (dispatch, getState) => {
     // Javascipt number is not precise, get fixed decimals to send command
     // so that the response can find the target callback.
+    console.log('VALUE: ', value);
     value = value.toFixed(2);
     const oldValue = getState().GridDB.DataGrid.spacing;
     if (oldValue !== value) {

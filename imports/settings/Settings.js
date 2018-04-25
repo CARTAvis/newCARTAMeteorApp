@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import RaisedButton from 'material-ui/RaisedButton';
-import { Tabs, Tab } from 'material-ui/Tabs';
+
+/* material-ui beta */
+// import RaisedButton from 'material-ui/RaisedButton';
+import AppBar from 'material-ui-next/AppBar';
+import Tabs, { Tab } from 'material-ui-next/Tabs';
+import Button from 'material-ui-next/Button';
+
 import ProfilerSettings from '../app/ProfilerSettings';
-import HistogramSettings from '../app/HistogramSettings';
+import HistogramSettings from '../histogramSettings/HistogramSettings';
 import ImageSettings from '../imageSettings/ImageSettings';
 import StatsSettings from '../statsSettings/StatsSettings';
 import actions from './actions';
@@ -38,17 +43,23 @@ class Settings extends Component {
     this.props.dispatch(actions.clearAll());
   }
   showWithTabs = () => {
+    const { currentSetting, settingsArray } = this.props;
     const tabs = (
-      <Tabs
-        value={this.props.currentSetting}
-        onChange={(newSetting) => { this.props.dispatch(actions.settingChanged(newSetting)); }}
-      >
-        {this.props.settingsArray.map(item =>
-          (<Tab label={item.settingType} value={item.settingType} key={Math.floor(Math.random() * 100)}>
-            {this.showSetting()}
-          </Tab>),
-        )}
-      </Tabs>
+      <div>
+        <AppBar position="static">
+          <Tabs
+            value={currentSetting}
+            onChange={(event, value) => { this.props.dispatch(actions.settingChanged(value)); }}
+          >
+            {settingsArray.map(item =>
+              (<Tab label={item.settingType} value={item.settingType} key={Math.floor(Math.random() * 1000)} />))}
+          </Tabs>
+        </AppBar>
+        {currentSetting === 'Profiler' && <ProfilerSettings />}
+        {currentSetting === 'Histogram' && <HistogramSettings />}
+        {currentSetting === 'Image' && <ImageSettings />}
+        {currentSetting === 'Statistics' && <StatsSettings />}
+      </div>
     );
     return tabs;
   }
@@ -63,10 +74,13 @@ class Settings extends Component {
         ref={(node) => { if (node) { this.settingsBox = node; } }}
         className="hideSettingsUI"
       >
-        <RaisedButton
+        <Button
+          variant="raised"
+          size="medium"
           onClick={this.hide}
-          label="close"
-        />
+        >
+            close
+        </Button>
         {this.props.settingsArray.length > 1 ? this.showWithTabs() : this.showSetting()}
       </div>
     );

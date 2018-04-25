@@ -20,6 +20,7 @@ import { setupSettingsDB } from '../settings/actions';
 import { setupImageSettingsDB } from '../imageSettings/actions';
 import { setupImageStatsDB } from '../imageStats/actions';
 import { setupRegionStatsDB } from '../regionStats/actions';
+import { setupHistogramSettingsDB } from '../histogramSettings/actions';
 import { storeReduxDispatch } from '../api/MongoHelper';
 
 import api from '../api/ApiService';
@@ -80,6 +81,7 @@ function setupComponentsDB() {
   setupImageSettingsDB();
   setupImageStatsDB();
   setupRegionStatsDB();
+  setupHistogramSettingsDB();
 }
 
 function setupResponseChannnelAndAllDB() {

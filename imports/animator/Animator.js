@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
-import Paper from 'material-ui/Paper';
-import { Tabs, Tab } from 'material-ui/Tabs';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
+/* material-ui beta */
+import Paper from 'material-ui-next/Paper';
+import Tabs, { Tab } from 'material-ui-next/Tabs';
+import AppBar from 'material-ui-next/AppBar';
+import IconButton from 'material-ui-next/IconButton';
+import SkipPrev from 'material-ui-icons/SkipPrevious';
+import SkipNext from 'material-ui-icons/SkipNext';
+import Stop from 'material-ui-icons/Stop';
+import PlayForward from 'material-ui-icons/PlayArrow';
+import Select from 'material-ui-next/Select';
+import { MenuItem } from 'material-ui-next/Menu';
+
+// import DropDownMenu from 'material-ui/DropDownMenu';
 import NumericInput from 'react-numeric-input';
 import Slider from 'material-ui/Slider';
-import IconButton from 'material-ui/IconButton';
-import SkipPrev from 'material-ui/svg-icons/av/skip-previous';
-import SkipNext from 'material-ui/svg-icons/av/skip-next';
-import Stop from 'material-ui/svg-icons/av/stop';
-import PlayForward from 'material-ui/svg-icons/av/play-arrow';
+
 import actions from './actions';
 import { connect } from 'react-redux';
 
@@ -18,7 +23,13 @@ const Image = 'Image';
 const Channel = 'Channel';
 const Stokes = 'Stokes';
 const Region = 'Region';
-
+// const styles = {
+//   root: {
+//     minWidth: 40,
+//   },
+// };
+//
+// @withStyles(styles)
 class Animator extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +39,7 @@ class Animator extends Component {
     this.props.dispatch(actions.setupAnimator());
   }
 
-  handleChangeTab = (value) => {
+  handleChangeTab = (event, value) => {
     // this.setState({
     //   value,
     // });
@@ -37,18 +48,18 @@ class Animator extends Component {
 
   handleSlider = (event, value) => {
     // this.setState({firstSlider: value});
-    // console.log('silder value:', value);
-    this.changeFrame(event, value - 1, value);
+    console.log('silder value:', value);
+    this.changeFrame(value - 1);
+    // this.changeFrame(event, value - 1, value);
   };
 
-  changeFrame = (event, index, value) => {
+  changeFrame = (index) => {
     // index: 0 ;value: 1 (we start from 1 for UI)
-    // console.log('change frame:', event, ';index:', index, ';value:', value);
     const { animatorTypeList } = this.props;
     const currentAnimatorType = this.props.currentAnimatorType ? this.props.currentAnimatorType : Image;
 
-    if (this.props.animatorTypeList && this.props.animatorTypeList.length > 0) {
-      for (const animatorType of this.props.animatorTypeList) {
+    if (animatorTypeList && animatorTypeList.length > 0) {
+      for (const animatorType of animatorTypeList) {
         if (animatorType.type == currentAnimatorType) {
           // console.log('current animatorTypeID:', animatorType.animatorTypeID);
           if (animatorType.type == Image) {
@@ -119,81 +130,102 @@ class Animator extends Component {
     }
 
     const menuItems = [];
-    for (let i = 1; i <= currentSelection.frameEnd; i++) {
-      if (currentSelection != imageSelection) {
-        menuItems.push(<MenuItem value={i} key={i} primaryText={i} />);
+    for (let i = 1; i <= currentSelection.frameEnd; i += 1) {
+      if (currentSelection !== imageSelection) {
+        menuItems.push(<MenuItem value={i} key={i}>{i}</MenuItem>);
       } else {
         const file = currentSelection.fileList[i - 1];
-        menuItems.push(<MenuItem value={i} key={i} primaryText={`${i} ${file}`} />);
+        menuItems.push(<MenuItem value={i} key={i}>{i} {file}</MenuItem>);
       }
     }
-
+    const w = this.props.firstColumnWidth / 4;
+    const tabStyle = {
+      minWidth: w,
+      width: w,
+    };
     return (
       <div>
-        <Paper style={{ width: 482, height: 200, backgroundColor: 'lightgrey' }} zDepth={2}>
-          <Tabs
-            value={currentAnimatorType}
-            onChange={this.handleChangeTab}
-          >
-            <Tab label={imageLabel} value={Image} />
-            <Tab label={channelLabel} value={Channel} />
-            <Tab label={stokesLabel} value={Stokes} />
-            <Tab label={regionLabel} value={Region} />
-          </Tabs>
-          <div style={{ display: 'flex', flexDirection: 'column', height: '20%' }}>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <div style={{ flex: 1 }}>
-                <DropDownMenu
-                  value={currentSelection.frame + 1}
-                  underlineStyle={{ color: 'black' }}
-                  onChange={this.changeFrame}
-                >
-                  {/* <MenuItem value={1} primaryText="Image 0" /> */}
-                  {menuItems}
-                </DropDownMenu>
-                {/* <p>&#8804; {currentSelection.frameEnd}</p> */}
-              </div>
-              <div style={{ flex: 4 }}>
-                <IconButton style={{ transform: 'rotate(180deg)' }}>
-                  <PlayForward />
-                </IconButton>
-                <IconButton>
-                  <SkipPrev />
-                </IconButton>
-                <IconButton>
-                  <Stop />
-                </IconButton>
-                <IconButton>
-                  <SkipNext />
-                </IconButton>
-                <IconButton>
-                  <PlayForward />
-                </IconButton>
+        <Paper style={{ width: this.props.firstColumnWidth, height: 150, backgroundColor: 'lightgrey' }}>
+          <AppBar position="static">
+            <Tabs
+              value={currentAnimatorType}
+              onChange={this.handleChangeTab}
+            >
+              <Tab style={tabStyle} label={imageLabel} value={Image} />
+              <Tab style={tabStyle} label={channelLabel} value={Channel} />
+              <Tab style={tabStyle} label={stokesLabel} value={Stokes} />
+              <Tab style={tabStyle} label={regionLabel} value={Region} />
+            </Tabs>
+          </AppBar>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{
+ display: 'flex', flexDirection: 'row',
+}}
+              >
+                <div style={{ flex: 1 }}>
+                  {/* <DropDownMenu
+                    value={currentSelection.frame + 1}
+                    underlineStyle={{ color: 'black' }}
+                    onChange={this.changeFrame}
+                  > */}
+                  <Select
+                    value={currentSelection.frame + 1}
+                    onChange={(event) => { this.changeFrame(event.target.value - 1); }}
+                    style={{ maxWidth: w }}
+                  >
+                    {menuItems}
+                  </Select>
+                  {/* </DropDownMenu> */}
+                </div>
+                <div style={{ flex: 4 }}>
+                  <div style={{
+ display: 'flex', alignItems: 'center', justifyContent: 'center',
+}}
+                  >
+                    <IconButton style={{ transform: 'rotate(180deg)' }}>
+                      <PlayForward />
+                    </IconButton>
+                    <IconButton>
+                      <SkipPrev />
+                    </IconButton>
+                    <IconButton>
+                      <Stop />
+                    </IconButton>
+                    <IconButton>
+                      <SkipNext />
+                    </IconButton>
+                    <IconButton>
+                      <PlayForward />
+                    </IconButton>
+                  </div>
+                </div>
               </div>
             </div>
-            {/* <div style={{ flex: 2 }}>
-              <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <div>
-                  <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameStartUser + 1} />
+            <div style={{ flex: 1 }}>
+              <div style={{
+                display: 'flex', flexDirection: 'row',
+              }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <NumericInput
+                      style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }}
+                      min={1}
+                      max={currentSelection.frameEnd}
+                      value={currentSelection.frameStartUser + 1}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Slider sliderStyle={{ width: '300px' }} step={1} min={currentSelection.frameEnd > 1 ? 1 : null} max={currentSelection.frameEnd} value={currentSelection.frame + 1} onChange={this.handleSlider} />
+                <div style={{ flex: 3 }}>
+                  <Slider sliderStyle={{ margin: 0, paddingTop: 0 }} step={1} min={currentSelection.frameEnd > 1 ? 1 : null} max={currentSelection.frameEnd} value={currentSelection.frame + 1} onChange={this.handleSlider} />
                 </div>
-                <div>
-                  <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameEndUser + 1} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameEndUser + 1} />
+                  </div>
                 </div>
               </div>
-            </div> */}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'row', height: '50%', width: '40%' }}>
-            <div style={{ marginTop: '15px' }}>
-              <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameStartUser + 1} />
-            </div>
-            <div>
-              <Slider sliderStyle={{ width: '350px', left: '10px', height: '2px' }} step={1} min={currentSelection.frameEnd > 1 ? 1 : null} max={currentSelection.frameEnd} value={currentSelection.frame + 1} onChange={this.handleSlider} />
-            </div>
-            <div style={{ marginLeft: '30px', marginTop: '15px' }}>
-              <NumericInput style={{ wrap: { height: '30px', width: '50px' }, input: { height: '30px', width: '50px' } }} min={1} max={currentSelection.frameEnd} value={currentSelection.frameEndUser + 1} />
             </div>
           </div>
         </Paper>
@@ -201,6 +233,7 @@ class Animator extends Component {
     );
   }
 }
+
 const mapStateToProps = state => ({
   animatorTypeList: state.AnimatorDB.animatorTypeList,
   currentAnimatorType: state.AnimatorDB.currentAnimatorType,

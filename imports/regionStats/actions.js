@@ -5,6 +5,7 @@ import Commands from '../api/Commands';
 
 const REGION_STATS_CHANGE = 'REGION_STATS_CHANGE';
 const GET_REGION_STATS = 'GET_REGION_STATS';
+const SET_SELECTED_REGION = 'SET_SELECTED_REGION';
 
 export const ActionType = {
   REGION_STATS_CHANGE,
@@ -22,15 +23,23 @@ function getRegionStats() {
       .then((resp) => {
         const regionStats = [];
         for (let i = 0; i < resp.data.stats.length; i += 1) {
+          const temp = [];
           for (let j = 1; j < resp.data.stats[i].length; j += 1) {
-            regionStats.push(resp.data.stats[i][j]);
+            temp.push(resp.data.stats[i][j]);
           }
+          regionStats.push(temp);
         }
         mongoUpsert(RegionStatsDB, { regionStats }, GET_REGION_STATS);
       });
   };
 }
+function setSelectedRegion(index) {
+  return () => {
+    mongoUpsert(RegionStatsDB, { selectedRegion: index }, SET_SELECTED_REGION);
+  };
+}
 const actions = {
   getRegionStats,
+  setSelectedRegion,
 };
 export default actions;

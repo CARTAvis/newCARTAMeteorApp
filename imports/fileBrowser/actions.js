@@ -10,14 +10,19 @@ import imageViewer from '../imageViewer/actions';
 
 import profiler from '../profiler/actions';
 import histogramActions from '../histogram/actions';
+import histogramSettingsActions from '../histogramSettings/actions';
 import gridControl from '../gridControl/actions';
 import imageStatsActions from '../imageStats/actions';
 import colormap from '../colormap/actions';
 
 const FILEBROWSER_CHANGE = 'FILEBROWSER_CHANGE';
+const REMOVE_FILEBROWSER = 'REMOVE_FILEBROWSER';
+const OPEN_FILEBROWSER = 'OPEN_FILEBROWSER';
 
 export const ActionType = {
   FILEBROWSER_CHANGE,
+  REMOVE_FILEBROWSER,
+  OPEN_FILEBROWSER,
 };
 
 // only for saving action history in mongo
@@ -28,11 +33,40 @@ export function setupFileBrowserDB() {
   api.instance().setupMongoRedux(FileBrowserDB, FILEBROWSER_CHANGE);
 }
 
+function setFileBrowser() {
+  return (dispatch, getState) => {
+    // const settingsArray = getState().SettingsDB.settingsArray;
+    // let found = false;
+    // for (let i = 0; i < settingsArray.length; i += 1) {
+    //   if (settingsArray[i].settingType === settingType) {
+    //     found = true;
+    //     break;
+    //   }
+    // }
+    // if (!found) {
+    let fileBrowserOpened = getState().FileBrowserDB.fileBrowserOpened;
+    // if (settingsArray.length === 0) {
+    if (!fileBrowserOpened) fileBrowserOpened = true;
+    else fileBrowserOpened = false;
+    // }
+    mongoUpsert(FileBrowserDB, {
+      fileBrowserOpened,
+    }, OPEN_FILEBROWSER);
+  };
+  // };
+}
+
 function parseFileList(resp) {
   const { cmd, data } = resp;
   const fileList = { files: data.dir, rootDir: data.name };
 
   mongoUpsert(FileBrowserDB, fileList, `Resp_${cmd}`);
+}
+
+function clearAll() {
+  return () => {
+    mongoUpsert(FileBrowserDB, { fileBrowserOpened: false }, REMOVE_FILEBROWSER);
+  };
 }
 
 function queryServerFileList(path) {
@@ -56,6 +90,7 @@ function closeFile() {
     const state = getState();
     const controllerID = state.ImageViewerDB.controllerID;
     const stack = state.ImageViewerDB.stack;
+    console.log('we just at beginning');
     if (stack && stack.layers) {
       const count = stack.layers.length;
       let currentLayer = null;
@@ -63,6 +98,7 @@ function closeFile() {
       for (const layer of stack.layers) {
         if (layer.selected) {
           // console.log('close this file:', layer.name);
+          console.log('we got a break');
           currentLayer = layer;
           break;
         }
@@ -70,6 +106,7 @@ function closeFile() {
 
       if (!currentLayer && count > 0) {
         currentLayer = stack.layers[count - 1];
+        console.log('aaaaaaaaaaaaaaa');
         // console.log('close this file:', currentLayer.name);
       }
       if (currentLayer) {
@@ -86,8 +123,8 @@ function closeFile() {
           .then((resp) => {
             console.log('animator.updateAnimator !!!:', resp);
             // update animatorType-Selections.
-            dispatch(colormap.updateColormap());
             dispatch(imageStatsActions.getImageStats());
+            dispatch(colormap.updateColormap());
             dispatch(animator.updateAnimator(resp));
           });
       } else {
@@ -136,6 +173,7 @@ function selectFileToOpen(path) {
 
         dispatch(profiler.getProfile());
         dispatch(histogramActions.getHistogramData());
+        dispatch(histogramSettingsActions.getHistogramPref());
         dispatch(gridControl.getDataGrid());
         dispatch(imageStatsActions.getImageStats());
         dispatch(colormap.updateColormap());
@@ -168,11 +206,39 @@ function selectFileToOpen(path) {
       });
   };
 }
+function selectFileToShowStates(path) {
+  // mongoUpsert(ImageViewerDB, { requestingFile: true }, 'REQUESTING_FILE');
+  return (dispatch, getState) => {
+    const state = getState();
 
+    // const nameArray = path.split('/');
+    // const fileName = nameArray[nameArray.length - 1];
+
+    const controllerID = state.ImageViewerDB.controllerID;
+    const arg = `id:${controllerID},data:${path}`;
+
+    api.instance().sendCommand(Commands.SELECT_FILE_TO_OPEN, arg)
+      .then((resp) => {
+        console.log('response is SELECT_FILE_TO_SHOW_STATES:', resp);
+        dispatch(imageStatsActions.getImageStatsOnly());
+        dispatch(imageViewer.updateStack());
+      });
+      //   return dispatch(imageViewer.updateStack());
+      // })
+      // .then((stack) => {
+      //   // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
+      //   // so when switch back to A(3d), need to query animatorType list again.
+      //   dispatch(animator.updateAnimator(stack));
+      // });
+  };
+}
 const actions = {
+  setFileBrowser,
+  clearAll,
   // closeFileBrowser,
   queryServerFileList,
   selectFileToOpen,
+  selectFileToShowStates,
   selectFile,
   closeFile,
 };

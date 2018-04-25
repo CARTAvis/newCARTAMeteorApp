@@ -62,6 +62,7 @@ export function setupMongoReduxListeners(collection, actionType) {
 }
 
 export function mongoResumeSelfDB(collection, actionType) {
+  console.log('ACTION TYPE: ', actionType);
   const sessionID = SessionManager.getSuitableSession();
   const docs = collection.find({ sessionID }).fetch();
   if (docs.length > 0) {

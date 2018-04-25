@@ -1,11 +1,14 @@
+import React, { Component } from 'react';
+/* material-ui beta */
+import Button from 'material-ui-next/Button';
+import Tooltip from 'material-ui-next/Tooltip';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
+// import RaisedButton from 'material-ui/RaisedButton';
+import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-resizable/css/styles.css';
 import 'react-grid-layout/css/styles.css';
 // import 'react-contextmenu/public/styles.css';
 import '../styles/react-contextmenu.css';
-import React, { Component } from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import { Tabs, Tab } from 'material-ui/Tabs';
-import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import LayoutWrapper from '../splitterLayout/LayoutWrapper';
 import Animator from '../animator/Animator';
 // import { Meteor } from 'meteor/meteor';
@@ -22,12 +25,33 @@ import Animator from '../animator/Animator';
 
 import FeatureContainer from '../featureContainer/FeatureContainer';
 import Settings from '../settings/Settings';
-import SideMenu from './SideMenu';
+import FileBrowser from '../fileBrowser/FileBrowser';
+// import SideMenu from './SideMenu';
 import Topbar from '../topbar/Topbar';
 // import FeatureContainerActions from '../featureContainer/actions';
 // import Region from './Region';
 import Region from '../region/Region';
 
+const theme = createMuiTheme({
+  overrides: {
+    MuiTooltip: {
+      // Name of the styleSheet
+      tooltipPlacementRight: {
+        background: 'transparent',
+        width: '80px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+      tooltipPlacementBottom: {
+        background: 'transparent',
+        width: '100px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+        color: 'black',
+      },
+    },
+  },
+});
 class MainPage extends Component {
   constructor(props) {
     super(props);
@@ -51,8 +75,11 @@ class MainPage extends Component {
   //   this.setState({ secondColumnWidth: newWidth });
   //   // use 2nd column's width
   // }
-  onUpdate = (second) => {
-    this.setState({ secondColumnWidth: second });
+  onUpdate = (first, second) => {
+    this.setState({
+      firstColumnWidth: first,
+      secondColumnWidth: second,
+    });
   }
   handleClick = (e, data) => {
     this.grid.getWrappedInstance().onAddItem(data.type);
@@ -84,12 +111,6 @@ class MainPage extends Component {
   }
   render() {
     console.log('IN RENDER');
-    const toolbarStyle = {
-      backgroundColor: '#EEEEEE',
-      bottom: 0,
-      width: '100%',
-    };
-    // const expanded = this.state.expand;
     const midPanel = (
       <div>
         <div>
@@ -111,14 +132,16 @@ class MainPage extends Component {
     );
     return (
       <div className="layout-row">
-        <SideMenu
+        {/* <SideMenu
           // expandToTrue={this.expandToTrue}
           // handleExpand={this.handleExpand}
           // expand={this.state.expand}
           handleLogout={this.props.handleLogout}
-        />
+        /> */}
         <div className="layout-fill">
-          <Topbar style={toolbarStyle} />
+          <Topbar
+            handleLogout={this.props.handleLogout}
+          />
           <LayoutWrapper
             firstPercentage={50}
             secondPercentage={50}
@@ -144,29 +167,54 @@ class MainPage extends Component {
                 <Region />
                 <Region />
               </div> */}
-              <Region />
-              <Animator />
+              <Region firstColumnWidth={this.state.firstColumnWidth} />
+              <Animator firstColumnWidth={this.state.firstColumnWidth} />
             </div>
             <div>
               <div style={{ marginLeft: '30%', marginTop: '10px' }}>
-                <RaisedButton
+                <MuiThemeProvider theme={theme}>
+                  <Tooltip title="Profiler">
+                    <Button
+                      variant="raised"
+                      size="medium"
+                      style={{ marginLeft: '10px' }}
+                      onClick={() => this.handleClick2('Profiler')}
+                    >
+                      <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
+                    </Button>
+                  </Tooltip>
+                </MuiThemeProvider>
+                <MuiThemeProvider theme={theme}>
+                  <Tooltip title="Histogram">
+                    <Button
+                      variant="raised"
+                      size="medium"
+                      style={{ marginLeft: '10px' }}
+                      onClick={() => this.handleClick2('Histogram')}
+                    >
+                      <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
+                    </Button>
+                  </Tooltip>
+                </MuiThemeProvider>
+                {/* <RaisedButton
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Profiler')}
                 >
                   <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
-                </RaisedButton>
-                <RaisedButton
+                </RaisedButton> */}
+                {/* <RaisedButton
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Histogram')}
                 >
                   <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
-                </RaisedButton>
+                </RaisedButton> */}
               </div>
               {midPanel}
             </div>
           </LayoutWrapper>
         </div>
         <Settings />
+        <FileBrowser />
       </div>
     );
   }

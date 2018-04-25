@@ -1,30 +1,38 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import Popover from 'material-ui/Popover';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
-import TextField from 'material-ui/TextField';
-import actions from './actions';
-// import api from '../api/ApiService';
+/* material-ui beta */
+import Select from 'material-ui-next/Select';
+import { MenuItem } from 'material-ui-next/Menu';
+import { InputLabel } from 'material-ui-next/Input';
+import { FormControl } from 'material-ui-next/Form';
+import Button from 'material-ui-next/Button';
+import TextField from 'material-ui-next/TextField';
+import Popover from 'material-ui-next/Popover';
 
+import FlatButton from 'material-ui/FlatButton';
+// import Popover from 'material-ui/Popover';
+import SelectField from 'material-ui/SelectField';
+// import MenuItem from 'material-ui/MenuItem';
+// import TextField from 'material-ui/TextField';
+import actions from './actions';
+import FCactions from '../featureContainer/actions';
+// import api from '../api/ApiService';
+this.dragging = false;
 class Profiler extends Component {
   constructor(props) {
     super(props);
     this.state = {
       saveAsInput: '',
-      src: '',
+      anchorEl: null,
+      value: '',
+      open: false,
     };
     this.props.dispatch(actions.setupProfiler());
     // this.getRef = this.getRef.bind(this);
   }
   componentDidMount = () => {
-    // console.log('componentDidMount', this.props);
     const trace1 = {
-      // x: [1, 2, 3, 4],
-      // y: [10, 15, 13, 17],
       type: 'scatter',
     };
     const layout = {
@@ -32,18 +40,23 @@ class Profiler extends Component {
     };
     const data = [trace1];
     Plotly.newPlot(this.el, data, layout);
+    if (this.props.profileData) {
+      Plotly.deleteTraces(this.el, -1);
+      Plotly.addTraces(this.el, this.props.profileData);
+    }
     this.el.on('plotly_hover', (e) => {
       this.props.dispatch(actions.onHover(e));
     });
     this.el.on('plotly_relayout', (e) => {
       if (!e.width) {
+        console.log('PLOTLY RELAYOUT');
         this.props.dispatch(actions.onZoomPan(e));
       }
     });
   }
   componentWillReceiveProps = (nextProps) => {
-    console.log('THIS.PROPS: ', this.props);
-    console.log('NEXT PROPS: ', nextProps);
+    // console.log('THIS.PROPS: ', this.props);
+    // console.log('NEXT PROPS: ', nextProps);
     if (JSON.stringify(nextProps.profileData) !== JSON.stringify(this.props.profileData)) {
       Plotly.deleteTraces(this.el, -1);
       Plotly.addTraces(this.el, nextProps.profileData);
@@ -72,26 +85,28 @@ class Profiler extends Component {
   // getRef = (el) => {
   //   this.el = el;
   // }
-  handleTouchTap = (event) => {
+  handleTouchTap = () => {
     // This prevents ghost click.
-    event.preventDefault();
+    // event.preventDefault();
     this.setState({
       open: true,
-      anchorEl: event.currentTarget,
+      anchorEl: this.saveProfileButton,
     });
   };
   handleRequestClose = () => {
     this.setState({
       open: false,
     });
+    // this.props.dispatch(FCactions.disableDragging(false));
   };
-  saveAs = (event) => {
+  saveAsInput = (event) => {
+    // this.props.dispatch(FCactions.disableDragging(true));
     this.setState({
       saveAsInput: event.target.value,
     });
   }
-  handleChange = (event, index, value) => {
-    this.setState({ value });
+  handleChange = (event) => {
+    this.setState({ value: event.target.value });
   }
   convertToImage = () => {
     Plotly.toImage(this.el, {
@@ -118,44 +133,81 @@ class Profiler extends Component {
     });
   }
   render() {
+    console.log('RENDER PROPS: ', this.props);
     return (
       <div>
-        <button onClick={this.handleTouchTap}>
+        <button
+          ref={(node) => { this.saveProfileButton = node; }}
+          onClick={this.handleTouchTap}
+          onMouseEnter={() => {
+            this.props.dispatch(FCactions.disableDragging(true));
+          }}
+        >
           <img className="iconImg" src="/images/save.png" alt="" />
         </button>
-        {/* <RaisedButton label="save" onClick={this.handleTouchTap} /> */}
-        <div style={{ marginTop: '2px' }} ref={(el) => { this.el = el; }} id="profiler" />
+        <div
+          // onMouseMove={() => {
+          //   console.log('MOUSE MOVE');
+          //   //
+          //   if (!this.props.isDragging) {
+          //     this.props.dispatch(FCactions.disableDragging(true));
+          //   }
+          // }}
+          // onMouseLeave={() => {
+          //   console.log('MOUSE LEAVE');
+          //   // if (this.dragging === true && this.mousedown === true) {
+          //   //   console.log('MOUSE UP');
+          //     this.props.dispatch(FCactions.disableDragging(false));
+          //   // }
+          //   // this.dragging = false;
+          //   // this.mousedown = false;
+          // }}
+          style={{ marginTop: '2px' }}
+          ref={(el) => { this.el = el; }}
+          id="profiler"
+        />
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
           anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={this.handleRequestClose}
+          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+          onClose={this.handleRequestClose}
         >
           <TextField
-            floatingLabelText="Save as..."
-            onChange={this.saveAs}
+            label="Save as..."
+            placeholder="File name"
+            onChange={this.saveAsInput}
             style={{ margin: '10px', verticalAlign: 'middle' }}
-          /><br />
-          <SelectField
-            floatingLabelText="File Type"
-            value={this.state.value}
-            onChange={this.handleChange}
-            autoWidth
-            style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
-          >
-            <MenuItem value="pdf" primaryText="pdf" />
-            <MenuItem value="ps" primaryText="ps" />
-          </SelectField>
-          <br />
-          <FlatButton
-            type="submit"
-            label="Save"
-            primary
-            // href={`data:text/eps;base64,${this.state.src}`}
-            style={{ marginRight: 0 }}
-            onClick={this.convertToImage}
+            margin="normal"
           />
+          <FormControl
+            style={{ width: '150px', margin: '5px', verticalAlign: 'middle' }}
+          >
+            <InputLabel htmlFor="file-type">File type</InputLabel>
+            <Select
+              inputProps={{
+                name: 'file type',
+                id: 'file-type',
+              }}
+              onChange={this.handleChange}
+              value={this.state.value}
+              // style={{ width: '150px', margin: '10px', verticalAlign: 'middle' }}
+            >
+              <MenuItem value="pdf">pdf</MenuItem>
+              <MenuItem value="ps">ps</MenuItem>
+            </Select>
+          </FormControl>
+          <br />
+          <Button
+            variant="flat"
+            type="submit"
+            size="medium"
+            onClick={this.convertToImage}
+            style={{ marginRight: 0 }}
+            color="primary"
+          >
+            Save
+          </Button>
         </Popover>
       </div>
     );
@@ -165,5 +217,6 @@ const mapStateToProps = state => ({
   profileData: state.ProfilerDB.profileData,
   data: state.ProfilerDB.data,
   zoomPanData: state.ProfilerDB.zoomPanData,
+  isDragging: state.FeatureContainerDB.isDragging,
 });
 export default connect(mapStateToProps)(Profiler);

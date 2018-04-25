@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import SplitterLayout from '../splitterLayout/components/SplitterLayout';
+import imageViewerActions from '../imageViewer/actions';
 
 const splitterWidth = 4;
 
 class LayoutWrapper extends Component {
   constructor(props) {
     super(props);
-
+    this.lastCall = 0;
     this.firstContainerSize = {};
     this.secondaryPercentage = 0;
     // if (this.props.firstPercentage) {
@@ -45,7 +47,11 @@ class LayoutWrapper extends Component {
 
     this.secondColumnSize.width = secondBlockWidth - splitterWidth - this.thirdColumnSize.width;
     this.secondColumnSize.height = this.firstContainerSize.height;
-    this.props.onUpdate(this.secondColumnSize.width);
+    this.props.onUpdate(this.firstColumnSize.width, this.secondColumnSize.width);
+    if (this.lastCall + 200 < Date.now()) {
+      this.lastCall = Date.now();
+      this.props.dispatch(imageViewerActions.updateViewSize(this.firstColumnSize.width));
+    }
     console.log('1st:', this.firstColumnSize.width);
     console.log('2nd:', this.secondColumnSize.width);
     console.log('3rd:', this.thirdColumnSize.width);
@@ -74,8 +80,10 @@ class LayoutWrapper extends Component {
 
     // TODO callback
     if (this.props.drage2ndeHandler) {
-      this.props.drage2ndeHandler(this.firstColumnSize,
-        this.secondColumnSize, this.thirdColumnSize);
+      this.props.drage2ndeHandler(
+        this.firstColumnSize,
+        this.secondColumnSize, this.thirdColumnSize,
+      );
     }
   };
   // affect 1,2, 3 column
@@ -186,7 +194,8 @@ class LayoutWrapper extends Component {
       // console.log('grimmer 2');
       secondContent = ({ thirdCihld } ? (<SplitterLayout
         percentage
-      >{secondChild}{thirdCihld}</SplitterLayout>) : { secondChild });
+      >{secondChild}{thirdCihld}
+      </SplitterLayout>) : { secondChild });
     }
 
     // console.log('grimmer 2nd percentage,', second ColumnPercentange);
@@ -197,6 +206,7 @@ class LayoutWrapper extends Component {
           secondColumnPercentange ?
             (<SplitterLayout
               percentage
+              primaryMinSize={30}
               secondaryInitialSize={secondColumnPercentange}
               mountHandler={this.mount1stLevel}
               resizeHandler={this.resize1stLevel}
@@ -205,7 +215,10 @@ class LayoutWrapper extends Component {
               {firstChild}
               {secondContent}
             </SplitterLayout>) :
-            (<SplitterLayout percentage>
+            (<SplitterLayout
+              primaryMinSize={30}
+              percentage
+            >
               {firstChild}
               {secondContent}
             </SplitterLayout>)
@@ -220,4 +233,4 @@ class LayoutWrapper extends Component {
     );
   }
 }
-export default LayoutWrapper;
+export default connect()(LayoutWrapper);

@@ -2,8 +2,10 @@
 import { mongoUpsert } from '../api/MongoHelper';
 // import SessionManager from '../api/SessionManager';
 import { HistogramDB } from '../api/HistogramDB';
+import { HistogramSettingsDB } from '../api/HistogramSettingsDB';
 import Commands from '../api/Commands';
 import api from '../api/ApiService';
+import histogramSettingsActions from '../histogramSettings/actions';
 
 // redux part
 const HISTOGRAM_CHANGE = 'HISTOGRAM_CHANGE';
@@ -55,6 +57,13 @@ export function parseReigsterHistogramResp(resp) {
 
   // save histogramID to mongodb
   mongoUpsert(HistogramDB, { histogramID }, `Resp_${cmd}`);
+  console.log('DISPATCHING HISTOGRAM SETTINGS ACTION');
+  const command = `${histogramID}:${Commands.GET_HISTOGRAM_PREF}`;
+  api.instance().sendCommand(command, '', (response) => {
+    console.log('PREF DATA: ', response.data);
+    const dataObj = JSON.parse(response.data.preferences);
+    mongoUpsert(HistogramSettingsDB, { histogramSettings: dataObj }, 'GET_HISTOGRAM_PREF');
+  });
 }
 
 function setupHistogram() {
