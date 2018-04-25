@@ -8,6 +8,8 @@ import IconButton from 'material-ui-next/IconButton';
 import Popover from 'material-ui-next/Popover';
 import TextField from 'material-ui-next/TextField';
 import Button from 'material-ui-next/Button';
+import Tooltip from 'material-ui-next/Tooltip';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
 import Run from 'material-ui/svg-icons/maps/directions-run';
 // import Popover from 'material-ui/Popover';
 import actions from './actions';
@@ -17,6 +19,26 @@ const style = {
   margin: 12,
   marginLeft: '50%',
 };
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiTooltip: {
+      // Name of the styleSheet
+      tooltipPlacementRight: {
+        background: 'transparent',
+        width: '80px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+      tooltipPlacementBottom: {
+        background: 'transparent',
+        width: '100px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+    },
+  },
+});
 
 class SessionUI extends Component {
   constructor(props) {
@@ -74,11 +96,15 @@ class SessionUI extends Component {
         {/* <IconButton onClick={this.handleTouchTap}>
           <People />
         </IconButton> */}
-        <IconButton
-          onClick={this.handleTouchTap}
-        >
-          <PeopleIcon />
-        </IconButton>
+        <MuiThemeProvider theme={theme}>
+          <Tooltip title="Share session">
+            <IconButton
+              onClick={this.handleTouchTap}
+            >
+              <PeopleIcon />
+            </IconButton>
+          </Tooltip>
+        </MuiThemeProvider>
         {this.state.watching ? 'watching' : false}
         <Popover
           open={this.state.open}
@@ -122,13 +148,17 @@ class SessionUI extends Component {
             </CopyToClipboard>
           </p>
         </Popover>
-        <IconButton
-          style={{
-           }}
-          onClick={this.handleLogout}
-        >
-          <Run />
-        </IconButton>
+        <MuiThemeProvider theme={theme}>
+          <Tooltip title="Logout">
+            <IconButton
+              style={{
+               }}
+              onClick={this.handleLogout}
+            >
+              <Run />
+            </IconButton>
+          </Tooltip>
+        </MuiThemeProvider>
       </div>
     );
   }

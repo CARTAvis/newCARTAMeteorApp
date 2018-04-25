@@ -12,6 +12,8 @@ import { InputLabel } from 'material-ui-next/Input';
 import { FormControl } from 'material-ui-next/Form';
 import Button from 'material-ui-next/Button';
 import { LinearProgress } from 'material-ui-next/Progress';
+import Tooltip from 'material-ui-next/Tooltip';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
 
 import MenuItem2 from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
@@ -31,8 +33,6 @@ import ImageViewer from '../imageViewer/ImageViewer';
 import settingsActions from '../settings/actions';
 import colormapActions from '../colormap/actions';
 import regionStatsActions from '../regionStats/actions';
-import Tooltip from 'material-ui-next/Tooltip';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
 
 const Blob = require('blob');
 
@@ -40,13 +40,13 @@ const theme = createMuiTheme({
   overrides: {
     MuiTooltip: {
       // Name of the styleSheet
-      tooltipRight: {
+      tooltipPlacementRight: {
         background: 'transparent',
         width: '80px',
         fontSize: '15px',
         fontStyle: 'italic',
       },
-      tooltipBottom: {
+      tooltipPlacementBottom: {
         background: 'transparent',
         width: '100px',
         fontSize: '15px',

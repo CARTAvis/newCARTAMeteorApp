@@ -30,7 +30,9 @@ const SelectableList = makeSelectable(List);
 class FileBrowser extends Component {
   constructor(props) {
     super(props);
-
+    this.state = {
+      tempDir: this.props.rootDir,
+    };
     // this.state = {
     //   selectedIndex: -1,
     // };
@@ -62,8 +64,16 @@ class FileBrowser extends Component {
   //   }
   // }
   hide = () => {
-    this.settingsBox.className = 'hideFileBrowserUI';
+    // this.settingsBox.className = 'hideFileBrowserUI';
     this.props.dispatch(actions.clearAll());
+  }
+  handleChange = (newDir) => {
+    this.setState({
+      tempDir: newDir,
+    });
+  }
+  handleEnter = (newDir) => {
+    this.props.dispatch(actions.queryServerFileList(newDir));
   }
   selectImage = (e, index) => {
     // this.setState({ selectedIndex: index });
@@ -101,8 +111,14 @@ class FileBrowser extends Component {
       const parentPath = this.props.rootDir.substring(0, this.props.rootDir.length - lastLen - 1);
       if (parentPath === '') {
         this.props.dispatch(actions.queryServerFileList('/'));
+        this.setState({
+          tempDir: '/',
+        });
       } else {
         this.props.dispatch(actions.queryServerFileList(parentPath));
+        this.setState({
+          tempDir: parentPath,
+        });
       }
 
       // /Users/grimmer/CARTA/Images
@@ -111,6 +127,9 @@ class FileBrowser extends Component {
   }
   clickFolder(folder) {
     const fullPath = `${this.props.rootDir}/${folder}`;
+    this.setState({
+      tempDir: fullPath,
+    });
     // grimmer send command:
     // /CartaObjects/DataLoader:getData ;para: path:/Users/grimmer/CARTA/Images/carta_region_file
 
@@ -127,6 +146,7 @@ class FileBrowser extends Component {
   render() {
     // const { files, selectedFile, browserOpened, rootDir } = this.props;
     const { files, selectedFile, rootDir, browserOpened } = this.props;
+    const targetDir = (this.state.tempDir === '/tmp') ? rootDir : this.state.tempDir;
     if (browserOpened && this.settingsBox) {
       this.settingsBox.className = 'showFileBrowserUI';
       // this.props.dispatch(actions.queryServerFileList(''));
@@ -173,7 +193,19 @@ class FileBrowser extends Component {
             {/* <p>File Browser, open file browser, then choose a file to read</p> */}
           <div style={{ fontSize: 18 }}>
             {/* directory: {rootDir} */}
-            <TextField id="dir" value={rootDir} inputProps={rootDir} style={{ width: '100%' }} />
+            <TextField
+              id="dir"
+              onChange={(event, newDir) => {
+                this.handleChange(newDir);
+              }}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  this.handleEnter(targetDir);
+                }
+              }}
+              value={targetDir}
+              style={{ width: '100%' }}
+            />
           </div>
           <div style={{ display: 'flex', flexDirection: 'raw' }}>
             <div style={{ display: 'flex', flexDirection: 'column', width: '65%' }}>
@@ -216,16 +248,6 @@ class FileBrowser extends Component {
             onClick={this.hide}
           >
             close
-          </Button>
-        </div>
-        <div style={{ position: 'absolute', bottom: '10px', right: '10px' }}>
-          <Button
-            disableRipple
-            variant="raised"
-            size="small"
-            // onClick={this.hide}
-          >
-            update
           </Button>
         </div>
       </div>

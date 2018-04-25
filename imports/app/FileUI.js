@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 // import PeopleIcon from 'material-ui-icons/People';
 // import Copy from 'material-ui-icons/ContentCopy';
 import IconButton from 'material-ui-next/IconButton';
+import Tooltip from 'material-ui-next/Tooltip';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
 // import Popover from 'material-ui-next/Popover';
 // import TextField from 'material-ui-next/TextField';
 // import Button from 'material-ui-next/Button';
@@ -21,7 +23,25 @@ import filebrowserActions from '../fileBrowser/actions';
 //   margin: 12,
 //   marginLeft: '50%',
 // };
-
+const theme = createMuiTheme({
+  overrides: {
+    MuiTooltip: {
+      // Name of the styleSheet
+      tooltipPlacementRight: {
+        background: 'transparent',
+        width: '80px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+      tooltipPlacementBottom: {
+        background: 'transparent',
+        width: '100px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+    },
+  },
+});
 class FileUI extends Component {
   constructor(props) {
     super(props);
@@ -88,19 +108,27 @@ class FileUI extends Component {
         {/* <IconButton onClick={this.handleTouchTap}>
           <People />
         </IconButton> */}
-        <IconButton
-          onClick={this.setFileBrowser}
-        >
-          <Folder />
-        </IconButton>
-        <IconButton
-          onClick={this.closeImage}
-          style={{
-            // overflowX: 'no-display', width: '30px'
-          }}
-        >
-          <Delete />
-        </IconButton>
+        <MuiThemeProvider theme={theme}>
+          <Tooltip title="Open files">
+            <IconButton
+              onClick={this.setFileBrowser}
+            >
+              <Folder />
+            </IconButton>
+          </Tooltip>
+        </MuiThemeProvider>
+        <MuiThemeProvider theme={theme}>
+          <Tooltip title="Close current image">
+            <IconButton
+              onClick={this.closeImage}
+              style={{
+                // overflowX: 'no-display', width: '30px'
+              }}
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        </MuiThemeProvider>
         {/* {this.state.watching ? 'watching' : false}
         <Popover
           open={this.state.open}

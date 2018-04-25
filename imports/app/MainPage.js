@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 /* material-ui beta */
 import Button from 'material-ui-next/Button';
+import Tooltip from 'material-ui-next/Tooltip';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
 // import RaisedButton from 'material-ui/RaisedButton';
 import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from 'react-contextmenu';
 import 'react-resizable/css/styles.css';
@@ -30,6 +32,26 @@ import Topbar from '../topbar/Topbar';
 // import Region from './Region';
 import Region from '../region/Region';
 
+const theme = createMuiTheme({
+  overrides: {
+    MuiTooltip: {
+      // Name of the styleSheet
+      tooltipPlacementRight: {
+        background: 'transparent',
+        width: '80px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+      tooltipPlacementBottom: {
+        background: 'transparent',
+        width: '100px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+        color: 'black',
+      },
+    },
+  },
+});
 class MainPage extends Component {
   constructor(props) {
     super(props);
@@ -150,22 +172,30 @@ class MainPage extends Component {
             </div>
             <div>
               <div style={{ marginLeft: '30%', marginTop: '10px' }}>
-                <Button
-                  variant="raised"
-                  size="medium"
-                  style={{ marginLeft: '10px' }}
-                  onClick={() => this.handleClick2('Profiler')}
-                >
-                  <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
-                </Button>
-                <Button
-                  variant="raised"
-                  size="medium"
-                  style={{ marginLeft: '10px' }}
-                  onClick={() => this.handleClick2('Histogram')}
-                >
-                  <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
-                </Button>
+                <MuiThemeProvider theme={theme}>
+                  <Tooltip title="Profiler">
+                    <Button
+                      variant="raised"
+                      size="medium"
+                      style={{ marginLeft: '10px' }}
+                      onClick={() => this.handleClick2('Profiler')}
+                    >
+                      <img style={{ width: '40px', height: '25px' }} src="/images/line.svg" alt="" />
+                    </Button>
+                  </Tooltip>
+                </MuiThemeProvider>
+                <MuiThemeProvider theme={theme}>
+                  <Tooltip title="Histogram">
+                    <Button
+                      variant="raised"
+                      size="medium"
+                      style={{ marginLeft: '10px' }}
+                      onClick={() => this.handleClick2('Histogram')}
+                    >
+                      <img style={{ width: '40px', height: '25px' }} src="/images/histogram.png" alt="" />
+                    </Button>
+                  </Tooltip>
+                </MuiThemeProvider>
                 {/* <RaisedButton
                   style={{ marginLeft: '10px' }}
                   onClick={() => this.handleClick2('Profiler')}

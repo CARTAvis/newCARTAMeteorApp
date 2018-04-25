@@ -47,6 +47,7 @@ function setFileBrowser() {
     let fileBrowserOpened = getState().FileBrowserDB.fileBrowserOpened;
     // if (settingsArray.length === 0) {
     if (!fileBrowserOpened) fileBrowserOpened = true;
+    else fileBrowserOpened = false;
     // }
     mongoUpsert(FileBrowserDB, {
       fileBrowserOpened,
