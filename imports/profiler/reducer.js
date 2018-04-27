@@ -1,7 +1,7 @@
 import { ActionType } from './actions';
 
 const defaultState = {
-  profilerSettings: { autoGenerate: false },
+  profilerSettings: { },
 };
 const ProfilerDB = (state = defaultState, action) => {
   switch (action.type) {

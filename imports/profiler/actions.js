@@ -43,17 +43,17 @@ function setupProfiler() {
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
         const profilerID = resp.data;
-        const command = `${profilerID}:getProfilerSettings`;
+        const command = `${profilerID}:${Commands.GET_PROFILER_SETTINGS}`;
         const parameters = '';
         api.instance().sendCommand(command, parameters)
           .then((response) => {
             console.log('Try to get the setting of profiler!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', response);
             const profilerSettings = response.data;
-            mongoUpsert(ProfilerDB, { profilerSettings }, 'getProfilerSettings');
+            mongoUpsert(ProfilerDB, { profilerID, profilerSettings }, 'getProfilerSettings');
           })
-          .then(() => {
-            parseRegisterProfilerResp(resp);
-          })
+          // .then(() => {
+          //   parseRegisterProfilerResp(resp);
+          // })
           .then(() => {
             dispatch(getFitData());
             dispatch(getFitStatistics());
@@ -62,19 +62,19 @@ function setupProfiler() {
   };
 }
 
-function clearProfile() {
-  return (dispatch) => {
-    const data = { x: [], y: [] };
-    mongoUpsert(ProfilerDB, { profileData: data }, SET_PROFILEDATA);
-  };
-}
+// function clearProfile() {
+//   return (dispatch) => {
+//     const data = { x: [], y: [] };
+//     mongoUpsert(ProfilerDB, { profileData: data }, SET_PROFILEDATA);
+//   };
+// }
 
 function getProfile() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
     // console.log('profilerID for getting profile: ', profilerID);
 
-    const cmd = `${profilerID}:getProfileData`;
+    const cmd = `${profilerID}:${Commands.GET_PROFILE_DATA}`;
     const params = '';
 
     api.instance().sendCommand(cmd, params, (resp) => {
@@ -89,7 +89,7 @@ function getProfile() {
 function getFitData() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:getFitData`;
+    const cmd = `${profilerID}:${Commands.GET_FIT_DATA}`;
     const params = '';
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
@@ -103,7 +103,7 @@ function getFitData() {
 function getFitStatistics() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:getFitStatistics`;
+    const cmd = `${profilerID}:${Commands.GET_FIT_STATISTICS}`;
     const params = '';
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
@@ -131,7 +131,7 @@ function autoGenerate() {
     const { profilerID } = getState().ProfilerDB;
     const { profilerSettings } = getState().ProfilerDB;
     if (profilerID && profilerSettings.autoGenerate) {
-      const cmd = `${profilerID}:newProfile`;
+      const cmd = `${profilerID}:${Commands.NEW_PROFILE}`;
       const params = '';
       api.instance().sendCommand(cmd, params)
         .then((resp) => {
@@ -148,7 +148,7 @@ function autoGenerate() {
 function clearProfiles() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:clearProfiles`;
+    const cmd = `${profilerID}:${Commands.CLEAR_PROFILES}`;
     const params = '';
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
@@ -161,7 +161,7 @@ function clearProfiles() {
 function getProfilerSettings() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:getProfilerSettings`;
+    const cmd = `${profilerID}:${Commands.GET_PROFILER_SETTINGS}`;
     const params = '';
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
@@ -175,7 +175,7 @@ function newProfile() {
   return (dispatch, getState) => {
     console.log('*******************************************************************');
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:newProfile`;
+    const cmd = `${profilerID}:${Commands.NEW_PROFILE}`;
     const params = '';
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
@@ -192,7 +192,7 @@ function newProfile() {
 function removeProfile() {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:removeProfile`;
+    const cmd = `${profilerID}:${Commands.REMOVE_PROFILE}`;
     const params = '';
     api.instance().sendCommand(cmd, params)
       .then((resp) => {
@@ -208,7 +208,7 @@ function removeProfile() {
 function setAutoGen(value) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:setAutoGenerate`;
+    const cmd = `${profilerID}:${Commands.SET_AUTO_GENERATE}`;
     api.instance().sendCommand(cmd, value)
       .then((resp) => {
         const { data } = resp;
@@ -227,7 +227,7 @@ function setAutoGen(value) {
 function setAxisUnitsLeft(value) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:setAxisUnitsLeft`;
+    const cmd = `${profilerID}:${Commands.SET_AXIS_UNITS_LEFT}`;
     api.instance().sendCommand(cmd, value)
       .then((resp) => {
         const { data } = resp;
@@ -242,7 +242,7 @@ function setAxisUnitsLeft(value) {
 function setAxisUnitsBottom(value) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:setAxisUnitsBottom`;
+    const cmd = `${profilerID}:${Commands.SET_AXIS_UNITS_BOTTOM}`;
     api.instance().sendCommand(cmd, value)
       .then((resp) => {
         const { data } = resp;
@@ -257,7 +257,7 @@ function setAxisUnitsBottom(value) {
 function setFitCurves(value) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:setFitCurves`;
+    const cmd = `${profilerID}:${Commands.SET_FIT_CURVES}`;
     const params = value.toString();
     api.instance().sendCommand(cmd, params)
       .then(() => {
@@ -272,7 +272,7 @@ function setFitCurves(value) {
 function setGaussCount(value) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:setGaussCount`;
+    const cmd = `${profilerID}:${Commands.SET_GAUSS_COUNT}`;
     api.instance().sendCommand(cmd, value)
       .then((resp) => {
         const { fit } = resp.data;
@@ -289,7 +289,7 @@ function setGaussCount(value) {
 function setGenerationMode(mode) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:setGenerationMode`;
+    const cmd = `${profilerID}:${Commands.SET_GENERATION_MODE}`;
     api.instance().sendCommand(cmd, mode)
       .then((resp) => {
         const { data } = resp;
@@ -346,7 +346,7 @@ function setProfilerMainSetting(value) {
 function setSelectedCurve(id) {
   return (dispatch, getState) => {
     const { profilerID } = getState().ProfilerDB;
-    const cmd = `${profilerID}:setSelectedCurve`;
+    const cmd = `${profilerID}:${Commands.SET_SELECTED_CURVE}`;
     api.instance().sendCommand(cmd, id)
       .then((resp) => {
         const { data } = resp;
@@ -456,7 +456,7 @@ const actions = {
   onHover,
   onZoomPan,
   getProfile,
-  clearProfile,
+  // clearProfile,
   getCurveData,
 
   autoGenerate,

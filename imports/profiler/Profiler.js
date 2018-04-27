@@ -132,7 +132,8 @@ class Profiler extends Component {
 
   updateChannelFrame = (animatorTypeList, profileData) => {
     let channelIndicator = 0;
-    if (animatorTypeList && profileData && profileData.length > 0) {
+    if (animatorTypeList && animatorTypeList.imageAnimator && animatorTypeList.channelAnimator &&
+        profileData && profileData.length > 0) {
       const imageAnimator = animatorTypeList.find((element) => {
         return element.type === 'Image';
       });
