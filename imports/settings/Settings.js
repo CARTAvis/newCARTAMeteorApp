@@ -7,8 +7,8 @@ import AppBar from 'material-ui-next/AppBar';
 import Tabs, { Tab } from 'material-ui-next/Tabs';
 import Button from 'material-ui-next/Button';
 
-import ProfilerSettings from '../app/ProfilerSettings';
 import HistogramSettings from '../histogramSettings/HistogramSettings';
+import ProfilerSettings from '../profiler/profilerSettings/ProfilerSettings';
 import ImageSettings from '../imageSettings/ImageSettings';
 import StatsSettings from '../statsSettings/StatsSettings';
 import actions from './actions';

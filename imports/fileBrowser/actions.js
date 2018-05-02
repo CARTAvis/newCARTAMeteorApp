@@ -126,6 +126,7 @@ function closeFile() {
             dispatch(imageStatsActions.getImageStats());
             dispatch(colormap.updateColormap());
             dispatch(animator.updateAnimator(resp));
+            dispatch(profiler.autoGenerate());
           });
       } else {
         console.log('no stack layer to close');
@@ -171,12 +172,14 @@ function selectFileToOpen(path) {
       .then((resp) => {
         console.log('response is SELECT_FILE_TO_OPEN:', resp);
 
-        dispatch(profiler.getProfile());
+        // dispatch(profiler.getProfile());
+        dispatch(profiler.autoGenerate());
         dispatch(histogramActions.getHistogramData());
         dispatch(histogramSettingsActions.getHistogramPref());
         dispatch(gridControl.getDataGrid());
         dispatch(imageStatsActions.getImageStats());
         dispatch(colormap.updateColormap());
+        // dispatch(profiler.getCurveData());
         return dispatch(imageViewer.updateStack());
       })
       .then((stack) => {
