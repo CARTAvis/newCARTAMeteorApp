@@ -7,6 +7,7 @@ import { mongoUpsert } from '../api/MongoHelper';
 import imageViewer from '../imageViewer/actions';
 import colormap from '../colormap/actions';
 import gridControl from '../gridControl/actions';
+import profiler from '../profiler/actions';
 // redux part
 const ANIMATOR_CHANGE = 'ANIMATOR_CHANGE';
 export const ActionType = {
@@ -247,6 +248,11 @@ function changeNonImageFrame(animatorType, newFrameIndex) {
           mongoUpsert(AnimatorDB, { animatorTypeList }, 'GET_ANIMATOR_DATA');
         }
       })
+      .then(() => {
+        if (animatorType.type === 'Stokes') {
+          dispatch(profiler.autoGenerate());
+        }
+      })
       .catch((e) => {
         throw e;
         // console.log('change Non-Image frame catch');
@@ -276,6 +282,7 @@ function changeImageFrame(animatorTypeID, newFrameIndex) {
       })
       .then(() => {
         dispatch(gridControl.getDataGrid());
+        dispatch(profiler.autoGenerate());
       });
   };
 }

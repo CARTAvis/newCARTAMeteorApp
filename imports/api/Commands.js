@@ -7,7 +7,7 @@ const SELECT_FILE_TO_OPEN = '/CartaObjects/ViewManager:dataLoaded';
 // non-global, need object id
 
 // non-global
-//need object id
+// need object id
 const GET_ANIMATORTYPE_ID = 'registerAnimator';
 const SET_ZOOM_LEVEL = 'setZoomLevel';
 const CLOSE_IMAGE = 'closeImage';
@@ -34,6 +34,20 @@ const SET_TICK_LENGTH = 'setTickLength';
 const SET_TICK_TRANSPARENCY = 'setTickTransparency';
 const SET_TICK_THICKNESS = 'setTickThickness';
 const SET_GRID_LABEL_FORMAT = 'setGridLabelFormat';
+const GET_PROFILER_SETTINGS = 'getProfilerSettings'; // commands for profiler
+const GET_PROFILE_DATA = 'getProfileData';
+const GET_FIT_DATA = 'getFitData';
+const GET_FIT_STATISTICS = 'getFitStatistics';
+const NEW_PROFILE = 'newProfile';
+const CLEAR_PROFILES = 'clearProfiles';
+const REMOVE_PROFILE = 'removeProfile';
+const SET_AUTO_GENERATE = 'setAutoGenerate';
+const SET_AXIS_UNITS_LEFT = 'setAxisUnitsLeft';
+const SET_AXIS_UNITS_BOTTOM = 'setAxisUnitsBottom';
+const SET_FIT_CURVES = 'setFitCurves';
+const SET_GAUSS_COUNT = 'setGaussCount';
+const SET_GENERATION_MODE = 'setGenerationMode';
+const SET_SELECTED_CURVE = 'setSelectedCurve';
 
 // New commands for new CARTA:
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
@@ -103,6 +117,20 @@ const Commands = {
   SET_TICK_TRANSPARENCY,
   SET_TICK_THICKNESS,
   SET_GRID_LABEL_FORMAT,
+  GET_PROFILER_SETTINGS, // commands for profiler
+  GET_PROFILE_DATA,
+  GET_FIT_DATA,
+  GET_FIT_STATISTICS,
+  NEW_PROFILE,
+  CLEAR_PROFILES,
+  REMOVE_PROFILE,
+  SET_AUTO_GENERATE,
+  SET_AXIS_UNITS_LEFT,
+  SET_AXIS_UNITS_BOTTOM,
+  SET_FIT_CURVES,
+  SET_GAUSS_COUNT,
+  SET_GENERATION_MODE,
+  SET_SELECTED_CURVE,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 
