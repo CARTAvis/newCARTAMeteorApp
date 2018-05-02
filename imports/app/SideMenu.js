@@ -24,14 +24,12 @@ export default class SideMenu extends Component {
     };
   }
   handleToggle = () => {
-    // this.props.handleExpand();
     this.setState({ expand: !this.state.expand });
   }
   handleLogout = () => {
     this.props.handleLogout();
   }
   handleOpenFiles = () => {
-    // this.props.expandToTrue();
     this.setState({
       width: this.state.openWidth,
       openFiles: !this.state.openFiles,
@@ -52,8 +50,6 @@ export default class SideMenu extends Component {
     } else {
       width = closeWidth;
     }
-    // margin: 'auto', left: '10%'
-    // margin: 'auto', right: '10%'
     const buttonStyle1 = { bottom: '10px', position: 'absolute' };
     const buttonStyle2 = { bottom: '10px', position: 'absolute' };
     const menu = (

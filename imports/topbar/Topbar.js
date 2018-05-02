@@ -2,21 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 /* material-ui beta */
-import IconButton from 'material-ui/IconButton';
-// import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
-// import More from 'material-ui/svg-icons/navigation/more-horiz';
 import TextField from 'material-ui/TextField';
 import Popover from 'material-ui/Popover';
-import Button from 'material-ui-next/Button';
 
 
 import AppBar from 'material-ui-next/AppBar';
 import Toolbar from 'material-ui-next/Toolbar';
-import { ToolbarSeparator } from 'material-ui/Toolbar';
-// import Dialog from 'material-ui/Dialog';
-// import Folder from 'material-ui/svg-icons/file/folder';
-// import Delete from 'material-ui/svg-icons/action/delete';
+
 import actions from './actions';
 import SessionUI from '../app/SessionUI';
 import FileUI from '../app/FileUI';
@@ -42,9 +35,6 @@ class Topbar extends Component {
         this.setState({ username: name });
       }
     });
-    // setTimeout(() => {
-    //   if (Meteor.user()) this.setState({ username: Meteor.user().username });
-    // }, 200);
   }
   handleClose = () => {
     this.setState({ open: false });
@@ -77,7 +67,6 @@ class Topbar extends Component {
     });
   }
   handleOpenFiles = () => {
-    // this.props.expandToTrue();
     this.setState({
       openFiles: !this.state.openFiles,
       openBrowser: !this.state.openBrowser,
@@ -124,17 +113,10 @@ class Topbar extends Component {
               </div>
             </div>
             <div>
-              {/* <MenuItemMUI style={{ overflowX: 'hidden', position: 'absolute', right: '0px', bottom: '5px', width: '50px' }} onClick={this.handleLogout} leftIcon={<Run />} />*/}
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <FileUI />
               </div>
             </div>
-            {/* <RaisedButton label="Local" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleLocal} disabled={this.state.localDisabled} />
-            <ToolbarSeparator style={{ margin: 0 }} />
-            <RaisedButton label="Remote" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleRemote} disabled={this.state.remoteDisabled} />
-            <IconButton onClick={this.handleConfig}>
-              <More />
-            </IconButton> */}
           </Toolbar>
         </AppBar>
         <Popover
@@ -160,7 +142,4 @@ class Topbar extends Component {
     );
   }
 }
-// const mapStateToProps = state => ({
-//
-// });
 export default connect()(Topbar);

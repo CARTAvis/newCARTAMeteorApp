@@ -207,12 +207,9 @@ function selectFileToOpen(path) {
   };
 }
 function selectFileToShowStates(path) {
-  // mongoUpsert(ImageViewerDB, { requestingFile: true }, 'REQUESTING_FILE');
   return (dispatch, getState) => {
     const state = getState();
 
-    // const nameArray = path.split('/');
-    // const fileName = nameArray[nameArray.length - 1];
 
     const controllerID = state.ImageViewerDB.controllerID;
     const arg = `id:${controllerID},data:${path}`;
@@ -223,13 +220,6 @@ function selectFileToShowStates(path) {
         dispatch(imageStatsActions.getImageStatsOnly());
         dispatch(imageViewer.updateStack());
       });
-      //   return dispatch(imageViewer.updateStack());
-      // })
-      // .then((stack) => {
-      //   // NOTE Sometimes when open A(3d), then B(2d), will only get image animatorType,
-      //   // so when switch back to A(3d), need to query animatorType list again.
-      //   dispatch(animator.updateAnimator(stack));
-      // });
   };
 }
 const actions = {

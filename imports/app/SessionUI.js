@@ -11,9 +11,7 @@ import Button from 'material-ui-next/Button';
 import Tooltip from 'material-ui-next/Tooltip';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
 import Run from 'material-ui/svg-icons/maps/directions-run';
-// import Popover from 'material-ui/Popover';
 import actions from './actions';
-// import SessionManager from '../api/SessionManager';
 
 const style = {
   margin: 12,
@@ -72,9 +70,6 @@ class SessionUI extends Component {
     });
   };
   switchWatchMode = () => {
-    // if(this.state.watching || this.state.sessionText) {
-    //   this.setState({watching: !this.state.watching});
-    // }
     if (!this.state.watching) {
       if (this.state.sessionText) {
         this.setState({ watching: true });
@@ -93,9 +88,6 @@ class SessionUI extends Component {
     const buttonLabel = !this.state.watching ? 'Get Screen' : 'StopWatch';
     return (
       <div>
-        {/* <IconButton onClick={this.handleTouchTap}>
-          <People />
-        </IconButton> */}
         <MuiThemeProvider theme={theme}>
           <Tooltip title="Share session">
             <IconButton
@@ -125,7 +117,6 @@ class SessionUI extends Component {
                 this.switchWatchMode();
               }
             }}
-            // style={{ padding: '10px', paddingTop: 0 }}
             margin="normal"
           />
           <Button
@@ -165,25 +156,8 @@ class SessionUI extends Component {
 }
 
 
-// let SessionUI = ({ sessionID }) => {
-//   return (
-//     <div>
-//       <TextField
-//         value="abc"
-//         hintText="Input Shared Screen's SessionID"
-//         onChange={handleChange}
-//       />
-//       <RaisedButton onTouchTap={this.switchShareMode} label="Get Screen" style={style} />
-//       SelfSessionID: {sessionID}
-//     </div>
-//   )
-// }
-
 const mapStateToProps = state => ({
-  // imageURL: state.image.imageURL,
   sessionID: state.sessionID,
 });
 
 export default connect(mapStateToProps)(SessionUI);
-
-// export default SessionUI;

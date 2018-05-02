@@ -33,36 +33,8 @@ class FileBrowser extends Component {
     this.state = {
       tempDir: this.props.rootDir,
     };
-    // this.state = {
-    //   selectedIndex: -1,
-    // };
-    // this.props.dispatch(actions.setupFileBrowser());
-
-    // if (this.props.openBrowser) {
-    //   this.props.dispatch(actions.queryServerFileList(''));
-    // }
     this.props.dispatch(actions.queryServerFileList(''));
   }
-
-  // closeBrowser = () => {
-  //   console.log('close file browser');
-  //
-  //   this.props.dispatch(actions.closeFileBrowser());
-  // }
-  // openBrowser = () => {
-  //   console.log('open file browser');
-  //
-  //   if (!this.props.browserOpened) {
-  //     this.props.dispatch(actions.queryServerFileList());
-  //   }
-  // }
-  // componentWillReceiveProps = (nextProps) => {
-  //   if (nextProps.browserOpened) {
-  //     this.settingsBox.className = 'showFileBrowserUI';
-  //   } else {
-  //     this.settingsBox.className = 'hideFileBrowserUI';
-  //   }
-  // }
   hide = () => {
     // this.settingsBox.className = 'hideFileBrowserUI';
     this.props.dispatch(actions.clearAll());
@@ -76,15 +48,9 @@ class FileBrowser extends Component {
     this.props.dispatch(actions.queryServerFileList(newDir));
   }
   selectImage = (e, index) => {
-    // this.setState({ selectedIndex: index });
     this.props.dispatch(actions.selectFile(index));
-    // if (this.props.selectedFile >= 0) {
-    //   const file = this.props.files[this.props.selectedFile];
-    //   // console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
-    //   this.props.dispatch(actions.selectFileToShowStates(`${this.props.rootDir}/${file.name}`));
-    //   this.props.dispatch(actions.closeFile());
-    // }
   }
+
 
   closeImage = () => {
     this.props.dispatch(actions.closeFile());
@@ -93,14 +59,9 @@ class FileBrowser extends Component {
   readImage = () => {
     if (this.props.selectedFile >= 0) {
       const file = this.props.files[this.props.selectedFile];
-      // console.log('choolse file to read, index:', this.props.selectedFile, ';name:', file.name);
       this.props.dispatch(actions.selectFileToOpen(`${this.props.rootDir}/${file.name}`));
     }
   }
-
-  // componentDidMount() {
-  //   console.log('grimmer filebrowser did mount');
-  // }
 
   clickParentFolder = () => {
     if (this.props.rootDir === '/') {
@@ -144,12 +105,10 @@ class FileBrowser extends Component {
     this.props.dispatch(actions.queryServerFileList(fullPath));
   }
   render() {
-    // const { files, selectedFile, browserOpened, rootDir } = this.props;
     const { files, selectedFile, rootDir, browserOpened } = this.props;
     const targetDir = (this.state.tempDir === '/tmp') ? rootDir : this.state.tempDir;
     if (browserOpened && this.settingsBox) {
       this.settingsBox.className = 'showFileBrowserUI';
-      // this.props.dispatch(actions.queryServerFileList(''));
     } else if (!browserOpened && this.settingsBox) {
       this.settingsBox.className = 'hideFileBrowserUI';
     }
@@ -189,10 +148,7 @@ class FileBrowser extends Component {
         className="hideFileBrowserUI"
       >
         <div>
-          {/* <Paper style={browserStyle} zDepth={1} > */}
-            {/* <p>File Browser, open file browser, then choose a file to read</p> */}
           <div style={{ fontSize: 18 }}>
-            {/* directory: {rootDir} */}
             <TextField
               id="dir"
               onChange={(event, newDir) => {
@@ -208,7 +164,7 @@ class FileBrowser extends Component {
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'raw' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', width: '65%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', width: '55%' }}>
               <div>
                 <ListItem
                   onClick={this.clickParentFolder}
@@ -221,12 +177,10 @@ class FileBrowser extends Component {
                 <SelectableList style={{ maxHeight: 300, overflow: 'auto' }} onChange={this.selectImage} value={selectedFile}>
                   {fileItems}
                 </SelectableList>
-                {/* <RaisedButton style={buttonStyle} onTouchTap={this.readImage} label="Read" secondary /> */}
               </div>
                 }
             </div>
-              {/* <RaisedButton style={buttonStyle} onTouchTap={this.closeImage} label="close" secondary /> */}
-            <div style={{ display: 'flex', flexDirection: 'column', overflow: 'scroll', alignItems: 'stretch', width: '35%', height: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', overflow: 'scroll', alignItems: 'stretch', width: '45%', height: '100%' }}>
               <div > loading options </div>
               <div style={{ height: '50%' }}>
                 <ImageStats />
