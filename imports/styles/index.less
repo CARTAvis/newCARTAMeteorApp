@@ -1,5 +1,7 @@
 // @primary-color : #d9d9d9;
-
+div:focus {
+  outline: none;
+}
 p {
     font-family: 'Roboto', sans-serif;
 }
@@ -90,20 +92,17 @@ p {
   flex: 1 1;
 }
 .showSettingsUI {
-  // max-height: 0;
-  // padding-top: 0;
-  // padding-bottom: 0;
-  // margin-top: 0;
-  // margin-bottom: 0;
   transition: all .3s ease-out;
-  position: fixed;
-  border: 1px solid red;
+  position: absolute;
+  border: 1px solid grey;
   bottom: 0;
-  width: 600px;
-  height: 450px;
+  // width: 600px;
+  // height: 450px;
+  width: 50%;
+  height: 60%;
   max-height: 100%;
   z-index: 2;
-  left: 50vh;
+  left: calc(50vw - 25%);
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -115,7 +114,7 @@ p {
   // height: 600px;
   top: 100vh;
   height: 0;
-  left: 50vh;
+  left: calc(50vw - 25%);
   position: absolute;
   overflow: hidden;
 }
@@ -129,20 +128,34 @@ p {
 }
 .settingsUISideMenu {
   flex: 1;
-  height: 100vh;
-  border-right: 1px solid red;
+  height: calc(100vh - 40% - 5px);
+  overflow-y: scroll;
+  border-right: 1px solid grey;
 }
 .settingsUIContent {
   flex: 4;
-  margin-left: 10px;
-  margin-right: 10px;
-  height: 350px;
+  padding-left: 10px;
+  padding-right: 10px;
+  // height: 350px;
+  height: calc(100vh - 40% - 5px);
   overflow-y: scroll;
+}
+.hide {
+  height: 0;
+  transition: height .5s;
+  overflow: hidden;
+}
+.show {
+  transition: height .5s;
+  height: 100px;
 }
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+}
+#settingsSubList {
+  padding-left: 30px;
 }
 // .box:hover > #hid-box {
 //   top: 0;

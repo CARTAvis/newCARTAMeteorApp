@@ -49,6 +49,11 @@ const SET_GAUSS_COUNT = 'setGaussCount';
 const SET_GENERATION_MODE = 'setGenerationMode';
 const SET_SELECTED_CURVE = 'setSelectedCurve';
 
+const SET_BIN_COUNT = 'setBinCount';
+const SET_BIN_WIDTH = 'setBinWidth';
+const SET_LOG_COUNT = 'setLogCount';
+const SET_PLANE_MODE = 'setPlaneMode';
+const SET_PLANE_CHANNEL = 'setPlaneChannel';
 // New commands for new CARTA:
 // const GET_DEFAULT_HISTOGRAM_ID = '/CartaObjects/ViewManager:getDefaultHistogramID';
 const QUERY_ANIMATOR_TYPES = 'queryAnimatorTypes';
@@ -68,6 +73,7 @@ const GET_STATS_INFO = 'getStatsInfo';
 const GET_STATS_PREF = 'getStatsPref';
 const GET_DATA_GRID_STATE = 'getDataGridState'; // commands for grid control
 const SET_SHOW_DEFAULT_COORDINATE_SYSTEM = 'setShowDefaultCoordinateSystem';
+const GET_HISTOGRAM_PREF = 'getHistogramPref';
 // TODO some commands need parameters, wrap them as a function
 
 const Commands = {
@@ -117,20 +123,12 @@ const Commands = {
   SET_TICK_TRANSPARENCY,
   SET_TICK_THICKNESS,
   SET_GRID_LABEL_FORMAT,
-  GET_PROFILER_SETTINGS, // commands for profiler
-  GET_PROFILE_DATA,
-  GET_FIT_DATA,
-  GET_FIT_STATISTICS,
-  NEW_PROFILE,
-  CLEAR_PROFILES,
-  REMOVE_PROFILE,
-  SET_AUTO_GENERATE,
-  SET_AXIS_UNITS_LEFT,
-  SET_AXIS_UNITS_BOTTOM,
-  SET_FIT_CURVES,
-  SET_GAUSS_COUNT,
-  SET_GENERATION_MODE,
-  SET_SELECTED_CURVE,
+  SET_BIN_COUNT,
+  GET_HISTOGRAM_PREF,
+  SET_BIN_WIDTH,
+  SET_LOG_COUNT,
+  SET_PLANE_MODE,
+  SET_PLANE_CHANNEL,
   // GET_DEFAULT_HISTOGRAM_ID,
 };
 

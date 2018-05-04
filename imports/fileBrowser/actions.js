@@ -10,6 +10,7 @@ import imageViewer from '../imageViewer/actions';
 
 import profiler from '../profiler/actions';
 import histogramActions from '../histogram/actions';
+import histogramSettingsActions from '../histogramSettings/actions';
 import gridControl from '../gridControl/actions';
 import imageStatsActions from '../imageStats/actions';
 import colormap from '../colormap/actions';
@@ -138,6 +139,7 @@ function selectFileToOpen(path) {
         // dispatch(profiler.getProfile());
         dispatch(profiler.autoGenerate());
         dispatch(histogramActions.getHistogramData());
+        dispatch(histogramSettingsActions.getHistogramPref());
         dispatch(gridControl.getDataGrid());
         dispatch(imageStatsActions.getImageStats());
         dispatch(colormap.updateColormap());

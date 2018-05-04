@@ -1,6 +1,6 @@
 import { ActionType } from './actions';
 
-const defaultState = { items: [] };
+const defaultState = { items: [], disableDragging: false, isDragging: false };
 
 const FeatureContainerDB = (state = defaultState, action) => {
   switch (action.type) {

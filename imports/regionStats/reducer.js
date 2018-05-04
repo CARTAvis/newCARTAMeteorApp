@@ -1,6 +1,6 @@
 import { ActionType } from './actions';
 
-const defaultState = { regionStats: [{}] };
+const defaultState = {};
 const RegionStatsDB = (state = defaultState, action) => {
   switch (action.type) {
     case ActionType.REGION_STATS_CHANGE: {

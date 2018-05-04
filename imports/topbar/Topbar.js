@@ -1,15 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+/* material-ui beta */
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import More from 'material-ui/svg-icons/navigation/more-horiz';
 import TextField from 'material-ui/TextField';
-import Card from 'material-ui/Card';
-import Divider from 'material-ui/Divider';
 import Popover from 'material-ui/Popover';
-import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
+
+import AppBar from 'material-ui-next/AppBar';
+import Toolbar from 'material-ui-next/Toolbar';
+import { ToolbarSeparator } from 'material-ui/Toolbar';
 // import Dialog from 'material-ui/Dialog';
 import actions from './actions';
 import SessionUI from '../app/SessionUI';
@@ -79,15 +81,15 @@ class Topbar extends Component {
     // console.log('METEOR: ', Meteor.users.find({ _id: Meteor.userId() }).fetch());
     return (
       <div>
-        <Toolbar style={this.props.style}>
-          <ToolbarGroup>
+        <AppBar position="sticky" color="default">
+          <Toolbar>
             <div className="layout-row-end-center ">
               <p style={{ borderRadius: '12px', border: '2px solid red', padding: '2px' }}>{this.state.username ? `Hi, ${this.state.username}` : ''}</p>
               <SessionUI />
             </div>
             <div>
               <div>
-                Region
+                  Region
               </div>
               <div>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -106,24 +108,14 @@ class Topbar extends Component {
                 </div>
               </div>
             </div>
-          </ToolbarGroup>
-          {/* <ToolbarGroup style={{ display: 'flex', flexDirection: 'column' }}>
-            <div>
-              <p>Region</p>
-            </div>
-            <div>
-              <p>test</p>
-            </div>
-          </ToolbarGroup> */}
-          <ToolbarGroup lastChild>
-            <RaisedButton label="Local" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleLocal} disabled={this.state.localDisabled} />
+            {/* <RaisedButton label="Local" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleLocal} disabled={this.state.localDisabled} />
             <ToolbarSeparator style={{ margin: 0 }} />
             <RaisedButton label="Remote" disabledBackgroundColor="#E0E0E0" disabledLabelColor="#9E9E9E" onClick={this.handleRemote} disabled={this.state.remoteDisabled} />
             <IconButton onClick={this.handleConfig}>
               <More />
-            </IconButton>
-          </ToolbarGroup>
-        </Toolbar>
+            </IconButton> */}
+          </Toolbar>
+        </AppBar>
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}

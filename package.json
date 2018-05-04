@@ -15,6 +15,7 @@
     "konva": "^1.7.6",
     "material-auto-rotating-carousel": "^1.4.2",
     "material-ui": "^0.20.0",
+    "material-ui-icons": "^1.0.0-beta.36",
     "material-ui-next": "npm:material-ui@next",
     "meteor-node-stubs": "~0.3.2",
     "moment": "^2.18.1",

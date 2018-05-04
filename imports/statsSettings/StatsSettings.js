@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-// import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
-import Chip from 'material-ui/Chip';
-import { blue300 } from 'material-ui/styles/colors';
+/* material-ui beta */
+import Chip from 'material-ui-next/Chip';
+import blue from 'material-ui-next/colors/blue';
 import actions from './actions';
 
 class StatsSettings extends Component {
@@ -20,6 +20,7 @@ class StatsSettings extends Component {
     }
   }
   render() {
+    const blue300 = blue[300];
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div>
@@ -27,10 +28,11 @@ class StatsSettings extends Component {
             {this.props.image.map(item =>
               (<Chip
                 key={Math.floor(Math.random() * 10000)}
-                backgroundColor={item.visible ? blue300 : ''}
+                style={{ backgroundColor: item.visible ? blue300 : '' }}
+                // backgroundColor={item.visible ? blue300 : ''}
+                label={item.label}
                 onClick={() => { this.toggle(item.visible, item.label, 'image'); }}
-              >{item.label}</Chip>),
-            )}
+              />))}
           </div>
         </div>
         <br />
@@ -39,10 +41,11 @@ class StatsSettings extends Component {
             {this.props.region.map(item =>
               (<Chip
                 key={Math.floor(Math.random() * 10000)}
-                backgroundColor={item.visible ? blue300 : ''}
+                style={{ backgroundColor: item.visible ? blue300 : '' }}
+                // backgroundColor={item.visible ? blue300 : ''}
                 onClick={() => { this.toggle(item.visible, item.label, 'region'); }}
-              >{item.label}</Chip>),
-            )}
+                label={item.label}
+              />))}
           </div>
         </div>
       </div>

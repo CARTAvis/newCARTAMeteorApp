@@ -53,22 +53,35 @@ class FeatureContainer extends Component {
     };
     // const i = el.add ? '+' : el.i;
     return (
-      <div key={el.i} data-grid={el} style={{ backgroundColor: 'white' }}>
+      <div
+        key={el.i}
+        data-grid={el}
+        style={{ backgroundColor: 'white' }}
+      >
+        <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i, el.type)}>x</button>
+        <button style={{ position: 'absolute', right: '23px', top: 0 }} onClick={() => this.setSetting(el.type)}>Setting</button>
         {/* {el.add ?
           <span className="add text" onClick={this.onAddItem}>Add +</span>
           : <span className="text">{i}</span>} */}
         {/* <span className="text">{el.i}</span> */}
         {this.addGraph(el.type)}
-        <button className="remove" style={removeStyle} onClick={() => this.onRemoveItem(el.i, el.type)}>x</button>
-        <button style={{ position: 'absolute', right: '23px', top: 0 }} onClick={() => this.setSetting(el.type)}>Setting</button>
+        {/* <div style={{
+ position: 'absolute', top: 0, backgroundColor: 'blue', right: 0, width: this.props.width - 20,
+}}
+        > */}
+        {/* <button onClick={() => this.setSetting(el.type)}>Setting</button> */}
+        {/* </div> */}
       </div>
     );
   }
   render() {
-    // console.log('RECEIVE PROPS');
+    console.log('RENDER FC');
     const width = this.props.width;
     return (
-      <div style={{ minHeight: '100vh' }}>
+      <div
+        style={{ minHeight: '100vh' }}
+        // ref={(node) => { this.gridLayout = node; }}
+      >
         {/* <button onClick={this.onAddItem('none')}>Add Item</button> */}
         <ReactGridLayout
           {...this.props}
@@ -78,8 +91,11 @@ class FeatureContainer extends Component {
           width={width}
           rowHeight={210}
           layout={this.props.items}
+          // isDraggable={!this.props.disableDragging}
+          // onDrag={() => {
+          //   this.props.dispatch(actions.isDragging(true));
+          // }}
           onDragStop={(e) => {
-            console.log();
             this.props.dispatch(actions.onDragStopDB(e));
           }}
         >
@@ -94,6 +110,7 @@ class FeatureContainer extends Component {
 }
 const mapStateToProps = state => ({
   items: state.FeatureContainerDB.items,
+  disableDragging: state.FeatureContainerDB.disableDragging,
 });
 export default connect(mapStateToProps, null, null, { withRef: true })(FeatureContainer);
 // export default FeatureContainer;
