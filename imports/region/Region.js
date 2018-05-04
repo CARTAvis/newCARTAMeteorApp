@@ -31,9 +31,31 @@ import ImageViewer from '../imageViewer/ImageViewer';
 import settingsActions from '../settings/actions';
 import colormapActions from '../colormap/actions';
 import regionStatsActions from '../regionStats/actions';
+import Tooltip from 'material-ui-next/Tooltip';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui-next/styles';
 
 const Blob = require('blob');
 
+const theme = createMuiTheme({
+  overrides: {
+    MuiTooltip: {
+      // Name of the styleSheet
+      tooltipRight: {
+        background: 'transparent',
+        width: '80px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+      tooltipBottom: {
+        background: 'transparent',
+        width: '100px',
+        fontSize: '15px',
+        fontStyle: 'italic',
+      },
+    },
+  },
+});
+const tooltipDelayX = 300;
 
 // import ImageViewer2 from '../imageViewer/ImageViewer2';
 
@@ -50,6 +72,8 @@ class Region extends Component {
     this.rect = null;
     this.state = {
       open: false,
+      tooltipOpenPeriod: false,
+      tooltipHovered: false,
       saveAsInput: '',
       currentColorStops: [],
       colormaps: [],
@@ -337,6 +361,22 @@ class Region extends Component {
   handleRequestCloseColormaps = () => {
     this.setState({ colormapsOpen: false });
   }
+  handleTooltipOpen = () => {
+    this.setState({
+      tooltipHovered: true,
+      tooltipOpenPeriod: true,
+    });
+  }
+  handleTooltipClose = () => {
+    this.setState({ tooltipHovered: false });
+    setTimeout(() => {
+      if (!this.state.tooltipHovered) {
+        setTimeout(() => {
+          this.setState({ tooltipOpenPeriod: false });
+        }, tooltipDelayX);
+      }
+    }, 200);
+  }
   saveAs = (event) => {
     this.setState({
       saveAsInput: event.target.value,
@@ -446,6 +486,12 @@ class Region extends Component {
       x, y, width, height, stops,
     } = this.props;
     const newStops = [];
+    const tooltipDelay = 550;
+    // if (this.tooltipOpen) {
+    //   tooltipDelay = 0;
+    // } else {
+    //   tooltipDelay = 550;
+    // }
     if (stops) {
       const total = stops.length;
       for (let i = 0; i < total; i += 1) {
@@ -524,7 +570,7 @@ class Region extends Component {
                   <ImageViewer firstColumnWidth={this.props.firstColumnWidth} />
                   {(this.props.mouseIsDown === 1) ? this.rect : false}
                   {this.props.regionArray ?
-                    this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
+                   this.props.regionArray.map((item, index) => this.addAnchor(item, index)) : false}
                 </Group>
               </Layer>
             </Stage>
@@ -549,30 +595,96 @@ class Region extends Component {
             </Stage>
             <Card style={{ width: '24px', position: 'absolute', top: 0 }} >
               <Divider className="divider" />
-              <button onClick={this.zoomIn} className="zoom">+</button>
+              <MuiThemeProvider theme={theme}>
+                <Tooltip
+                  id="tooltip-zoomIn"
+                  title="zoom in"
+                  placement="right"
+                  onClose={this.handleTooltipClose}
+                  enterDelay={this.state.tooltipOpenPeriod ? 0 : tooltipDelay}
+                  onOpen={this.handleTooltipOpen}
+                >
+                  <button onClick={this.zoomIn} className="zoom">+</button>
+                </Tooltip>
+              </MuiThemeProvider>
               <Divider className="divider" />
-              <button onClick={this.zoomOut} className="zoom">-</button>
+              <MuiThemeProvider theme={theme}>
+                <Tooltip
+                  id="tooltip-zoomIn"
+                  title="zoom out"
+                  placement="right"
+                  onClose={this.handleTooltipClose}
+                  enterDelay={this.state.tooltipOpenPeriod ? 0 : tooltipDelay}
+                  onOpen={this.handleTooltipOpen}
+                >
+                  <button onClick={this.zoomOut} className="zoom">-</button>
+                </Tooltip>
+              </MuiThemeProvider>
               <Divider className="divider" />
-              <button onClick={this.setSetting} className="zoom">
-                <img className="iconImg" src="/images/tools.png" alt="" />
-              </button>
+              <MuiThemeProvider theme={theme}>
+                <Tooltip
+                  id="tooltip-zoomIn"
+                  title="settings"
+                  placement="right"
+                  onOpen={this.handleTooltipOpen}
+                  enterDelay={this.state.tooltipOpenPeriod ? 0 : tooltipDelay}
+                  onClose={this.handleTooltipClose}
+                >
+                  <button onClick={this.setSetting} className="zoom">
+                    <img className="iconImg" src="/images/tools.png" alt="" />
+                  </button>
+                </Tooltip>
+              </MuiThemeProvider>
               <Divider className="divider" />
               <button ref={(node) => { this.saveImageViewerButton = node; }} onClick={this.handleTouchTap} className="zoom">
                 <img className="iconImg" src="/images/save.png" alt="" />
               </button>
             </Card>
             <Card style={{ width: '24px', position: 'absolute', bottom: 0 }} >
-              <button onClick={this.panReset} className="zoom">
-                <img className="iconImg" src="/images/pan_reset.png" alt="" />
-              </button>
+              <MuiThemeProvider theme={theme}>
+                <Tooltip
+                  id="tooltip-zoomIn"
+                  title="reset pan"
+                  placement="right"
+                  onOpen={this.handleTooltipOpen}
+                  enterDelay={this.state.tooltipOpenPeriod ? 0 : tooltipDelay}
+                  onClose={this.handleTooltipClose}
+                >
+                  <button onClick={this.panReset} className="zoom">
+                    <img className="iconImg" src="/images/pan_reset.png" alt="" />
+                  </button>
+                </Tooltip>
+              </MuiThemeProvider>
               <Divider className="divider" />
-              <button onClick={this.zoomReset} className="zoom">
-                <img className="iconImg" src="/images/zoom_reset.png" alt="" />
-              </button>
+              <MuiThemeProvider theme={theme}>
+                <Tooltip
+                  id="tooltip-zoomIn"
+                  title="reset zoom"
+                  placement="right"
+                  onOpen={this.handleTooltipOpen}
+                  enterDelay={this.state.tooltipOpenPeriod ? 0 : tooltipDelay}
+                  onClose={this.handleTooltipClose}
+                >
+                  <button onClick={this.zoomReset} className="zoom">
+                    <img className="iconImg" src="/images/zoom_reset.png" alt="" />
+                  </button>
+                </Tooltip>
+              </MuiThemeProvider>
               <Divider className="divider" />
-              <button onClick={this.panZoomReset} className="zoom">
-                <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
-              </button>
+              <MuiThemeProvider theme={theme}>
+                <Tooltip
+                  id="tooltip-zoomIn"
+                  title="reset all"
+                  placement="right"
+                  onOpen={this.handleTooltipOpen}
+                  enterDelay={this.state.tooltipOpenPeriod ? 0 : tooltipDelay}
+                  onClose={this.handleTooltipClose}
+                >
+                  <button onClick={this.panZoomReset} className="zoom">
+                    <img className="iconImg" src="/images/panzoom_reset.png" alt="" />
+                  </button>
+                </Tooltip>
+              </MuiThemeProvider>
             </Card>
             <Card style={{
                 width: '24px', position: 'absolute', bottom: 50, left: this.props.firstColumnWidth - 75,
